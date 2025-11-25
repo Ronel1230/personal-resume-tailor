@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { OpenAI } from 'openai';
 import { PDFDocument, StandardFonts } from 'pdf-lib';
-import { getBaseResumeByName } from '@/app/data/baseResumes';
+import { getBaseResumeByName } from '@/app/data/db';
 import { buildPrompt } from '@/app/utils/promptBuilder';
 import { parseResume, TemplateContext } from './utils';
 import { renderTemplate1 } from './templates/template1';
@@ -75,7 +75,7 @@ export async function POST(req: NextRequest) {
     }
 
     // 2. Load base resume based on selected profile, fallback to default embedded
-    const profile = getBaseResumeByName(baseResumeProfile);
+    const profile = await getBaseResumeByName(baseResumeProfile);
     const baseResume: string = profile?.resumeText || ``;
     const customPrompt = profile?.customPrompt;
     const pdfTemplate = profile?.pdfTemplate || 1;

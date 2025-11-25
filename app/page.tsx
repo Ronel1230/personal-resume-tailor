@@ -1,9 +1,38 @@
 'use client';
-import { useRef } from 'react';
-import { baseResumes } from './data/baseResumes';
+import { useRef, useEffect, useState } from 'react';
+import { BaseResumeProfile } from './data/baseResumes';
 
 export default function Home() {
   const formRef = useRef<HTMLFormElement>(null);
+  const [baseResumes, setBaseResumes] = useState<BaseResumeProfile[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchProfiles() {
+      try {
+        const response = await fetch('/api/profiles');
+        const data = await response.json();
+        if (data.profiles) {
+          setBaseResumes(data.profiles);
+        }
+      } catch (error) {
+        console.error('Failed to fetch profiles:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchProfiles();
+  }, []);
+
+  if (loading) {
+    return (
+      <main className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
+        <div className="bg-white shadow-lg rounded-lg p-8 w-full max-w-xl">
+          <p className="text-center text-gray-600">Loading profiles...</p>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="min-h-screen flex items-center justify-center bg-gray-50 p-4">

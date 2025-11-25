@@ -1,3 +1,5 @@
+// Type definition for BaseResumeProfile
+// Note: Profiles are now stored in the database and accessed via API or db.ts helpers
 export type BaseResumeProfile = {
   name: string; // profile display name used as the select value
   resumeText: string; // full plain-text resume template
@@ -5,7 +7,7 @@ export type BaseResumeProfile = {
   pdfTemplate?: number; // PDF template identifier (e.g., 'default', 'modern', 'classic')
 };
 
-// Import all profiles from individual files
+// Import all profiles from individual files (used only for seeding)
 import { profile as christianCarrasco } from './profiles/christian-carrasco';
 import { profile as edwinRivera } from './profiles/edwin-rivera';
 import { profile as markWlodawski } from './profiles/mark-wlodawski';
@@ -14,7 +16,8 @@ import { profile as sergiArcusa } from './profiles/sergi-arcusa';
 import { profile as stephenPoserina } from './profiles/stephen-poserina';
 import { profile as venuYara } from './profiles/venu-yara';
 
-// Aggregate all profiles from individual files
+// Aggregate all profiles from individual files (used only for seeding)
+// This is kept temporarily for the seed script migration
 export const baseResumes: BaseResumeProfile[] = [
   christianCarrasco,
   edwinRivera,
@@ -25,13 +28,7 @@ export const baseResumes: BaseResumeProfile[] = [
   venuYara,
 ];
 
-export function getBaseResumeByName(name: string | null | undefined): BaseResumeProfile | null {
-  if (!name) return null;
-  const profile = baseResumes.find(p => p.name === name);
-  return profile || null;
-}
-
-// Helper function to convert profile name to filename (slug)
+// Helper function to convert profile name to filename (slug) - kept for backward compatibility
 export function nameToFilename(name: string): string {
   return name
     .toLowerCase()
@@ -39,10 +36,10 @@ export function nameToFilename(name: string): string {
     .replace(/^-+|-+$/g, '');
 }
 
-// Helper function to convert filename to profile name (reverse slug)
+// Helper function to convert filename to profile name (reverse slug) - kept for backward compatibility
 export function filenameToName(filename: string): string {
   // Remove .ts extension if present
-  const nameWithoutExt = filename.replace(/.ts$/, '');
+  const nameWithoutExt = filename.replace(/\.ts$/, '');
   // Convert kebab-case to Title Case
   return nameWithoutExt
     .split('-')
