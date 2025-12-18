@@ -43,7 +43,7 @@ Include explicit database-related experience in the Professional Experience sect
 15. Maintain all original section headers and formatting. Do not include commentary or extra text outside the resume.
 16. STYLE CONSTRAINTS:
 - No em dashes (—). Use plain connectors (commas, semicolons, "and") or simple hyphens when necessary.
-- Use concise storytelling bullets (challenge → action → result) rather than task lists.
+- Use concise storytelling bullets (challenge - action - result) rather than task lists.
 - Prefer non-rounded percentages when plausible (e.g., 33%, 47%, 92%) to convey precision.
 - Prioritize impact, metrics, and results over generic responsibilities in every bullet.
 
