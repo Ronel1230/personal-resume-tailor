@@ -1,5 +1,5 @@
 import { PDFPage, rgb } from 'pdf-lib';
-import { TemplateContext, wrapText, wrapBulletText, formatDate, drawTextWithBold, COLORS, SPACING } from '../utils';
+import { TemplateContext, wrapText, wrapBulletText, formatDate, drawTextWithBold, COLORS, SPACING, BULLET_INDENT } from '../utils';
 
 // TEMPLATE 4: CLASSIC CENTERED - Centered header with elegant spacing
 export async function renderTemplate4(context: TemplateContext): Promise<Uint8Array> {
@@ -35,7 +35,6 @@ export async function renderTemplate4(context: TemplateContext): Promise<Uint8Ar
     y -= NAME_SIZE + 6;
   }
   
-  // Contact - centered
   const contactParts = [location, phone, email].filter(Boolean);
   if (contactParts.length > 0) {
     const contactText = contactParts.join('   •   ');
@@ -45,7 +44,6 @@ export async function renderTemplate4(context: TemplateContext): Promise<Uint8Ar
     y -= CONTACT_SIZE + 10;
   }
   
-  // Centered line
   const lineWidth = 180;
   const lineX = (PAGE_WIDTH - lineWidth) / 2;
   page.drawLine({
@@ -111,8 +109,8 @@ export async function renderTemplate4(context: TemplateContext): Promise<Uint8Ar
       continue;
     }
     
-    // Bullet
-    const wrapped = wrapBulletText(line, font, BODY_SIZE, CONTENT_WIDTH);
+    // Bullet or regular text
+    const wrapped = wrapBulletText(line, font, BODY_SIZE, CONTENT_WIDTH - BULLET_INDENT);
     
     if (wrapped.hasBullet && isFirstBulletAfterJob) {
       y -= SPACING.BEFORE_FIRST_BULLET;
@@ -126,7 +124,8 @@ export async function renderTemplate4(context: TemplateContext): Promise<Uint8Ar
         y = PAGE_HEIGHT - MARGIN_TOP;
       }
       
-      drawTextWithBold(page, wline, MARGIN_LEFT, y, font, fontBold, BODY_SIZE, BLACK);
+      const xPos = wrapped.hasBullet ? MARGIN_LEFT + BULLET_INDENT : MARGIN_LEFT;
+      drawTextWithBold(page, wline, xPos, y, font, fontBold, BODY_SIZE, BLACK);
       y -= LINE_HEIGHT;
     }
     

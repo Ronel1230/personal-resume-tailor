@@ -1,5 +1,5 @@
 import { PDFPage, rgb } from 'pdf-lib';
-import { TemplateContext, wrapText, wrapBulletText, formatDate, drawTextWithBold, COLORS, SPACING } from '../utils';
+import { TemplateContext, wrapText, wrapBulletText, formatDate, drawTextWithBold, COLORS, SPACING, BULLET_INDENT } from '../utils';
 
 // TEMPLATE 3: MINIMALIST - Clean and elegant with subtle grays
 export async function renderTemplate3(context: TemplateContext): Promise<Uint8Array> {
@@ -14,7 +14,7 @@ export async function renderTemplate3(context: TemplateContext): Promise<Uint8Ar
   const MARGIN_LEFT = 60;
   const MARGIN_RIGHT = 60;
   const MARGIN_TOP = 55;
-  const MARGIN_BOTTOM = 55;
+  const MARGIN_BOTTOM = 50;
   const CONTENT_WIDTH = PAGE_WIDTH - MARGIN_LEFT - MARGIN_RIGHT;
   
   // Typography
@@ -39,7 +39,6 @@ export async function renderTemplate3(context: TemplateContext): Promise<Uint8Ar
     y -= CONTACT_SIZE + 6;
   }
   
-  // Subtle divider
   page.drawLine({
     start: { x: MARGIN_LEFT, y },
     end: { x: PAGE_WIDTH - MARGIN_RIGHT, y },
@@ -110,8 +109,8 @@ export async function renderTemplate3(context: TemplateContext): Promise<Uint8Ar
       continue;
     }
     
-    // Bullet
-    const wrapped = wrapBulletText(line, font, BODY_SIZE, CONTENT_WIDTH);
+    // Bullet or regular text
+    const wrapped = wrapBulletText(line, font, BODY_SIZE, CONTENT_WIDTH - BULLET_INDENT);
     
     if (wrapped.hasBullet && isFirstBulletAfterJob) {
       y -= SPACING.BEFORE_FIRST_BULLET;
@@ -125,7 +124,9 @@ export async function renderTemplate3(context: TemplateContext): Promise<Uint8Ar
         y = PAGE_HEIGHT - MARGIN_TOP;
       }
       
-      drawTextWithBold(page, wline, MARGIN_LEFT, y, font, fontBold, BODY_SIZE, DARK_GRAY);
+      // Bullets are indented, regular text (like education) is at margin
+      const xPos = wrapped.hasBullet ? MARGIN_LEFT + BULLET_INDENT : MARGIN_LEFT;
+      drawTextWithBold(page, wline, xPos, y, font, fontBold, BODY_SIZE, DARK_GRAY);
       y -= LINE_HEIGHT;
     }
     

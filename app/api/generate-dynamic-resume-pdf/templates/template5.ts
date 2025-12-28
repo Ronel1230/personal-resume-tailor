@@ -1,5 +1,5 @@
 import { PDFPage, rgb } from 'pdf-lib';
-import { TemplateContext, wrapText, wrapBulletText, formatDate, drawTextWithBold, COLORS, SPACING } from '../utils';
+import { TemplateContext, wrapText, wrapBulletText, formatDate, drawTextWithBold, COLORS, SPACING, BULLET_INDENT } from '../utils';
 
 // TEMPLATE 5: MODERN BLOCK - Large name with clean sections
 export async function renderTemplate5(context: TemplateContext): Promise<Uint8Array> {
@@ -34,7 +34,6 @@ export async function renderTemplate5(context: TemplateContext): Promise<Uint8Ar
     y -= NAME_SIZE + 8;
   }
   
-  // Contact - no separator after name
   const contactParts = [email, phone, location].filter(Boolean);
   if (contactParts.length > 0) {
     page.drawText(contactParts.join('   |   '), { x: MARGIN_LEFT, y, size: CONTACT_SIZE, font, color: MEDIUM_GRAY });
@@ -68,7 +67,6 @@ export async function renderTemplate5(context: TemplateContext): Promise<Uint8Ar
       page.drawText(sectionName, { x: MARGIN_LEFT, y, size: SECTION_SIZE, font: fontBold, color: DARK_SLATE });
       y -= 4;
       
-      // Full width line
       page.drawLine({
         start: { x: MARGIN_LEFT, y },
         end: { x: PAGE_WIDTH - MARGIN_RIGHT, y },
@@ -105,8 +103,8 @@ export async function renderTemplate5(context: TemplateContext): Promise<Uint8Ar
       continue;
     }
     
-    // Bullet
-    const wrapped = wrapBulletText(line, font, BODY_SIZE, CONTENT_WIDTH);
+    // Bullet or regular text
+    const wrapped = wrapBulletText(line, font, BODY_SIZE, CONTENT_WIDTH - BULLET_INDENT);
     
     if (wrapped.hasBullet && isFirstBulletAfterJob) {
       y -= SPACING.BEFORE_FIRST_BULLET;
@@ -120,7 +118,8 @@ export async function renderTemplate5(context: TemplateContext): Promise<Uint8Ar
         y = PAGE_HEIGHT - MARGIN_TOP;
       }
       
-      drawTextWithBold(page, wline, MARGIN_LEFT, y, font, fontBold, BODY_SIZE, BLACK);
+      const xPos = wrapped.hasBullet ? MARGIN_LEFT + BULLET_INDENT : MARGIN_LEFT;
+      drawTextWithBold(page, wline, xPos, y, font, fontBold, BODY_SIZE, BLACK);
       y -= LINE_HEIGHT;
     }
     

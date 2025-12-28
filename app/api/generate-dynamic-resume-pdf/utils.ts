@@ -86,10 +86,11 @@ export function wrapText(text: string, font: PDFFont, size: number, maxWidth: nu
   return lines;
 }
 
-// Bullet character
+// Bullet character and indent
 export const BULLET_CHAR = '•';
+export const BULLET_INDENT = 10; // Indent before bullet from margin
 
-// Helper to wrap bullet text - NO indent, bullet aligns to margin
+// Helper to wrap bullet text with indent
 export function wrapBulletText(
   text: string,
   font: PDFFont,
@@ -103,15 +104,16 @@ export function wrapBulletText(
   // Remove the original bullet/dash if present
   const content = hasBullet ? text.slice(bulletMatch![0].length) : text;
   
-  // For bullet lines, wrap content and add bullet to first line only
-  const wrappedLines = wrapText(content, font, size, maxWidth);
+  // For bullet lines, wrap content (accounting for bullet indent)
+  const effectiveWidth = hasBullet ? maxWidth - BULLET_INDENT : maxWidth;
+  const wrappedLines = wrapText(content, font, size, effectiveWidth);
   
   const lines: string[] = [];
   for (let i = 0; i < wrappedLines.length; i++) {
     if (i === 0 && hasBullet) {
       lines.push(BULLET_CHAR + '   ' + wrappedLines[i]); // 3 spaces after bullet
     } else if (hasBullet) {
-      lines.push('     ' + wrappedLines[i]); // 5 spaces for continuation
+      lines.push('     ' + wrappedLines[i]); // 5 spaces for continuation (aligns with text)
     } else {
       lines.push(wrappedLines[i]); // No indent for non-bullet text
     }
@@ -150,9 +152,9 @@ export const SPACING = {
   SECTION_GAP: 18,            // Space before a new section header
   AFTER_SECTION_HEADER: 14,   // Space after section header
   JOB_GAP: 14,                // Space between jobs
-  AFTER_JOB_HEADER: 12,       // Space after job title + company line (INCREASED)
+  AFTER_JOB_HEADER: 12,       // Space after job title + company line
   BULLET_LINE_HEIGHT: 1.5,    // Line height for bullets
-  BULLET_GAP: 4,              // Extra space between bullets (INCREASED)
+  BULLET_GAP: 4,              // Extra space between bullets
   BEFORE_FIRST_BULLET: 4,     // Space before first bullet in a job
 };
 

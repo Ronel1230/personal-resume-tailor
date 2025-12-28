@@ -14,6 +14,7 @@ Full Stack Developer with 5+ years of experience building scalable, high-perform
 
 Education:
 Bachelor's degree in Computer Science — University of North Carolina at Charlotte, 2018 - 2020
+Bachelor's degree in Computer Science — University of North Carolina Wilmington, 2016 - 2018
 
 Technical Skills:
 • Frontend: React.js, Next.js, Angular, Vue.js, TypeScript, Redux Toolkit, RxJS, Tailwind CSS, Material-UI, WCAG, Component Architecture

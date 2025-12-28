@@ -1,7 +1,7 @@
 import { PDFPage, rgb } from 'pdf-lib';
-import { TemplateContext, wrapText, wrapBulletText, formatDate, drawTextWithBold, COLORS, SPACING } from '../utils';
+import { TemplateContext, wrapText, wrapBulletText, formatDate, drawTextWithBold, COLORS, SPACING, BULLET_INDENT } from '../utils';
 
-// TEMPLATE 1: BOLD HEADER - Strong name with horizontal rules
+// TEMPLATE 1: BOLD HEADER - Strong name with horizontal rule
 export async function renderTemplate1(context: TemplateContext): Promise<Uint8Array> {
   const { pdfDoc, font, fontBold, name, email, phone, location, body, PAGE_WIDTH, PAGE_HEIGHT } = context;
   let { page } = context;
@@ -28,20 +28,17 @@ export async function renderTemplate1(context: TemplateContext): Promise<Uint8Ar
   let y = PAGE_HEIGHT - MARGIN_TOP;
   
   // === HEADER ===
-  // Name first
   if (name) {
     page.drawText(name, { x: MARGIN_LEFT, y, size: NAME_SIZE, font: fontBold, color: BLACK });
     y -= NAME_SIZE + 6;
   }
   
-  // Contact
   const contactParts = [email, phone, location].filter(Boolean);
   if (contactParts.length > 0) {
     page.drawText(contactParts.join('   |   '), { x: MARGIN_LEFT, y, size: CONTACT_SIZE, font, color: MEDIUM_GRAY });
     y -= CONTACT_SIZE + 8;
   }
   
-  // Bottom rule only
   page.drawLine({
     start: { x: MARGIN_LEFT, y },
     end: { x: PAGE_WIDTH - MARGIN_RIGHT, y },
@@ -95,11 +92,9 @@ export async function renderTemplate1(context: TemplateContext): Promise<Uint8Ar
         y = PAGE_HEIGHT - MARGIN_TOP;
       }
       
-      // Title
       page.drawText(jobTitle.trim(), { x: MARGIN_LEFT, y, size: JOB_TITLE_SIZE, font: fontBold, color: BLACK });
       y -= JOB_TITLE_SIZE + 2;
       
-      // Company | Period
       const periodFormatted = formatDate(period.trim());
       page.drawText(`${company.trim()}  |  ${periodFormatted}`, { x: MARGIN_LEFT, y, size: BODY_SIZE, font, color: MEDIUM_GRAY });
       y -= SPACING.AFTER_JOB_HEADER;
@@ -108,9 +103,8 @@ export async function renderTemplate1(context: TemplateContext): Promise<Uint8Ar
     }
     
     // Bullet or text
-    const wrapped = wrapBulletText(line, font, BODY_SIZE, CONTENT_WIDTH);
+    const wrapped = wrapBulletText(line, font, BODY_SIZE, CONTENT_WIDTH - BULLET_INDENT);
     
-    // Add extra space before first bullet after job header
     if (wrapped.hasBullet && isFirstBulletAfterJob) {
       y -= SPACING.BEFORE_FIRST_BULLET;
       isFirstBulletAfterJob = false;
@@ -123,7 +117,9 @@ export async function renderTemplate1(context: TemplateContext): Promise<Uint8Ar
         y = PAGE_HEIGHT - MARGIN_TOP;
       }
       
-      drawTextWithBold(page, wline, MARGIN_LEFT, y, font, fontBold, BODY_SIZE, BLACK);
+      // Bullets are indented, regular text is at margin
+      const xPos = wrapped.hasBullet ? MARGIN_LEFT + BULLET_INDENT : MARGIN_LEFT;
+      drawTextWithBold(page, wline, xPos, y, font, fontBold, BODY_SIZE, BLACK);
       y -= LINE_HEIGHT;
     }
     

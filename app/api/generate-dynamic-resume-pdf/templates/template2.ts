@@ -1,5 +1,5 @@
 import { PDFPage, rgb } from 'pdf-lib';
-import { TemplateContext, wrapText, wrapBulletText, formatDate, drawTextWithBold, COLORS, SPACING } from '../utils';
+import { TemplateContext, wrapText, wrapBulletText, formatDate, drawTextWithBold, COLORS, SPACING, BULLET_INDENT } from '../utils';
 
 // TEMPLATE 2: ACCENT BAR - Navy left accent bar
 export async function renderTemplate2(context: TemplateContext): Promise<Uint8Array> {
@@ -8,7 +8,7 @@ export async function renderTemplate2(context: TemplateContext): Promise<Uint8Ar
   
   const BLACK = COLORS.BLACK;
   const MEDIUM_GRAY = COLORS.MEDIUM_GRAY;
-  const NAVY = rgb(0.15, 0.22, 0.35); // Changed to navy blue
+  const NAVY = rgb(0.15, 0.22, 0.35);
   
   // Layout
   const ACCENT_WIDTH = 5;
@@ -110,7 +110,7 @@ export async function renderTemplate2(context: TemplateContext): Promise<Uint8Ar
     }
     
     // Bullet
-    const wrapped = wrapBulletText(line, font, BODY_SIZE, CONTENT_WIDTH);
+    const wrapped = wrapBulletText(line, font, BODY_SIZE, CONTENT_WIDTH - BULLET_INDENT);
     
     if (wrapped.hasBullet && isFirstBulletAfterJob) {
       y -= SPACING.BEFORE_FIRST_BULLET;
@@ -125,7 +125,8 @@ export async function renderTemplate2(context: TemplateContext): Promise<Uint8Ar
         y = PAGE_HEIGHT - MARGIN_TOP;
       }
       
-      drawTextWithBold(page, wline, MARGIN_LEFT, y, font, fontBold, BODY_SIZE, BLACK);
+      const xPos = wrapped.hasBullet ? MARGIN_LEFT + BULLET_INDENT : MARGIN_LEFT;
+      drawTextWithBold(page, wline, xPos, y, font, fontBold, BODY_SIZE, BLACK);
       y -= LINE_HEIGHT;
     }
     
