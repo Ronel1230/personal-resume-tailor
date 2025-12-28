@@ -1,7 +1,7 @@
 import { PDFPage, rgb } from 'pdf-lib';
 import { TemplateContext, wrapText, wrapBulletText, formatDate, drawTextWithBold, COLORS, SPACING } from '../utils';
 
-// TEMPLATE 5: MODERN BLOCK - Name in block with bottom border
+// TEMPLATE 5: MODERN BLOCK - Large name with clean sections
 export async function renderTemplate5(context: TemplateContext): Promise<Uint8Array> {
   const { pdfDoc, font, fontBold, name, email, phone, location, body, PAGE_WIDTH, PAGE_HEIGHT } = context;
   let { page } = context;
@@ -31,28 +31,20 @@ export async function renderTemplate5(context: TemplateContext): Promise<Uint8Ar
   // === HEADER ===
   if (name) {
     page.drawText(name, { x: MARGIN_LEFT, y, size: NAME_SIZE, font: fontBold, color: DARK_SLATE });
-    y -= NAME_SIZE + 4;
-    
-    // Short accent underline
-    page.drawLine({
-      start: { x: MARGIN_LEFT, y },
-      end: { x: MARGIN_LEFT + 60, y },
-      thickness: 3,
-      color: ACCENT
-    });
-    y -= 10;
+    y -= NAME_SIZE + 8;
   }
   
-  // Contact
+  // Contact - no separator after name
   const contactParts = [email, phone, location].filter(Boolean);
   if (contactParts.length > 0) {
     page.drawText(contactParts.join('   |   '), { x: MARGIN_LEFT, y, size: CONTACT_SIZE, font, color: MEDIUM_GRAY });
-    y -= CONTACT_SIZE + 18;
+    y -= CONTACT_SIZE + 20;
   }
   
   // === BODY ===
   const bodyLines = body.split('\n');
   let isFirstJob = true;
+  let isFirstBulletAfterJob = false;
   
   for (let i = 0; i < bodyLines.length; i++) {
     const line = bodyLines[i].trim();
@@ -85,6 +77,7 @@ export async function renderTemplate5(context: TemplateContext): Promise<Uint8Ar
       });
       y -= SPACING.AFTER_SECTION_HEADER;
       isFirstJob = true;
+      isFirstBulletAfterJob = false;
       continue;
     }
     
@@ -108,11 +101,17 @@ export async function renderTemplate5(context: TemplateContext): Promise<Uint8Ar
       const periodFormatted = formatDate(period.trim());
       page.drawText(`${company.trim()}  |  ${periodFormatted}`, { x: MARGIN_LEFT, y, size: BODY_SIZE, font, color: MEDIUM_GRAY });
       y -= SPACING.AFTER_JOB_HEADER;
+      isFirstBulletAfterJob = true;
       continue;
     }
     
     // Bullet
     const wrapped = wrapBulletText(line, font, BODY_SIZE, CONTENT_WIDTH);
+    
+    if (wrapped.hasBullet && isFirstBulletAfterJob) {
+      y -= SPACING.BEFORE_FIRST_BULLET;
+      isFirstBulletAfterJob = false;
+    }
     
     for (const wline of wrapped.lines) {
       if (y < MARGIN_BOTTOM) {

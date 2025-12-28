@@ -1,14 +1,14 @@
 import { PDFPage, rgb } from 'pdf-lib';
 import { TemplateContext, wrapText, wrapBulletText, formatDate, drawTextWithBold, COLORS, SPACING } from '../utils';
 
-// TEMPLATE 2: ACCENT BAR - Teal left accent bar
+// TEMPLATE 2: ACCENT BAR - Navy left accent bar
 export async function renderTemplate2(context: TemplateContext): Promise<Uint8Array> {
   const { pdfDoc, font, fontBold, name, email, phone, location, body, PAGE_WIDTH, PAGE_HEIGHT } = context;
   let { page } = context;
   
   const BLACK = COLORS.BLACK;
   const MEDIUM_GRAY = COLORS.MEDIUM_GRAY;
-  const TEAL = rgb(0.15, 0.45, 0.45);
+  const NAVY = rgb(0.15, 0.22, 0.35); // Changed to navy blue
   
   // Layout
   const ACCENT_WIDTH = 5;
@@ -27,7 +27,7 @@ export async function renderTemplate2(context: TemplateContext): Promise<Uint8Ar
   const LINE_HEIGHT = BODY_SIZE * SPACING.BULLET_LINE_HEIGHT;
   
   const drawAccent = (p: PDFPage) => {
-    p.drawRectangle({ x: 0, y: 0, width: ACCENT_WIDTH, height: PAGE_HEIGHT, color: TEAL });
+    p.drawRectangle({ x: 0, y: 0, width: ACCENT_WIDTH, height: PAGE_HEIGHT, color: NAVY });
   };
   
   drawAccent(page);
@@ -41,13 +41,14 @@ export async function renderTemplate2(context: TemplateContext): Promise<Uint8Ar
   
   const contactParts = [location, phone, email].filter(Boolean);
   if (contactParts.length > 0) {
-    page.drawText(contactParts.join('   •   '), { x: MARGIN_LEFT, y, size: CONTACT_SIZE, font, color: MEDIUM_GRAY });
+    page.drawText(contactParts.join('   |   '), { x: MARGIN_LEFT, y, size: CONTACT_SIZE, font, color: MEDIUM_GRAY });
     y -= CONTACT_SIZE + 16;
   }
   
   // === BODY ===
   const bodyLines = body.split('\n');
   let isFirstJob = true;
+  let isFirstBulletAfterJob = false;
   
   for (let i = 0; i < bodyLines.length; i++) {
     const line = bodyLines[i].trim();
@@ -75,10 +76,11 @@ export async function renderTemplate2(context: TemplateContext): Promise<Uint8Ar
         start: { x: MARGIN_LEFT, y },
         end: { x: PAGE_WIDTH - MARGIN_RIGHT, y },
         thickness: 1.5,
-        color: TEAL
+        color: NAVY
       });
       y -= SPACING.AFTER_SECTION_HEADER;
       isFirstJob = true;
+      isFirstBulletAfterJob = false;
       continue;
     }
     
@@ -103,11 +105,17 @@ export async function renderTemplate2(context: TemplateContext): Promise<Uint8Ar
       const periodFormatted = formatDate(period.trim());
       page.drawText(`${company.trim()}  |  ${periodFormatted}`, { x: MARGIN_LEFT, y, size: BODY_SIZE, font, color: MEDIUM_GRAY });
       y -= SPACING.AFTER_JOB_HEADER;
+      isFirstBulletAfterJob = true;
       continue;
     }
     
     // Bullet
     const wrapped = wrapBulletText(line, font, BODY_SIZE, CONTENT_WIDTH);
+    
+    if (wrapped.hasBullet && isFirstBulletAfterJob) {
+      y -= SPACING.BEFORE_FIRST_BULLET;
+      isFirstBulletAfterJob = false;
+    }
     
     for (const wline of wrapped.lines) {
       if (y < MARGIN_BOTTOM) {

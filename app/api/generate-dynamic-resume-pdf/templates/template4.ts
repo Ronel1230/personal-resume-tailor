@@ -1,7 +1,7 @@
 import { PDFPage, rgb } from 'pdf-lib';
 import { TemplateContext, wrapText, wrapBulletText, formatDate, drawTextWithBold, COLORS, SPACING } from '../utils';
 
-// TEMPLATE 4: CLASSIC SERIF STYLE - Centered header with elegant spacing
+// TEMPLATE 4: CLASSIC CENTERED - Centered header with elegant spacing
 export async function renderTemplate4(context: TemplateContext): Promise<Uint8Array> {
   const { pdfDoc, font, fontBold, name, email, phone, location, body, PAGE_WIDTH, PAGE_HEIGHT } = context;
   let { page } = context;
@@ -59,6 +59,7 @@ export async function renderTemplate4(context: TemplateContext): Promise<Uint8Ar
   // === BODY ===
   const bodyLines = body.split('\n');
   let isFirstJob = true;
+  let isFirstBulletAfterJob = false;
   
   for (let i = 0; i < bodyLines.length; i++) {
     const line = bodyLines[i].trim();
@@ -82,6 +83,7 @@ export async function renderTemplate4(context: TemplateContext): Promise<Uint8Ar
       page.drawText(sectionName, { x: MARGIN_LEFT, y, size: SECTION_SIZE, font: fontBold, color: CHARCOAL });
       y -= SPACING.AFTER_SECTION_HEADER;
       isFirstJob = true;
+      isFirstBulletAfterJob = false;
       continue;
     }
     
@@ -105,11 +107,17 @@ export async function renderTemplate4(context: TemplateContext): Promise<Uint8Ar
       const periodFormatted = formatDate(period.trim());
       page.drawText(`${company.trim()}  |  ${periodFormatted}`, { x: MARGIN_LEFT, y, size: BODY_SIZE, font, color: MEDIUM_GRAY });
       y -= SPACING.AFTER_JOB_HEADER;
+      isFirstBulletAfterJob = true;
       continue;
     }
     
     // Bullet
     const wrapped = wrapBulletText(line, font, BODY_SIZE, CONTENT_WIDTH);
+    
+    if (wrapped.hasBullet && isFirstBulletAfterJob) {
+      y -= SPACING.BEFORE_FIRST_BULLET;
+      isFirstBulletAfterJob = false;
+    }
     
     for (const wline of wrapped.lines) {
       if (y < MARGIN_BOTTOM) {

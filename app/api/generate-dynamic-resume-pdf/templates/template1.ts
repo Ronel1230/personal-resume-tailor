@@ -13,7 +13,7 @@ export async function renderTemplate1(context: TemplateContext): Promise<Uint8Ar
   // Layout
   const MARGIN_LEFT = 50;
   const MARGIN_RIGHT = 50;
-  const MARGIN_TOP = 50;
+  const MARGIN_TOP = 55;
   const MARGIN_BOTTOM = 50;
   const CONTENT_WIDTH = PAGE_WIDTH - MARGIN_LEFT - MARGIN_RIGHT;
   
@@ -28,15 +28,7 @@ export async function renderTemplate1(context: TemplateContext): Promise<Uint8Ar
   let y = PAGE_HEIGHT - MARGIN_TOP;
   
   // === HEADER ===
-  // Top rule
-  page.drawLine({
-    start: { x: MARGIN_LEFT, y: y + 8 },
-    end: { x: PAGE_WIDTH - MARGIN_RIGHT, y: y + 8 },
-    thickness: 2,
-    color: DARK_GRAY
-  });
-  
-  // Name - bold and large
+  // Name first
   if (name) {
     page.drawText(name, { x: MARGIN_LEFT, y, size: NAME_SIZE, font: fontBold, color: BLACK });
     y -= NAME_SIZE + 6;
@@ -49,7 +41,7 @@ export async function renderTemplate1(context: TemplateContext): Promise<Uint8Ar
     y -= CONTACT_SIZE + 8;
   }
   
-  // Bottom rule
+  // Bottom rule only
   page.drawLine({
     start: { x: MARGIN_LEFT, y },
     end: { x: PAGE_WIDTH - MARGIN_RIGHT, y },
@@ -61,6 +53,7 @@ export async function renderTemplate1(context: TemplateContext): Promise<Uint8Ar
   // === BODY ===
   const bodyLines = body.split('\n');
   let isFirstJob = true;
+  let isFirstBulletAfterJob = false;
   
   for (let i = 0; i < bodyLines.length; i++) {
     const line = bodyLines[i].trim();
@@ -84,6 +77,7 @@ export async function renderTemplate1(context: TemplateContext): Promise<Uint8Ar
       page.drawText(sectionName, { x: MARGIN_LEFT, y, size: SECTION_SIZE, font: fontBold, color: DARK_GRAY });
       y -= SPACING.AFTER_SECTION_HEADER;
       isFirstJob = true;
+      isFirstBulletAfterJob = false;
       continue;
     }
     
@@ -109,11 +103,18 @@ export async function renderTemplate1(context: TemplateContext): Promise<Uint8Ar
       const periodFormatted = formatDate(period.trim());
       page.drawText(`${company.trim()}  |  ${periodFormatted}`, { x: MARGIN_LEFT, y, size: BODY_SIZE, font, color: MEDIUM_GRAY });
       y -= SPACING.AFTER_JOB_HEADER;
+      isFirstBulletAfterJob = true;
       continue;
     }
     
     // Bullet or text
     const wrapped = wrapBulletText(line, font, BODY_SIZE, CONTENT_WIDTH);
+    
+    // Add extra space before first bullet after job header
+    if (wrapped.hasBullet && isFirstBulletAfterJob) {
+      y -= SPACING.BEFORE_FIRST_BULLET;
+      isFirstBulletAfterJob = false;
+    }
     
     for (const wline of wrapped.lines) {
       if (y < MARGIN_BOTTOM) {

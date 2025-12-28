@@ -86,7 +86,7 @@ export function wrapText(text: string, font: PDFFont, size: number, maxWidth: nu
   return lines;
 }
 
-// Bullet character - small bullet point
+// Bullet character
 export const BULLET_CHAR = '•';
 
 // Helper to wrap bullet text - NO indent, bullet aligns to margin
@@ -110,8 +110,10 @@ export function wrapBulletText(
   for (let i = 0; i < wrappedLines.length; i++) {
     if (i === 0 && hasBullet) {
       lines.push(BULLET_CHAR + '   ' + wrappedLines[i]); // 3 spaces after bullet
+    } else if (hasBullet) {
+      lines.push('     ' + wrappedLines[i]); // 5 spaces for continuation
     } else {
-      lines.push('     ' + wrappedLines[i]); // 5 spaces for continuation (aligns with text after bullet)
+      lines.push(wrappedLines[i]); // No indent for non-bullet text
     }
   }
   
@@ -148,9 +150,10 @@ export const SPACING = {
   SECTION_GAP: 18,            // Space before a new section header
   AFTER_SECTION_HEADER: 14,   // Space after section header
   JOB_GAP: 14,                // Space between jobs
-  AFTER_JOB_HEADER: 8,        // Space after job title + company line
+  AFTER_JOB_HEADER: 12,       // Space after job title + company line (INCREASED)
   BULLET_LINE_HEIGHT: 1.5,    // Line height for bullets
-  BULLET_GAP: 3,              // Extra space between bullets
+  BULLET_GAP: 4,              // Extra space between bullets (INCREASED)
+  BEFORE_FIRST_BULLET: 4,     // Space before first bullet in a job
 };
 
 // Color constants

@@ -51,6 +51,7 @@ export async function renderTemplate3(context: TemplateContext): Promise<Uint8Ar
   // === BODY ===
   const bodyLines = body.split('\n');
   let isFirstJob = true;
+  let isFirstBulletAfterJob = false;
   
   for (let i = 0; i < bodyLines.length; i++) {
     const line = bodyLines[i].trim();
@@ -81,6 +82,7 @@ export async function renderTemplate3(context: TemplateContext): Promise<Uint8Ar
       });
       y -= SPACING.AFTER_SECTION_HEADER;
       isFirstJob = true;
+      isFirstBulletAfterJob = false;
       continue;
     }
     
@@ -104,11 +106,17 @@ export async function renderTemplate3(context: TemplateContext): Promise<Uint8Ar
       const periodFormatted = formatDate(period.trim());
       page.drawText(`${company.trim()}  |  ${periodFormatted}`, { x: MARGIN_LEFT, y, size: BODY_SIZE, font, color: MEDIUM_GRAY });
       y -= SPACING.AFTER_JOB_HEADER;
+      isFirstBulletAfterJob = true;
       continue;
     }
     
     // Bullet
     const wrapped = wrapBulletText(line, font, BODY_SIZE, CONTENT_WIDTH);
+    
+    if (wrapped.hasBullet && isFirstBulletAfterJob) {
+      y -= SPACING.BEFORE_FIRST_BULLET;
+      isFirstBulletAfterJob = false;
+    }
     
     for (const wline of wrapped.lines) {
       if (y < MARGIN_BOTTOM) {
