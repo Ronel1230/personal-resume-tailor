@@ -48,9 +48,7 @@ export function formatDate(dateStr: string): string {
     'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
   ];
 
-  // Handle different date formats
   if (dateStr.includes('–') || dateStr.includes('-')) {
-    // Split by dash and format each part
     const parts = dateStr.split(/[–-]/).map(part => part.trim());
     return parts.map(part => {
       if (part.match(/^\d{2}\/\d{4}$/)) {
@@ -58,16 +56,15 @@ export function formatDate(dateStr: string): string {
         const monthIndex = parseInt(month) - 1;
         return `${monthNames[monthIndex]} ${year}`;
       }
-      return part; // Return as-is if not in MM/YYYY format
+      return part;
     }).join(' – ');
   } else if (dateStr.match(/^\d{2}\/\d{4}$/)) {
-    // Single date in MM/YYYY format
     const [month, year] = dateStr.split('/');
     const monthIndex = parseInt(month) - 1;
     return `${monthNames[monthIndex]} ${year}`;
   }
 
-  return dateStr; // Return as-is if not in expected format
+  return dateStr;
 }
 
 // Helper to wrap text within a max width
@@ -91,16 +88,14 @@ export function wrapText(text: string, font: PDFFont, size: number, maxWidth: nu
 
 // Bullet character - small bullet point
 export const BULLET_CHAR = '•';
-export const BULLET_INDENT = 12; // Space after bullet before text starts
-export const HANGING_INDENT = 8; // Additional indent for wrapped lines
 
-// Helper to wrap text with proper indentation for bullet points
-export function wrapTextWithIndent(
+// Helper to wrap bullet text - NO indent, bullet aligns to margin
+export function wrapBulletText(
   text: string,
   font: PDFFont,
   size: number,
   maxWidth: number
-): { lines: string[]; prefix: string; indentWidth: number; hasBullet: boolean } {
+): { lines: string[]; hasBullet: boolean } {
   // Detect if line starts with bullet-like characters
   const bulletMatch = text.match(/^[\-\·•]\s*/);
   const hasBullet = !!bulletMatch;
@@ -108,52 +103,19 @@ export function wrapTextWithIndent(
   // Remove the original bullet/dash if present
   const content = hasBullet ? text.slice(bulletMatch![0].length) : text;
   
-  // Calculate the hanging indent for wrapped lines
-  const bulletWidth = hasBullet ? font.widthOfTextAtSize(BULLET_CHAR + ' ', size) : 0;
-  const hangingIndent = hasBullet ? bulletWidth + HANGING_INDENT : 0;
-  
-  // Wrap the content - first line gets full width minus bullet, continuation lines get less
-  const firstLineWidth = maxWidth - bulletWidth;
-  const continuationWidth = maxWidth - hangingIndent;
+  // For bullet lines, wrap content and add bullet to first line only
+  const wrappedLines = wrapText(content, font, size, maxWidth);
   
   const lines: string[] = [];
-  const words = content.split(' ');
-  let currentLine = '';
-  let isFirstLine = true;
-  
-  for (let i = 0; i < words.length; i++) {
-    const testLine = currentLine ? currentLine + ' ' + words[i] : words[i];
-    const currentMaxWidth = isFirstLine ? firstLineWidth : continuationWidth;
-    const testWidth = font.widthOfTextAtSize(testLine, size);
-    
-    if (testWidth > currentMaxWidth && currentLine) {
-      if (isFirstLine && hasBullet) {
-        lines.push(BULLET_CHAR + '  ' + currentLine);
-      } else {
-        lines.push(currentLine);
-      }
-      currentLine = words[i];
-      isFirstLine = false;
+  for (let i = 0; i < wrappedLines.length; i++) {
+    if (i === 0 && hasBullet) {
+      lines.push(BULLET_CHAR + '   ' + wrappedLines[i]); // 3 spaces after bullet
     } else {
-      currentLine = testLine;
+      lines.push('     ' + wrappedLines[i]); // 5 spaces for continuation (aligns with text after bullet)
     }
   }
   
-  // Add the last line
-  if (currentLine) {
-    if (isFirstLine && hasBullet) {
-      lines.push(BULLET_CHAR + '  ' + currentLine);
-    } else {
-      lines.push(currentLine);
-    }
-  }
-  
-  return {
-    lines,
-    prefix: hasBullet ? BULLET_CHAR + '  ' : '',
-    indentWidth: hangingIndent,
-    hasBullet
-  };
+  return { lines, hasBullet };
 }
 
 // Helper to draw text with bold segments (markdown **bold**)
@@ -167,7 +129,6 @@ export function drawTextWithBold(
   size: number,
   color: RGB
 ) {
-  // Split by ** for bold
   const parts = text.split(/(\*\*[^*]+\*\*)/g);
   let offsetX = x;
   for (const part of parts) {
@@ -182,15 +143,14 @@ export function drawTextWithBold(
   }
 }
 
-// Spacing constants for consistent layout
+// Spacing constants
 export const SPACING = {
-  SECTION_GAP: 16,           // Space before a new section
-  AFTER_SECTION_HEADER: 10,  // Space after section header line
-  JOB_GAP: 12,               // Space between jobs
-  AFTER_JOB_TITLE: 2,        // Space after job title before company
-  AFTER_COMPANY: 6,          // Space after company/period before bullets
-  BULLET_LINE_HEIGHT: 1.45,  // Line height multiplier for bullet text
-  BODY_LINE_HEIGHT: 1.4,     // General body line height multiplier
+  SECTION_GAP: 18,            // Space before a new section header
+  AFTER_SECTION_HEADER: 14,   // Space after section header
+  JOB_GAP: 14,                // Space between jobs
+  AFTER_JOB_HEADER: 8,        // Space after job title + company line
+  BULLET_LINE_HEIGHT: 1.5,    // Line height for bullets
+  BULLET_GAP: 3,              // Extra space between bullets
 };
 
 // Color constants
@@ -198,6 +158,5 @@ export const COLORS = {
   BLACK: rgb(0, 0, 0),
   MEDIUM_GRAY: rgb(0.4, 0.4, 0.4),
   LIGHT_GRAY: rgb(0.6, 0.6, 0.6),
-  DARK_GRAY: rgb(0.3, 0.3, 0.3),
-  SUBTLE_GRAY: rgb(0.55, 0.55, 0.55),
+  DARK_GRAY: rgb(0.25, 0.25, 0.25),
 };
