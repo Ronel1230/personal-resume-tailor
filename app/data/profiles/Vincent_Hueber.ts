@@ -16,14 +16,19 @@ Education:
 Bachelor's degree in Computer Science — Siena University, 2009 - 2014
 
 Technical Skills:
-• Frontend: React.js, Next.js, Angular, Vue.js, TypeScript, Redux Toolkit, RxJS, Tailwind CSS, Material-UI, WCAG, Component Architecture
-• Backend: Node.js (Express, NestJS), Python (FastAPI, Django), PHP (Laravel), REST & GraphQL APIs, AWS Lambda
-• Databases: PostgreSQL, MySQL, MongoDB, DynamoDB, Redis, Prisma, Sequelize
-• AI & Integrations: OpenAI API, LangChain, Pinecone, Hugging Face, FAISS, Vector Databases, RAG Pipelines
-• Testing: Jest, Cypress, Playwright, Storybook, Supertest, Unit & e2e Automation
-• DevOps & Cloud: AWS, Azure, Docker, GitHub Actions, CI/CD, Nginx, CDN Optimization, CloudFront
-• Performance & Security: Caching, Load Balancing, Core Web Vitals, OAuth2, JWT, CSRF/XSS Mitigation
-• Methodologies: Agile (Scrum/Kanban), TDD, CI/CD Automation, Cross-functional Collaboration
+• Languages: TypeScript, JavaScript, Python, PHP, SQL, GraphQL, HTML5, CSS3, Bash
+• Frontend: React 18, Next.js 14, Angular, AngularJS (Legacy), Vue.js, Redux Toolkit, React Query, Zustand, Chart.js, ApexCharts, Tailwind CSS, Bootstrap, Styled Components, SCSS, Material-UI, Ant Design, Storybook, Webpack, Vite, Rollup
+• Backend: Node.js, Express.js, NestJS, Fastify, PHP Laravel, Python FastAPI, GraphQL (Apollo Federation, Apollo Router), REST API Design, WebSockets, RabbitMQ, Message Queues, Microservices, Monolith-to-Microservices Migration
+• Databases: PostgreSQL, MySQL, SQL Server, MongoDB, Redis, Elasticsearch, Prisma, Sequelize, TypeORM, Knex.js, Query Optimization, Full-Text Search, Database Replication, Sharding
+• E-commerce & Retail: Inventory Management Systems, Order Management, BOPIS (Buy Online Pick Up In Store), Product Catalog, Pricing Engines, SKU Management, Barcode Integration, POS Integration
+• Search & Discovery: Elasticsearch, Algolia, Apache Solr, Autocomplete, Faceted Search, Product Recommendations, Collaborative Filtering, Search Relevance, Vehicle Fitment Data
+• Cloud & DevOps: AWS (ECS, Lambda, S3, CloudFront, RDS, ElastiCache, SQS, SNS, EventBridge), Docker, Kubernetes, Helm, Terraform, GitHub Actions, Jenkins, ArgoCD, Blue-Green Deployments
+• AI Integration: OpenAI API, LangChain, Vector Databases, Semantic Search, Natural Language Processing, Product Matching, Recommendation Engines, Chatbot Development
+• Real-time Systems: WebSockets, Redis Pub/Sub, Redis Streams, Server-Sent Events, Real-time Inventory Updates, Live Order Tracking, Push Notifications
+• Testing: Jest, Cypress, Playwright, React Testing Library, Enzyme, PHPUnit, Supertest, Load Testing (k6), API Contract Testing
+• Monitoring & Analytics: Datadog, New Relic, Grafana, Prometheus, Splunk, Google Analytics, Mixpanel, Custom Analytics Dashboards, A/B Testing
+• Security: OAuth2, JWT, SAML, SSO, LDAP/Active Directory, API Security, PCI-DSS Awareness, Rate Limiting, WAF, DDoS Protection
+• Practices: Agile, Scrum, Kanban, CI/CD, Feature Flags, Trunk-Based Development, Code Review, Legacy Code Modernization, Technical Debt Management
 
 Work Experience:
 

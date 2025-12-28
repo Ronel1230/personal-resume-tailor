@@ -17,14 +17,17 @@ Bachelor's degree in Computer Science — University of North Carolina at Charlo
 Bachelor's degree in Computer Science — University of North Carolina Wilmington, 2016 - 2018
 
 Technical Skills:
-• Frontend: React.js, Next.js, Angular, Vue.js, TypeScript, Redux Toolkit, RxJS, Tailwind CSS, Material-UI, WCAG, Component Architecture
-• Backend: Node.js (Express, NestJS), Python (FastAPI, Django), PHP (Laravel), REST & GraphQL APIs, AWS Lambda
-• Databases: PostgreSQL, MySQL, MongoDB, DynamoDB, Redis, Prisma, Sequelize
-• AI & Integrations: OpenAI API, LangChain, Pinecone, Hugging Face, FAISS, Vector Databases, RAG Pipelines
-• Testing: Jest, Cypress, Playwright, Storybook, Supertest, Unit & e2e Automation
-• DevOps & Cloud: AWS, Azure, Docker, GitHub Actions, CI/CD, Nginx, CDN Optimization, CloudFront
-• Performance & Security: Caching, Load Balancing, Core Web Vitals, OAuth2, JWT, CSRF/XSS Mitigation
-• Methodologies: Agile (Scrum/Kanban), TDD, CI/CD Automation, Cross-functional Collaboration
+• Languages: TypeScript, JavaScript, Python, SQL, GraphQL, HTML5, CSS3, Markdown
+• Frontend: React 18, Next.js 14 (Pages & App Router), Redux Toolkit, React Query, Zustand, React Hook Form, Zod, Recharts, Visx, Tailwind CSS, CSS-in-JS, Material-UI, Radix UI, shadcn/ui, Storybook, Webpack, Vite, pnpm
+• Backend: Node.js, Express.js, NestJS, Fastify, GraphQL (Apollo Server), REST API Design, WebSockets, Serverless Functions, API Gateway Patterns, Rate Limiting, Request Validation
+• Databases: PostgreSQL, MySQL, MongoDB, Redis, DynamoDB, Prisma ORM, Drizzle ORM, Sequelize, Database Design, Migrations, Query Optimization, Indexing, Connection Pooling
+• Cloud & DevOps: AWS (Lambda, ECS, S3, CloudFront, RDS, ElastiCache, SQS, SNS), Azure (App Service, Azure AD), Docker, Docker Compose, GitHub Actions, Vercel, Railway, Fly.io
+• AI & Automation: OpenAI GPT-4, LangChain, Pinecone, Vector Embeddings, RAG Pipelines, Prompt Engineering, Chatbot Development, AI-Assisted Coding Tools
+• Financial Systems: Portfolio Management, Real-time Market Data, Financial Dashboards, Trading Analytics, Investment Calculations, Regulatory Compliance Concepts
+• Testing & QA: Jest, Vitest, Cypress, Playwright, React Testing Library, MSW (Mock Service Worker), Testing Pyramid, Coverage Reports, Snapshot Testing
+• Monitoring: AWS CloudWatch, Datadog, Sentry, LogRocket, Grafana, Custom Dashboards, Error Tracking, Performance Monitoring, User Analytics
+• Security: OAuth2, OIDC, JWT, Azure AD, MSAL.js, RBAC, Session Management, CORS, CSP, Input Sanitization, Secure Coding Practices
+• Tools & Practices: Git, GitHub, Linear, Jira, Confluence, Figma, Agile/Scrum, Code Review, Pair Programming, Technical Documentation, API Documentation (OpenAPI/Swagger)
 
 Work Experience:
 

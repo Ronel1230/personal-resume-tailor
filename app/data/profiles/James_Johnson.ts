@@ -16,14 +16,18 @@ Education:
 Bachelor's Degree in Computer Science — University of Texas at Dallas, 2010 - 2014
 
 Technical Skills:
-• Frontend: React.js, Next.js, Angular, Vue.js, TypeScript, Redux Toolkit, RxJS, Tailwind CSS, Material-UI, WCAG, Component Architecture
-• Backend: Node.js (Express, NestJS), Python (FastAPI, Django), PHP (Laravel), REST & GraphQL APIs, AWS Lambda
-• Databases: PostgreSQL, MySQL, MongoDB, DynamoDB, Redis, Prisma, Sequelize
-• AI & Integrations: OpenAI API, LangChain, Pinecone, Hugging Face, FAISS, Vector Databases, RAG Pipelines
-• Testing: Jest, Cypress, Playwright, Storybook, Supertest, Unit & e2e Automation
-• DevOps & Cloud: AWS, Azure, Docker, GitHub Actions, CI/CD, Nginx, CDN Optimization, CloudFront
-• Performance & Security: Caching, Load Balancing, Core Web Vitals, OAuth2, JWT, CSRF/XSS Mitigation
-• Methodologies: Agile (Scrum/Kanban), TDD, CI/CD Automation, Cross-functional Collaboration
+• Languages: TypeScript, JavaScript, Go, Python, SQL, GraphQL, Protocol Buffers, Bash, HTML5, CSS3
+• Frontend: React 18, Next.js 14, Angular, Vue 3, Redux Toolkit, MobX, Recoil, D3.js, Three.js, Highcharts, Tailwind CSS, Emotion, Material-UI, Chakra UI, Storybook, Nx Monorepo, Module Federation
+• Backend: Node.js, Express.js, NestJS, Go (Gin, Echo), Python FastAPI, GraphQL (Apollo Federation, Apollo Router), gRPC, REST API Design, WebSockets, Server-Sent Events, Event-Driven Architecture
+• Databases: PostgreSQL, MySQL, MongoDB, Redis, Elasticsearch, ClickHouse, BigQuery, Bigtable, Cassandra, Prisma, TypeORM, Raw SQL Optimization, Time-Series Data, OLAP vs OLTP
+• Cloud & Infrastructure: GCP (Cloud Run, GKE, Cloud Functions, BigQuery, Pub/Sub, Cloud Storage), AWS (ECS, Lambda, S3), Docker, Kubernetes, Helm, Istio, Terraform, Pulumi, GitHub Actions, Jenkins, ArgoCD
+• Observability & DevOps: Prometheus, Grafana, Jaeger, OpenTelemetry, ELK Stack, Datadog, PagerDuty, SLOs/SLIs, Incident Management, Runbook Automation, Chaos Engineering
+• AI & ML: OpenAI GPT-4, LangChain, Pinecone, Weaviate, Hugging Face, TensorFlow.js, ML Model Serving, Vector Search, Semantic Analysis, Anomaly Detection
+• Video & Media: FFmpeg, HLS/DASH Streaming, Video Transcoding, WebRTC, Media Processing Pipelines, CDN Configuration, Adaptive Bitrate Streaming
+• Search & Analytics: Elasticsearch, Algolia, Apache Solr, Full-Text Search, Faceted Navigation, Search Relevance Tuning, Analytics Pipelines
+• Testing: Jest, Vitest, Cypress, Playwright, Go Testing, Testify, Contract Testing, Chaos Testing, Load Testing (Locust, k6), Synthetic Monitoring
+• Security: OAuth2, OIDC, JWT, SAML, API Gateway Security, Rate Limiting, DDoS Protection, Zero Trust Architecture, Secret Management, Compliance (SOC 2, GDPR)
+• Practices: Agile, Scrum, SRE Principles, Blameless Postmortems, Infrastructure as Code, GitOps, Feature Flags, Canary Deployments, Blue-Green Deployments
 
 Work Experience:
 

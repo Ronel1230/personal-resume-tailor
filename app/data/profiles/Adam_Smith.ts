@@ -16,14 +16,17 @@ Education:
 Master's in Computer Science — Argosy University, 2014
 
 Technical Skills:
-• Frontend: React.js, Next.js, Angular, Vue.js, TypeScript, Redux Toolkit, RxJS, Tailwind CSS, Material-UI, WCAG, Component Architecture
-• Backend: Node.js (Express, NestJS), Python (FastAPI, Django), PHP (Laravel), REST & GraphQL APIs, AWS Lambda
-• Databases: PostgreSQL, MySQL, MongoDB, DynamoDB, Redis, Prisma, Sequelize
-• AI & Integrations: OpenAI API, LangChain, Pinecone, Hugging Face, FAISS, Vector Databases, RAG Pipelines
-• Testing: Jest, Cypress, Playwright, Storybook, Supertest, Unit & e2e Automation
-• DevOps & Cloud: AWS, Azure, Docker, GitHub Actions, CI/CD, Nginx, CDN Optimization, CloudFront
-• Performance & Security: Caching, Load Balancing, Core Web Vitals, OAuth2, JWT, CSRF/XSS Mitigation
-• Methodologies: Agile (Scrum/Kanban), TDD, CI/CD Automation, Cross-functional Collaboration
+• Languages: JavaScript, TypeScript, Python, SQL, HTML5, CSS3, Go, Bash
+• Frontend: React 18, Next.js 14, Redux Toolkit, Zustand, React Query, TanStack Table, Framer Motion, Tailwind CSS, Styled Components, Material-UI, Ant Design, Radix UI, Storybook, Webpack, Vite, Turborepo
+• Backend: Node.js, Express.js, NestJS, Fastify, Python FastAPI, Django REST Framework, GraphQL (Apollo Server), REST API Design, WebSockets, Socket.io, gRPC, Microservices Architecture
+• Databases: PostgreSQL, MySQL, MongoDB, Redis, Elasticsearch, TimescaleDB, DynamoDB, Prisma, Sequelize, TypeORM, Drizzle, Database Optimization, Query Tuning, Indexing Strategies
+• Cloud & Infrastructure: AWS (EC2, ECS, Lambda, S3, SQS, SNS, EventBridge, CloudFront, RDS, Aurora), Azure (Functions, Cosmos DB, App Service), Docker, Kubernetes, Terraform, GitHub Actions, Jenkins, ArgoCD
+• AI & Machine Learning: OpenAI API, LangChain, Pinecone, FAISS, Hugging Face Transformers, Vector Databases, RAG Pipelines, Prompt Engineering, Embeddings, Semantic Search
+• Real-time Systems: WebSockets, Redis Pub/Sub, Server-Sent Events, Message Queues (RabbitMQ, AWS SQS), Event-Driven Architecture, CQRS
+• Testing & Quality: Jest, Vitest, Cypress, Playwright, React Testing Library, Supertest, MSW, Test-Driven Development, Integration Testing, Visual Regression Testing
+• Monitoring & Observability: Datadog, New Relic, Grafana, Prometheus, OpenTelemetry, AWS CloudWatch, Sentry, PagerDuty, Log Aggregation, Distributed Tracing
+• Security: OAuth2, OpenID Connect, JWT, Auth0, Okta, SAML, RBAC, ABAC, API Security, OWASP Top 10, Penetration Testing Awareness, Data Encryption
+• Methodologies: Agile (Scrum, Kanban), TDD, BDD, CI/CD, GitFlow, Trunk-Based Development, Code Review, Pair Programming, Technical Documentation
 
 Work Experience:
 

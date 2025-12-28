@@ -16,14 +16,17 @@ Education:
 Bachelor's degree in Computer Science — Worcester Polytechnic Institute, 2014 - 2018
 
 Technical Skills:
-• Frontend: React.js, Next.js, Angular, Vue.js, TypeScript, Redux Toolkit, RxJS, Tailwind CSS, Material-UI, WCAG, Component Architecture
-• Backend: Node.js (Express, NestJS), Python (FastAPI, Django), PHP (Laravel), REST & GraphQL APIs, AWS Lambda
-• Databases: PostgreSQL, MySQL, MongoDB, DynamoDB, Redis, Prisma, Sequelize
-• AI & Integrations: OpenAI API, LangChain, Pinecone, Hugging Face, FAISS, Vector Databases, RAG Pipelines
-• Testing: Jest, Cypress, Playwright, Storybook, Supertest, Unit & e2e Automation
-• DevOps & Cloud: AWS, Azure, Docker, GitHub Actions, CI/CD, Nginx, CDN Optimization, CloudFront
-• Performance & Security: Caching, Load Balancing, Core Web Vitals, OAuth2, JWT, CSRF/XSS Mitigation
-• Methodologies: Agile (Scrum/Kanban), TDD, CI/CD Automation, Cross-functional Collaboration
+• Languages: TypeScript, JavaScript, Python, SQL, GraphQL, HTML5, CSS3, Shell Scripting
+• Frontend: React 18, Next.js 14 (App Router, Server Components), Redux Toolkit, React Query, Zustand, Jotai, D3.js, Recharts, Chart.js, Tailwind CSS, CSS Modules, Radix UI, shadcn/ui, Storybook, Chromatic, Webpack, Vite
+• Backend: Node.js, Express.js, NestJS, Fastify, Python FastAPI, GraphQL (Apollo Server, GraphQL Yoga), REST API Design, WebSockets, Microservices, Event Sourcing, Domain-Driven Design
+• Databases: PostgreSQL, MySQL, MongoDB, Redis, DynamoDB, Prisma ORM, Sequelize, Knex.js, Database Migrations, Query Optimization, Connection Pooling, Read Replicas, Sharding Concepts
+• Cloud & DevOps: AWS (Lambda, ECS, Fargate, S3, CloudFront, RDS, ElastiCache, API Gateway, Step Functions), Docker, Kubernetes, Terraform, AWS CDK, GitHub Actions, CircleCI, Serverless Framework
+• AI Integration: OpenAI GPT-4, LangChain, Pinecone Vector DB, FAISS, Embeddings API, RAG Architecture, Prompt Engineering, Conversational AI, Document Processing
+• Financial Technology: Real-time Market Data, Trading Systems, Portfolio Analytics, Bloomberg API, Reuters API, FIX Protocol Concepts, Financial Data Visualization, Compliance Reporting
+• Testing: Jest, Vitest, Cypress, Playwright, React Testing Library, Supertest, Contract Testing (Pact), Visual Regression, Load Testing (k6, Artillery)
+• Observability: AWS CloudWatch, Datadog, Grafana, OpenTelemetry, Distributed Tracing, Log Aggregation, APM, Custom Metrics, Alerting
+• Security & Auth: OAuth2, OIDC, JWT, AWS Cognito, Azure AD, SAML, RBAC, MFA, API Key Management, Secrets Management (AWS Secrets Manager)
+• Practices: Agile/Scrum, Kanban, TDD, CI/CD, Feature Flags (LaunchDarkly), A/B Testing, Code Review, Architecture Decision Records, Technical Writing
 
 Work Experience:
 
