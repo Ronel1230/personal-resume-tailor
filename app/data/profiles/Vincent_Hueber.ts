@@ -1,19 +1,19 @@
 import { BaseResumeProfile } from '../baseResumes';
 
 export const profile: BaseResumeProfile = {
-  name: "Christian Carrasco",
+  name: "Vincent Hueber",
   resumeText: `Senior Software Engineer
-Christian Carrasco
-christianmadrid201@gmail.com
+Vincent Hueber
+vincenthueber1991@outlook.com
 
-+34 722 243 634
-Barcelona, Spain
+(626) 709-2731
+Largo, FL, US
 
 Summary:
-Full Stack Developer with 7+ years of experience building scalable, high-performance applications using React, Next.js, Node.js, and modern cloud-native architectures. Skilled in designing robust APIs, integrating AI-driven features with Python frameworks, and optimizing performance across the stack. Strong background in cloud deployment, CI/CD automation, security best practices, and delivering measurable engineering impact through maintainable, high-quality code.
+Full Stack Developer with 10+ years of experience building scalable, high-performance applications using React, Next.js, Node.js, and modern cloud-native architectures. Skilled in designing robust APIs, integrating AI-driven features with Python frameworks, and optimizing performance across the stack. Strong background in cloud deployment, CI/CD automation, security best practices, and delivering measurable engineering impact through maintainable, high-quality code.
 
 Education:
-Bachelor’s Degree in Computer Science — University of Barcelona, 2018
+Bachelor's degree in Computer Science — Siena University, 2009 - 2014
 
 Technical Skills:
 • Frontend: React.js, Next.js, Angular, Vue.js, TypeScript, Redux Toolkit, RxJS, Tailwind CSS, Material-UI, WCAG, Component Architecture
@@ -27,7 +27,7 @@ Technical Skills:
 
 Work Experience:
 
-Senior Full Stack Engineer — Class2Class, Barcelona: Jun 2023 – Present
+Senior Software Engineer at O'Reilly Auto Parts: Dec 2023 – Present
 • Developed full-stack modules using React, Next.js, and Node.js integrated with REST and GraphQL APIs to enable real-time customer engagement features.
 • Designed scalable backend services in NestJS with microservice communication and caching layers, reducing API latency by 30%.
 • Implemented AI-powered recommendation and personalization features using OpenAI APIs and vector databases, improving session engagement by 24%.
@@ -38,7 +38,7 @@ Senior Full Stack Engineer — Class2Class, Barcelona: Jun 2023 – Present
 • Collaborated cross-functionally with design, data, and backend teams to maintain UI/API consistency across domains.
 • Mentored engineers on architecture, performance tuning, and TypeScript best practices.
 
-Full Stack Software Engineer — STP Group, Barcelona: Nov 2022 – Apr 2023
+Senior Engineer at O'Reilly Auto Parts: Dec 2020 – Dec 2023
 • Built internal portals using React, Next.js, and Node.js/FastAPI to improve data accessibility for global engineering teams.
 • Developed AI-assisted search and summarization tools using LangChain and OpenAI, reducing documentation lookup time by 42%.
 • Architected REST APIs and PostgreSQL schemas to securely handle large datasets.
@@ -49,7 +49,29 @@ Full Stack Software Engineer — STP Group, Barcelona: Nov 2022 – Apr 2023
 • Containerized services using Docker and automated deployments with GitHub Actions and AWS ECS.
 • Worked with data science teams to embed AI workflows into frontend experiences.
 
-Software Developer — Corva.ai, Remote: Jun 2018 – Oct 2022
+Senior Software Developer at O'Reilly Auto Parts: May 2018 – Dec 2020
+• Developed real-time analytics dashboards using React, Node.js, and Express processing millions of events daily.
+• Built REST APIs and backend schedulers for campaign aggregation and automated cleanup pipelines.
+• Integrated OAuth authentication, payment gateways, and analytics APIs with reliable retry logic.
+• Optimized backend performance through Redis caching, improved queries, and load balancing, reducing response times by 33%.
+• Created AI-assisted A/B testing automation using Python and OpenAI APIs to improve campaign outcomes.
+• Built reusable TypeScript component libraries deployed across internal tools.
+• Created CI/CD testing pipelines with Jest, Cypress, and Supertest for high deployment reliability.
+• Delivered interactive visualization dashboards aligned with business KPIs through collaboration with data and UX teams.
+• Improved deployment workflows using Docker and GitHub Actions across multiple environments.
+
+Software Engineer at LBi Software: Aug 2015 – Mar 2018
+• Developed real-time analytics dashboards using React, Node.js, and Express processing millions of events daily.
+• Built REST APIs and backend schedulers for campaign aggregation and automated cleanup pipelines.
+• Integrated OAuth authentication, payment gateways, and analytics APIs with reliable retry logic.
+• Optimized backend performance through Redis caching, improved queries, and load balancing, reducing response times by 33%.
+• Created AI-assisted A/B testing automation using Python and OpenAI APIs to improve campaign outcomes.
+• Built reusable TypeScript component libraries deployed across internal tools.
+• Created CI/CD testing pipelines with Jest, Cypress, and Supertest for high deployment reliability.
+• Delivered interactive visualization dashboards aligned with business KPIs through collaboration with data and UX teams.
+• Improved deployment workflows using Docker and GitHub Actions across multiple environments.
+
+Associate Software Consultant at ACA Technology: Dec 2014 – Jun 2015
 • Developed real-time analytics dashboards using React, Node.js, and Express processing millions of events daily.
 • Built REST APIs and backend schedulers for campaign aggregation and automated cleanup pipelines.
 • Integrated OAuth authentication, payment gateways, and analytics APIs with reliable retry logic.

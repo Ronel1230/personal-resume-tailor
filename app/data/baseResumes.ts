@@ -8,24 +8,20 @@ export type BaseResumeProfile = {
 };
 
 // Import all profiles from individual files (used only for seeding)
-import { profile as christianCarrasco } from './profiles/christian-carrasco';
-import { profile as edwinRivera } from './profiles/edwin-rivera';
-import { profile as markWlodawski } from './profiles/mark-wlodawski';
-import { profile as samuelWlodawski } from './profiles/samuel-wlodawski';
-import { profile as sergiArcusa } from './profiles/sergi-arcusa';
-import { profile as stephenPoserina } from './profiles/stephen-poserina';
-import { profile as venuYara } from './profiles/venu-yara';
+import { profile as Adam_Smith } from './profiles/Adam_Smith';
+import { profile as James_Johnson } from './profiles/James_Johnson';
+import { profile as Michael_Kleinhandler } from './profiles/Michael_Kleinhandler';
+import { profile as Daniel_Alfred } from './profiles/Daniel_Alfred';
+import { profile as Vincent_Hueber } from './profiles/Vincent_Hueber';
 
 // Aggregate all profiles from individual files (used only for seeding)
 // This is kept temporarily for the seed script migration
 export const baseResumes: BaseResumeProfile[] = [
-  christianCarrasco,
-  edwinRivera,
-  markWlodawski,
-  samuelWlodawski,
-  sergiArcusa,
-  stephenPoserina,
-  venuYara,
+  Adam_Smith,
+  James_Johnson,
+  Michael_Kleinhandler,
+  Daniel_Alfred,
+  Vincent_Hueber
 ];
 
 // Helper function to convert profile name to filename (slug) - kept for backward compatibility
