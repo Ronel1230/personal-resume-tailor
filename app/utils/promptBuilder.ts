@@ -47,6 +47,14 @@ Include explicit database-related experience in the Professional Experience sect
 - Prefer non-rounded percentages when plausible (e.g., 33%, 47%, 92%) to convey precision.
 - Prioritize impact, metrics, and results over generic responsibilities in every bullet.
 
+17. MARKDOWN BOLD FORMATTING FOR TECHNICAL SKILLS:
+- Wrap ALL technical skills, technologies, tools, frameworks, and programming languages in **double asterisks** for bold formatting.
+- In the Summary section: bold all technical terms (e.g., "Full Stack Developer with expertise in **React**, **Node.js**, and **AWS**").
+- In Work Experience bullets: bold all mentioned technologies (e.g., "Architected microservices using **NestJS** and **PostgreSQL**").
+- In the Skills section: bold ONLY the category labels, NOT the individual skills (e.g., "**Languages:** JavaScript, TypeScript, Python" or "**Frontend:** React, Next.js, Redux").
+- Technical terms to bold include: programming languages, frameworks, libraries, databases, cloud services (AWS, Azure, GCP), DevOps tools, CI/CD platforms, and any other technical tools or platforms.
+- This markdown formatting is CRITICAL for PDF rendering - do not skip this step.
+
 Here is the base resume:
 
 ${baseResume}
