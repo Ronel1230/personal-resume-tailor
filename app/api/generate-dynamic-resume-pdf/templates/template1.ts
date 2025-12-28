@@ -51,6 +51,7 @@ export async function renderTemplate1(context: TemplateContext): Promise<Uint8Ar
   const bodyLines = body.split('\n');
   let isFirstJob = true;
   let isFirstBulletAfterJob = false;
+  let currentSection = '';
   
   for (let i = 0; i < bodyLines.length; i++) {
     const line = bodyLines[i].trim();
@@ -71,6 +72,7 @@ export async function renderTemplate1(context: TemplateContext): Promise<Uint8Ar
       }
       
       const sectionName = line.slice(0, -1).toUpperCase();
+      currentSection = sectionName.toLowerCase();
       page.drawText(sectionName, { x: MARGIN_LEFT, y, size: SECTION_SIZE, font: fontBold, color: DARK_GRAY });
       y -= SPACING.AFTER_SECTION_HEADER;
       isFirstJob = true;
@@ -78,8 +80,11 @@ export async function renderTemplate1(context: TemplateContext): Promise<Uint8Ar
       continue;
     }
     
-    // Job line
-    const jobMatch = line.match(/^(.+?) at (.+?):\s*(.+)$/);
+    // Check if we're in a skills section (technical skills, skills, etc.)
+    const isSkillsSection = currentSection.includes('skill');
+    
+    // Job line (only applies to experience sections, not skills)
+    const jobMatch = !isSkillsSection && line.match(/^(.+?) at (.+?):\s*(.+)$/);
     if (jobMatch) {
       const [, jobTitle, company, period] = jobMatch;
       
@@ -102,7 +107,25 @@ export async function renderTemplate1(context: TemplateContext): Promise<Uint8Ar
       continue;
     }
     
-    // Bullet or text
+    // For skills section, don't use bullet indent - align with margin
+    if (isSkillsSection) {
+      const wrapped = wrapText(line.replace(/^[\-\·•]\s*/, ''), font, BODY_SIZE, CONTENT_WIDTH);
+      
+      for (const wline of wrapped) {
+        if (y < MARGIN_BOTTOM) {
+          page = pdfDoc.addPage([PAGE_WIDTH, PAGE_HEIGHT]);
+          context.page = page;
+          y = PAGE_HEIGHT - MARGIN_TOP;
+        }
+        
+        drawTextWithBold(page, wline, MARGIN_LEFT, y, font, fontBold, BODY_SIZE, BLACK);
+        y -= LINE_HEIGHT;
+      }
+      y -= 2; // Small gap between skill lines
+      continue;
+    }
+    
+    // Bullet or text (for non-skills sections)
     const wrapped = wrapBulletText(line, font, BODY_SIZE, CONTENT_WIDTH - BULLET_INDENT);
     
     if (wrapped.hasBullet && isFirstBulletAfterJob) {
