@@ -1,203 +1,145 @@
 import { PDFPage, rgb } from 'pdf-lib';
-import { TemplateContext, wrapText, wrapTextWithIndent, formatDate, drawTextWithBold, COLORS } from '../utils';
+import { TemplateContext, wrapText, wrapTextWithIndent, formatDate, drawTextWithBold, COLORS, SPACING } from '../utils';
 
-// Template 1 Body Content Renderer - Classic style with full-width underlines
-function renderBodyContentTemplate1(
-  context: TemplateContext,
-  y: number,
-  left: number,
-  right: number,
-  contentWidth: number,
-  bodySize: number,
-  bodyLineHeight: number,
-  sectionHeaderSize: number,
-  sectionLineHeight: number,
-  marginBottom: number
-): number {
-  const { font, fontBold, body, PAGE_HEIGHT, PAGE_WIDTH, pdfDoc } = context;
+// TEMPLATE 1: CLASSIC - Clean professional layout with navy header
+export async function renderTemplate1(context: TemplateContext): Promise<Uint8Array> {
+  const { pdfDoc, font, fontBold, name, email, phone, location, body, PAGE_WIDTH, PAGE_HEIGHT } = context;
+  let { page } = context;
+  
   const BLACK = COLORS.BLACK;
   const MEDIUM_GRAY = COLORS.MEDIUM_GRAY;
-  const NAVY_BLUE = rgb(0.1, 0.2, 0.4);
+  const NAVY = rgb(0.12, 0.18, 0.32);
   
+  // Layout settings
+  const MARGIN_LEFT = 54;
+  const MARGIN_RIGHT = 54;
+  const MARGIN_TOP = 50;
+  const MARGIN_BOTTOM = 50;
+  const CONTENT_WIDTH = PAGE_WIDTH - MARGIN_LEFT - MARGIN_RIGHT;
+  
+  // Typography settings
+  const NAME_SIZE = 22;
+  const CONTACT_SIZE = 9.5;
+  const SECTION_HEADER_SIZE = 11;
+  const JOB_TITLE_SIZE = 10;
+  const BODY_SIZE = 9.5;
+  const BULLET_LINE_HEIGHT = BODY_SIZE * SPACING.BULLET_LINE_HEIGHT;
+  
+  let y = PAGE_HEIGHT - MARGIN_TOP;
+  
+  // === HEADER SECTION ===
+  // Name
+  if (name) {
+    const nameText = name.toUpperCase();
+    page.drawText(nameText, { x: MARGIN_LEFT, y, size: NAME_SIZE, font: fontBold, color: NAVY });
+    y -= NAME_SIZE + 8;
+  }
+  
+  // Contact line
+  const contactParts = [location, phone, email].filter(Boolean);
+  if (contactParts.length > 0) {
+    const contactLine = contactParts.join('  |  ');
+    page.drawText(contactLine, { x: MARGIN_LEFT, y, size: CONTACT_SIZE, font, color: MEDIUM_GRAY });
+    y -= CONTACT_SIZE + 6;
+  }
+  
+  // Header divider line
+  page.drawLine({
+    start: { x: MARGIN_LEFT, y },
+    end: { x: PAGE_WIDTH - MARGIN_RIGHT, y },
+    thickness: 1.5,
+    color: NAVY
+  });
+  y -= 20;
+  
+  // === BODY CONTENT ===
   const bodyLines = body.split('\n');
-  let firstJob = true;
+  let isFirstJob = true;
   
   for (let i = 0; i < bodyLines.length; i++) {
     const line = bodyLines[i].trim();
+    
+    // Empty line - small gap
     if (!line) {
-      y -= 6;
+      y -= 4;
       continue;
     }
     
+    // Section header (ends with :)
     if (line.endsWith(':')) {
-      y -= 12;
-      const sectionHeader = line.slice(0, -1);
-      const sectionLines = wrapText(sectionHeader, fontBold, sectionHeaderSize, contentWidth);
-      for (const sectionLine of sectionLines) {
-        if (y < marginBottom) {
-          context.page = pdfDoc.addPage([PAGE_WIDTH, PAGE_HEIGHT]);
-          y = PAGE_HEIGHT - 72;
-        }
-        context.page.drawText(sectionLine, { x: left, y, size: sectionHeaderSize, font: fontBold, color: NAVY_BLUE });
-        y -= 6;
-        // Full-width underline in navy blue
-        context.page.drawLine({
-          start: { x: left, y: y },
-          end: { x: right, y: y },
-          thickness: 2,
-          color: NAVY_BLUE
-        });
-        y -= sectionLineHeight;
-      }
-    } else {
-      const isJobExperience = / at .+:.+/.test(line);
+      y -= SPACING.SECTION_GAP;
+      const sectionHeader = line.slice(0, -1).toUpperCase();
       
-      if (isJobExperience) {
-        const match = line.match(/^(.+?) at (.+?):\s*(.+)$/);
-        if (match) {
-          const [, jobTitle, companyName, period] = match;
-          
-          if (!firstJob) {
-            y -= 8;
-          }
-          firstJob = false;
-          
-          const titleLines = wrapText(jobTitle.trim(), fontBold, bodySize + 1, contentWidth - 10);
-          for (const titleLine of titleLines) {
-            if (y < marginBottom) {
-              context.page = pdfDoc.addPage([PAGE_WIDTH, PAGE_HEIGHT]);
-              y = PAGE_HEIGHT - 72;
-            }
-            context.page.drawText(titleLine, { x: left + 10, y, size: bodySize + 1, font: fontBold, color: BLACK });
-            y -= bodyLineHeight + 2;
-          }
-          
-          const formattedPeriod = formatDate(period.trim());
-          const companyPeriodLine = `${companyName.trim()} | ${formattedPeriod}`;
-          const companyPeriodLines = wrapText(companyPeriodLine, font, bodySize, contentWidth - 10);
-          for (const line of companyPeriodLines) {
-            if (y < marginBottom) {
-              context.page = pdfDoc.addPage([PAGE_WIDTH, PAGE_HEIGHT]);
-              y = PAGE_HEIGHT - 72;
-            }
-            context.page.drawText(line, { x: left + 10, y, size: bodySize, font, color: MEDIUM_GRAY });
-            y -= bodyLineHeight;
-          }
-          
-          y -= 4;
-        }
-      } else {
-        const isSkillsCategory = line.startsWith('·');
-        if (isSkillsCategory) {
-          const categoryName = line.trim();
-          const categoryLines = wrapText(categoryName, fontBold, bodySize + 1, contentWidth - 20);
-          for (const categoryLine of categoryLines) {
-            if (y < marginBottom) {
-              context.page = pdfDoc.addPage([PAGE_WIDTH, PAGE_HEIGHT]);
-              y = PAGE_HEIGHT - 72;
-            }
-            context.page.drawText(categoryLine, { x: left + 10, y, size: bodySize + 1, font: fontBold, color: BLACK });
-            y -= bodyLineHeight + 2;
-          }
-        } else {
-          const wrapped = wrapTextWithIndent(line, font, bodySize, contentWidth - 10);
-          for (let i = 0; i < wrapped.lines.length; i++) {
-            if (y < marginBottom) {
-              context.page = pdfDoc.addPage([PAGE_WIDTH, PAGE_HEIGHT]);
-              y = PAGE_HEIGHT - 72;
-            }
-            const xPos = i === 0 ? left + 10 : left + 10 + wrapped.indentWidth;
-            drawTextWithBold(context.page, wrapped.lines[i], xPos, y, font, fontBold, bodySize, BLACK);
-            y -= bodyLineHeight;
-          }
-        }
+      if (y < MARGIN_BOTTOM + 40) {
+        page = pdfDoc.addPage([PAGE_WIDTH, PAGE_HEIGHT]);
+        context.page = page;
+        y = PAGE_HEIGHT - MARGIN_TOP;
       }
+      
+      page.drawText(sectionHeader, { x: MARGIN_LEFT, y, size: SECTION_HEADER_SIZE, font: fontBold, color: NAVY });
+      y -= 4;
+      
+      // Underline for section
+      page.drawLine({
+        start: { x: MARGIN_LEFT, y },
+        end: { x: PAGE_WIDTH - MARGIN_RIGHT, y },
+        thickness: 0.75,
+        color: NAVY
+      });
+      y -= SPACING.AFTER_SECTION_HEADER;
+      isFirstJob = true;
+      continue;
     }
     
-    if (y < marginBottom) {
-      context.page = pdfDoc.addPage([PAGE_WIDTH, PAGE_HEIGHT]);
-      y = PAGE_HEIGHT - 72;
+    // Job experience line (format: "Title at Company: Period")
+    const jobMatch = line.match(/^(.+?) at (.+?):\s*(.+)$/);
+    if (jobMatch) {
+      const [, jobTitle, companyName, period] = jobMatch;
+      
+      if (!isFirstJob) {
+        y -= SPACING.JOB_GAP;
+      }
+      isFirstJob = false;
+      
+      if (y < MARGIN_BOTTOM + 60) {
+        page = pdfDoc.addPage([PAGE_WIDTH, PAGE_HEIGHT]);
+        context.page = page;
+        y = PAGE_HEIGHT - MARGIN_TOP;
+      }
+      
+      // Job title
+      page.drawText(jobTitle.trim(), { x: MARGIN_LEFT, y, size: JOB_TITLE_SIZE, font: fontBold, color: BLACK });
+      y -= JOB_TITLE_SIZE + SPACING.AFTER_JOB_TITLE;
+      
+      // Company | Period
+      const formattedPeriod = formatDate(period.trim());
+      const companyLine = `${companyName.trim()}  |  ${formattedPeriod}`;
+      page.drawText(companyLine, { x: MARGIN_LEFT, y, size: BODY_SIZE, font, color: MEDIUM_GRAY });
+      y -= BODY_SIZE + SPACING.AFTER_COMPANY;
+      continue;
+    }
+    
+    // Bullet point or regular text
+    const wrapped = wrapTextWithIndent(line, font, BODY_SIZE, CONTENT_WIDTH);
+    
+    for (let j = 0; j < wrapped.lines.length; j++) {
+      if (y < MARGIN_BOTTOM) {
+        page = pdfDoc.addPage([PAGE_WIDTH, PAGE_HEIGHT]);
+        context.page = page;
+        y = PAGE_HEIGHT - MARGIN_TOP;
+      }
+      
+      // First line starts at margin, continuation lines are indented
+      const xPos = j === 0 ? MARGIN_LEFT : MARGIN_LEFT + wrapped.indentWidth;
+      drawTextWithBold(page, wrapped.lines[j], xPos, y, font, fontBold, BODY_SIZE, BLACK);
+      y -= BULLET_LINE_HEIGHT;
+    }
+    
+    // Small gap after each bullet
+    if (wrapped.hasBullet) {
+      y -= 1;
     }
   }
-  
-  return y;
-}
-
-// CLASSIC TEMPLATE - Traditional centered layout with navy blue accent
-export async function renderTemplate1(context: TemplateContext): Promise<Uint8Array> {
-  const { pdfDoc, page, font, fontBold, name, email, phone, location, PAGE_WIDTH, PAGE_HEIGHT } = context;
-  const BLACK = COLORS.BLACK;
-  const MEDIUM_GRAY = COLORS.MEDIUM_GRAY;
-  const NAVY_BLUE = rgb(0.1, 0.2, 0.4); // Navy blue accent
-  
-  const MARGIN_TOP = 60;
-  const MARGIN_BOTTOM = 50;
-  const MARGIN_LEFT = 50;
-  const MARGIN_RIGHT = 50;
-  const CONTENT_WIDTH = PAGE_WIDTH - MARGIN_LEFT - MARGIN_RIGHT;
-  
-  const NAME_SIZE = 28; // Larger name
-  const CONTACT_SIZE = 11;
-  const SECTION_HEADER_SIZE = 16; // Larger section headers
-  const BODY_SIZE = 11;
-  
-  // Navy blue header bar
-  page.drawRectangle({
-    x: 0,
-    y: PAGE_HEIGHT - 100,
-    width: PAGE_WIDTH,
-    height: 100,
-    color: NAVY_BLUE
-  });
-  
-  let y = PAGE_HEIGHT - 50;
-  const left = MARGIN_LEFT;
-  const right = PAGE_WIDTH - MARGIN_RIGHT;
-  
-  // Centered name (uppercase, white on navy)
-  if (name) {
-    const nameText = name.toUpperCase();
-    const nameLines = wrapText(nameText, fontBold, NAME_SIZE, CONTENT_WIDTH);
-    for (const line of nameLines) {
-      const textWidth = fontBold.widthOfTextAtSize(line, NAME_SIZE);
-      const centerX = (PAGE_WIDTH - textWidth) / 2;
-      page.drawText(line, { x: centerX, y, size: NAME_SIZE, font: fontBold, color: rgb(1, 1, 1) });
-      y -= NAME_SIZE * 0.8;
-    }
-    y -= 8;
-  }
-  
-  // Centered contact info (white on navy)
-  const contactParts = [location, phone, email].filter(Boolean);
-  if (contactParts.length > 0) {
-    const contactLine = contactParts.join(' • ');
-    const contactLines = wrapText(contactLine, font, CONTACT_SIZE, CONTENT_WIDTH);
-    for (const line of contactLines) {
-      const textWidth = font.widthOfTextAtSize(line, CONTACT_SIZE);
-      const centerX = (PAGE_WIDTH - textWidth) / 2;
-      page.drawText(line, { x: centerX, y, size: CONTACT_SIZE, font, color: rgb(0.9, 0.9, 0.9) });
-      y -= CONTACT_SIZE * 1.5;
-    }
-    y -= 4;
-  }
-  
-  y = PAGE_HEIGHT - 120;
-  
-  // Render body with custom template 1 rendering
-  // TODO: Add custom template 1 rendering
-  y = renderBodyContentTemplate1(
-    context, 
-    y, 
-    left, 
-    right, 
-    CONTENT_WIDTH, 
-    BODY_SIZE, 
-    BODY_SIZE * 1.4, 
-    SECTION_HEADER_SIZE, 
-    SECTION_HEADER_SIZE * 1.5, 
-    MARGIN_BOTTOM
-  );
   
   return await pdfDoc.save();
 }
-

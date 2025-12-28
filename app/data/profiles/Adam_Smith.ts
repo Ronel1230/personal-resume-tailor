@@ -28,47 +28,46 @@ Technical Skills:
 Work Experience:
 
 Senior Software Developer at Cargo Express Freight: Dec 2023 – Present
-• Developed full-stack modules using React, Next.js, and Node.js integrated with REST and GraphQL APIs to enable real-time customer engagement features.
-• Designed scalable backend services in NestJS with microservice communication and caching layers, reducing API latency by 30%.
-• Implemented AI-powered recommendation and personalization features using OpenAI APIs and vector databases, improving session engagement by 24%.
-• Built and deployed serverless applications using AWS Lambda and DynamoDB to support cost-efficient scaling during high-traffic periods.
-• Implemented schema-driven API design and validation with TypeScript and Prisma, decreasing runtime errors and improving maintainability.
-• Optimized frontend performance with lazy loading, code splitting, and API tuning, improving Core Web Vitals by 26%.
-• Established a unified testing strategy with Jest, Cypress, and Supertest, reducing post-release bugs by 40%.
-• Collaborated cross-functionally with design, data, and backend teams to maintain UI/API consistency across domains.
-• Mentored engineers on architecture, performance tuning, and TypeScript best practices.
+• Architected and developed a comprehensive shipment tracking platform using React 18, Next.js 14, and NestJS microservices, providing real-time visibility for 50,000+ daily shipments across 200+ carrier integrations.
+• Designed an AI-powered route optimization engine using OpenAI APIs and custom machine learning models, reducing average delivery times by 18% and fuel costs by 12% through intelligent dispatch recommendations.
+• Built real-time shipment status streaming using WebSockets, Redis pub/sub, and AWS EventBridge, enabling instant notifications for 15,000+ concurrent users with automatic failover and reconnection handling.
+• Implemented a driver mobile companion app backend using NestJS and GraphQL subscriptions, supporting offline-first sync for proof-of-delivery photos, signatures, and GPS tracking data.
+• Designed PostgreSQL database schema with TimescaleDB extension for time-series shipment telemetry, implementing efficient partitioning and retention policies for 500M+ daily location events.
+• Led frontend performance optimization initiative achieving 95+ Lighthouse scores through lazy loading, image optimization with Next.js Image component, and strategic code splitting.
+• Established comprehensive testing strategy with Jest unit tests, Cypress E2E tests, and Playwright visual regression, maintaining 90% coverage while reducing regression bugs by 55%.
+• Mentored 5 mid-level engineers through architecture design sessions, code reviews, and pair programming, helping 2 team members advance to senior positions.
 
 Senior Software Engineer at Snapsheet: Aug 2018 – Sep 2023
-• Built internal portals using React, Next.js, and Node.js/FastAPI to improve data accessibility for global engineering teams.
-• Developed AI-assisted search and summarization tools using LangChain and OpenAI, reducing documentation lookup time by 42%.
-• Architected REST APIs and PostgreSQL schemas to securely handle large datasets.
-• Implemented asynchronous processing with Redis caching to enhance backend throughput and scalability.
-• Boosted frontend performance using SSR and dynamic imports for faster rendering.
-• Expanded test coverage using Jest, Cypress, and Storybook to improve regression reliability.
-• Integrated role-based authentication using JWT and OAuth2 across platforms.
-• Containerized services using Docker and automated deployments with GitHub Actions and AWS ECS.
-• Worked with data science teams to embed AI workflows into frontend experiences.
+• Led development of a cloud-based insurance claims processing platform using React, TypeScript, and Node.js/Express, handling 100,000+ monthly claims with automated damage assessment workflows.
+• Architected a photo-based vehicle damage estimation system integrating computer vision APIs, reducing claims processing time from 5 days to 4 hours through automated initial assessments.
+• Built scalable REST APIs using Express.js and PostgreSQL with Sequelize ORM, implementing connection pooling, query optimization, and horizontal read replicas to handle 5x traffic growth.
+• Implemented Redis-based distributed caching and session management, reducing database load by 60% and achieving sub-100ms API response times for frequently accessed claim data.
+• Designed event-driven architecture using AWS SQS and Lambda for asynchronous claim document processing, OCR extraction, and fraud detection scoring.
+• Developed a white-label partner portal framework using React with dynamic theming and configuration-driven UI, onboarding 15+ insurance carrier partners with zero code changes.
+• Expanded automated testing infrastructure using Jest, React Testing Library, and Cypress, reducing production defects by 40% and enabling confident weekly releases.
+• Implemented OAuth2/JWT authentication with Auth0 integration, supporting SSO for enterprise clients and RBAC for 50+ distinct permission combinations.
+• Containerized all microservices using Docker with multi-stage builds, orchestrating deployments through GitHub Actions and AWS ECS with blue-green deployment strategy.
+• Led migration from class-based React to functional components with hooks, improving code maintainability and reducing bundle size by 25%.
 
 Software Engineer at Microsoft: May 2016 – Jul 2018
-• Developed real-time analytics dashboards using React, Node.js, and Express processing millions of events daily.
-• Built REST APIs and backend schedulers for campaign aggregation and automated cleanup pipelines.
-• Integrated OAuth authentication, payment gateways, and analytics APIs with reliable retry logic.
-• Optimized backend performance through Redis caching, improved queries, and load balancing, reducing response times by 33%.
-• Created AI-assisted A/B testing automation using Python and OpenAI APIs to improve campaign outcomes.
-• Built reusable TypeScript component libraries deployed across internal tools.
-• Created CI/CD testing pipelines with Jest, Cypress, and Supertest for high deployment reliability.
-• Delivered interactive visualization dashboards aligned with business KPIs through collaboration with data and UX teams.
-• Improved deployment workflows using Docker and GitHub Actions across multiple environments.
+• Developed internal analytics dashboards for Azure DevOps using React, TypeScript, and Node.js, visualizing CI/CD pipeline metrics for 10,000+ development teams worldwide.
+• Built RESTful API services using Node.js/Express with SQL Server backend, aggregating build and deployment data from distributed telemetry systems processing 1B+ events daily.
+• Implemented scheduled data aggregation jobs using Azure Functions and Cosmos DB, generating hourly/daily rollups for performance trend analysis and capacity planning.
+• Integrated Azure Active Directory authentication with MSAL.js, implementing secure token management and role-based access controls for internal enterprise applications.
+• Optimized SQL queries and implemented strategic indexing, reducing dashboard load times from 30 seconds to under 3 seconds for complex multi-dimensional reports.
+• Created reusable React component library with comprehensive TypeScript types, documented in Storybook and adopted across 5 internal teams.
+• Collaborated with UX research team to implement accessibility improvements achieving WCAG 2.0 AA compliance across all dashboard interfaces.
+• Participated in on-call rotation for production systems, developing expertise in Azure Application Insights, Log Analytics, and incident response procedures.
 
 Junior Web Developer at The Zebra: Jul 2014 – Apr 2016
-• Developed real-time analytics dashboards using React, Node.js, and Express processing millions of events daily.
-• Built REST APIs and backend schedulers for campaign aggregation and automated cleanup pipelines.
-• Integrated OAuth authentication, payment gateways, and analytics APIs with reliable retry logic.
-• Optimized backend performance through Redis caching, improved queries, and load balancing, reducing response times by 33%.
-• Created AI-assisted A/B testing automation using Python and OpenAI APIs to improve campaign outcomes.
-• Built reusable TypeScript component libraries deployed across internal tools.
-• Created CI/CD testing pipelines with Jest, Cypress, and Supertest for high deployment reliability.
-• Delivered interactive visualization dashboards aligned with business KPIs through collaboration with data and UX teams.
-• Improved deployment workflows using Docker and GitHub Actions across multiple environments.\`,`,
+• Built responsive customer-facing insurance comparison interfaces using JavaScript, jQuery, and Handlebars.js templating, supporting 2M+ monthly quote requests.
+• Developed Node.js/Express backend services for insurance rate API integrations, implementing retry logic, rate limiting, and graceful degradation for 30+ carrier connections.
+• Created A/B testing framework infrastructure using JavaScript and Google Analytics, enabling marketing team to run experiments that improved conversion rates by 15%.
+• Implemented form validation and multi-step wizard workflows using jQuery and custom JavaScript, reducing form abandonment rates by 20%.
+• Optimized page load performance through asset bundling with Grunt, image compression, and lazy loading techniques, improving Time to Interactive by 40%.
+• Built MySQL database queries and stored procedures for customer data reporting, learning relational database design and normalization principles.
+• Collaborated with senior engineers on REST API design and documentation, gaining experience with Swagger/OpenAPI specifications.
+• Participated in Agile ceremonies including sprint planning, daily standups, and retrospectives, contributing to team velocity tracking and process improvements.
+• Resolved production bugs through systematic debugging, log analysis, and cross-browser testing, developing strong troubleshooting skills.\``,
   pdfTemplate: 2
 };

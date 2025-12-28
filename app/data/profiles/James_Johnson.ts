@@ -28,36 +28,38 @@ Technical Skills:
 Work Experience:
 
 Senior Software Developer at BrightOps: May 2023 – Nov 2025
-• Developed full-stack modules using React, Next.js, and Node.js integrated with REST and GraphQL APIs to enable real-time customer engagement features.
-• Designed scalable backend services in NestJS with microservice communication and caching layers, reducing API latency by 30%.
-• Implemented AI-powered recommendation and personalization features using OpenAI APIs and vector databases, improving session engagement by 24%.
-• Built and deployed serverless applications using AWS Lambda and DynamoDB to support cost-efficient scaling during high-traffic periods.
-• Implemented schema-driven API design and validation with TypeScript and Prisma, decreasing runtime errors and improving maintainability.
-• Optimized frontend performance with lazy loading, code splitting, and API tuning, improving Core Web Vitals by 26%.
-• Established a unified testing strategy with Jest, Cypress, and Supertest, reducing post-release bugs by 40%.
-• Collaborated cross-functionally with design, data, and backend teams to maintain UI/API consistency across domains.
-• Mentored engineers on architecture, performance tuning, and TypeScript best practices.
+• Architected a unified DevOps observability platform using React 18, Next.js 14 App Router, and NestJS microservices, consolidating monitoring data from 500+ production services across 50+ client organizations.
+• Built an AI-powered incident analysis system using OpenAI GPT-4 APIs and LangChain, automatically correlating logs, metrics, and traces to reduce mean-time-to-resolution by 45%.
+• Designed real-time alerting infrastructure using WebSockets, Redis Streams, and AWS SNS/SQS, delivering sub-second incident notifications to 5,000+ on-call engineers with 99.99% delivery reliability.
+• Implemented a GraphQL federation gateway using Apollo Router, enabling independent team deployments and seamless data aggregation from 15 backend microservices.
+• Built custom visualization components using D3.js and React for interactive time-series dashboards, flame graphs, and distributed trace waterfalls handling 10M+ data points.
+• Developed a multi-tenant data isolation architecture using PostgreSQL row-level security and schema-per-tenant patterns, ensuring SOC 2 compliance for enterprise clients.
+• Optimized frontend performance achieving 98 Lighthouse scores through aggressive code splitting, React Server Components, and edge caching with CloudFront.
+• Established comprehensive testing culture with Jest unit tests, Cypress component tests, and Playwright E2E suites, maintaining 92% coverage and zero production regressions in 6 months.
+• Mentored 6 engineers on TypeScript patterns, React performance optimization, and distributed systems design through weekly architecture sessions.
 
 Software Engineer at Google: Nov 2017 – Jan 2023
-• Built internal portals using React, Next.js, and Node.js/FastAPI to improve data accessibility for global engineering teams.
-• Developed AI-assisted search and summarization tools using LangChain and OpenAI, reducing documentation lookup time by 42%.
-• Architected REST APIs and PostgreSQL schemas to securely handle large datasets.
-• Implemented asynchronous processing with Redis caching to enhance backend throughput and scalability.
-• Boosted frontend performance using SSR and dynamic imports for faster rendering.
-• Expanded test coverage using Jest, Cypress, and Storybook to improve regression reliability.
-• Integrated role-based authentication using JWT and OAuth2 across platforms.
-• Containerized services using Docker and automated deployments with GitHub Actions and AWS ECS.
-• Worked with data science teams to embed AI workflows into frontend experiences.
+• Developed internal developer productivity tools for Google Cloud Platform using React, TypeScript, and Go backend services, supporting 30,000+ engineers in daily development workflows.
+• Built a code search and navigation interface using React and custom syntax highlighting, processing queries across 500M+ files with sub-100ms response times through optimized Bigtable indexing.
+• Designed and implemented REST APIs using Go and Protocol Buffers, handling 50M+ daily requests with automatic load balancing and graceful degradation patterns.
+• Created automated code review assistance tools that integrated with the internal review system, reducing review cycle time by 30% through intelligent reviewer suggestions and diff analysis.
+• Implemented OAuth2 authentication flows and fine-grained permission systems using Google's internal identity infrastructure, supporting complex organizational hierarchies.
+• Built reusable React component libraries with comprehensive TypeScript definitions, adopted by 20+ internal teams and reducing UI development time by 35%.
+• Optimized frontend performance through strategic code splitting, virtual scrolling for large datasets, and service worker caching, achieving 50% reduction in initial load time.
+• Led migration from AngularJS to React for legacy applications, implementing incremental adoption strategies that allowed parallel development without feature freezes.
+• Collaborated with SRE teams to implement observability dashboards using Grafana and custom React visualizations, improving incident response efficiency.
+• Containerized Node.js services using Docker and deployed through Google's internal Kubernetes-based infrastructure with automated canary releases.
 
 Junior Developer at Stringr: Aug 2014 – Nov 2017
-• Developed real-time analytics dashboards using React, Node.js, and Express processing millions of events daily.
-• Built REST APIs and backend schedulers for campaign aggregation and automated cleanup pipelines.
-• Integrated OAuth authentication, payment gateways, and analytics APIs with reliable retry logic.
-• Optimized backend performance through Redis caching, improved queries, and load balancing, reducing response times by 33%.
-• Created AI-assisted A/B testing automation using Python and OpenAI APIs to improve campaign outcomes.
-• Built reusable TypeScript component libraries deployed across internal tools.
-• Created CI/CD testing pipelines with Jest, Cypress, and Supertest for high deployment reliability.
-• Delivered interactive visualization dashboards aligned with business KPIs through collaboration with data and UX teams.
-• Improved deployment workflows using Docker and GitHub Actions across multiple environments.\`,`,
-  pdfTemplate: 2
+• Developed a video content marketplace platform using React, Node.js/Express, and MongoDB, connecting 10,000+ freelance videographers with media companies for licensed footage.
+• Built video upload and transcoding pipeline using Node.js, FFmpeg, and AWS S3/Lambda, processing 5,000+ video submissions daily with automatic quality optimization.
+• Implemented real-time bidding system using Socket.io and Redis pub/sub, enabling live auction functionality for time-sensitive news footage with sub-second bid updates.
+• Created RESTful APIs for user management, content licensing, and payment processing using Express.js and Stripe integration, handling $2M+ in monthly transactions.
+• Developed search functionality using Elasticsearch, implementing full-text search, faceted filtering, and geo-location queries for video content discovery.
+• Built responsive mobile-first interfaces using React with CSS Modules, ensuring consistent experience across devices for both content creators and buyers.
+• Implemented OAuth authentication with social login (Facebook, Google) and JWT session management, simplifying user onboarding and reducing registration abandonment by 25%.
+• Created automated deployment pipelines using Jenkins and Docker, reducing deployment time from 2 hours to 15 minutes with zero-downtime rolling updates.
+• Optimized MongoDB queries through index analysis and aggregation pipeline improvements, reducing average API response time from 800ms to 150ms.
+• Participated in on-call rotation, developing expertise in production debugging, log analysis, and incident response for a 24/7 marketplace platform.\``,
+  pdfTemplate: 1
 };

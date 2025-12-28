@@ -89,41 +89,70 @@ export function wrapText(text: string, font: PDFFont, size: number, maxWidth: nu
   return lines;
 }
 
-// Helper to wrap text with proper indentation for lines starting with prefixes (like '- ' or '· ')
+// Bullet character - small bullet point
+export const BULLET_CHAR = '•';
+export const BULLET_INDENT = 12; // Space after bullet before text starts
+export const HANGING_INDENT = 8; // Additional indent for wrapped lines
+
+// Helper to wrap text with proper indentation for bullet points
 export function wrapTextWithIndent(
   text: string,
   font: PDFFont,
   size: number,
   maxWidth: number
-): { lines: string[]; prefix: string; indentWidth: number } {
-  // Convert '-' to '•' (bullet) for consistency
-  const normalizedText = text.replace(/^(-\s+)/, '• ');
+): { lines: string[]; prefix: string; indentWidth: number; hasBullet: boolean } {
+  // Detect if line starts with bullet-like characters
+  const bulletMatch = text.match(/^[\-\·•]\s*/);
+  const hasBullet = !!bulletMatch;
   
-  // Detect common prefixes
-  const prefixMatch = normalizedText.match(/^([\-\·•]\s+)/);
-  const prefix = prefixMatch ? prefixMatch[1] : '';
-  const content = prefix ? normalizedText.slice(prefix.length) : normalizedText;
+  // Remove the original bullet/dash if present
+  const content = hasBullet ? text.slice(bulletMatch![0].length) : text;
   
-  // Calculate prefix width for indentation
-  const prefixWidth = prefix ? font.widthOfTextAtSize(prefix, size) : 0;
+  // Calculate the hanging indent for wrapped lines
+  const bulletWidth = hasBullet ? font.widthOfTextAtSize(BULLET_CHAR + ' ', size) : 0;
+  const hangingIndent = hasBullet ? bulletWidth + HANGING_INDENT : 0;
   
-  // Wrap the content part
-  const wrappedContent = wrapText(content, font, size, maxWidth - prefixWidth);
+  // Wrap the content - first line gets full width minus bullet, continuation lines get less
+  const firstLineWidth = maxWidth - bulletWidth;
+  const continuationWidth = maxWidth - hangingIndent;
   
-  // Build lines with prefix on first line only
   const lines: string[] = [];
-  wrappedContent.forEach((line, index) => {
-    if (index === 0) {
-      lines.push(prefix + line);
+  const words = content.split(' ');
+  let currentLine = '';
+  let isFirstLine = true;
+  
+  for (let i = 0; i < words.length; i++) {
+    const testLine = currentLine ? currentLine + ' ' + words[i] : words[i];
+    const currentMaxWidth = isFirstLine ? firstLineWidth : continuationWidth;
+    const testWidth = font.widthOfTextAtSize(testLine, size);
+    
+    if (testWidth > currentMaxWidth && currentLine) {
+      if (isFirstLine && hasBullet) {
+        lines.push(BULLET_CHAR + '  ' + currentLine);
+      } else {
+        lines.push(currentLine);
+      }
+      currentLine = words[i];
+      isFirstLine = false;
     } else {
-      lines.push(line);
+      currentLine = testLine;
     }
-  });
+  }
+  
+  // Add the last line
+  if (currentLine) {
+    if (isFirstLine && hasBullet) {
+      lines.push(BULLET_CHAR + '  ' + currentLine);
+    } else {
+      lines.push(currentLine);
+    }
+  }
   
   return {
     lines,
-    prefix,
-    indentWidth: prefixWidth
+    prefix: hasBullet ? BULLET_CHAR + '  ' : '',
+    indentWidth: hangingIndent,
+    hasBullet
   };
 }
 
@@ -153,11 +182,22 @@ export function drawTextWithBold(
   }
 }
 
+// Spacing constants for consistent layout
+export const SPACING = {
+  SECTION_GAP: 16,           // Space before a new section
+  AFTER_SECTION_HEADER: 10,  // Space after section header line
+  JOB_GAP: 12,               // Space between jobs
+  AFTER_JOB_TITLE: 2,        // Space after job title before company
+  AFTER_COMPANY: 6,          // Space after company/period before bullets
+  BULLET_LINE_HEIGHT: 1.45,  // Line height multiplier for bullet text
+  BODY_LINE_HEIGHT: 1.4,     // General body line height multiplier
+};
+
 // Color constants
 export const COLORS = {
   BLACK: rgb(0, 0, 0),
   MEDIUM_GRAY: rgb(0.4, 0.4, 0.4),
   LIGHT_GRAY: rgb(0.6, 0.6, 0.6),
   DARK_GRAY: rgb(0.3, 0.3, 0.3),
+  SUBTLE_GRAY: rgb(0.55, 0.55, 0.55),
 };
-
