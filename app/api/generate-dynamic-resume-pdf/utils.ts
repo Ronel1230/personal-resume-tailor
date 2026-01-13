@@ -17,13 +17,38 @@ export interface TemplateContext {
 
 // Helper to normalize bold markers - fix newlines and extra whitespace inside **...**
 export function normalizeBoldMarkers(text: string): string {
-  // Match **...** patterns that may contain newlines or extra whitespace
+  // Step 1: Match **...** patterns that may contain newlines or extra whitespace
   // and normalize the content inside them
-  return text.replace(/\*\*([^*]*(?:\*(?!\*)[^*]*)*)\*\*/g, (match, content) => {
+  let normalized = text.replace(/\*\*([^*]*(?:\*(?!\*)[^*]*)*)\*\*/g, (match, content) => {
     // Replace newlines and multiple spaces with a single space
-    const normalized = content.replace(/\s+/g, ' ').trim();
-    return `**${normalized}**`;
+    const cleanContent = content.replace(/\s+/g, ' ').trim();
+    if (!cleanContent) return ''; // Remove empty bold markers
+    return `**${cleanContent}**`;
   });
+  
+  // Step 2: Remove orphaned/unbalanced ** markers
+  // Count pairs and remove unmatched ones
+  const parts = normalized.split('**');
+  if (parts.length % 2 === 0) {
+    // Odd number of ** markers means unbalanced - remove trailing orphan
+    // Reconstruct by pairing: text, bold, text, bold, ... , text, orphan-text
+    const result: string[] = [];
+    for (let i = 0; i < parts.length; i++) {
+      if (i % 2 === 0) {
+        // Regular text
+        result.push(parts[i]);
+      } else if (i < parts.length - 1) {
+        // Bold text (has closing **)
+        result.push(`**${parts[i]}**`);
+      } else {
+        // Last part after orphan ** - just append without markers
+        result.push(parts[i]);
+      }
+    }
+    normalized = result.join('');
+  }
+  
+  return normalized;
 }
 
 // Helper to parse resume text
@@ -80,22 +105,41 @@ export function formatDate(dateStr: string): string {
   return dateStr;
 }
 
+// Non-breaking space used to protect spaces inside bold markers during wrapping
+const NBSP = '\u00A0';
+
 // Helper to wrap text within a max width
+// This function keeps **bold text** markers together (won't split across lines)
 export function wrapText(text: string, font: PDFFont, size: number, maxWidth: number): string[] {
-  const words = text.split(' ');
+  // Step 1: Protect spaces inside **...** by replacing with non-breaking space
+  // This ensures bold phrases stay together when splitting by space
+  const protectedText = text.replace(/\*\*([^*]+)\*\*/g, (match, content) => {
+    return '**' + content.replace(/ /g, NBSP) + '**';
+  });
+  
+  const words = protectedText.split(' ').filter(w => w);
   const lines: string[] = [];
   let currentLine = '';
+  
   for (let i = 0; i < words.length; i++) {
-    const testLine = currentLine ? currentLine + ' ' + words[i] : words[i];
-    const testWidth = font.widthOfTextAtSize(testLine, size);
+    const word = words[i];
+    const testLine = currentLine ? currentLine + ' ' + word : word;
+    // Calculate width without ** markers for accurate measurement
+    const testWidth = font.widthOfTextAtSize(testLine.replace(/\*\*/g, ''), size);
+    
     if (testWidth > maxWidth && currentLine) {
-      lines.push(currentLine);
-      currentLine = words[i];
+      // Restore regular spaces and push the line
+      lines.push(currentLine.replace(new RegExp(NBSP, 'g'), ' '));
+      currentLine = word;
     } else {
       currentLine = testLine;
     }
   }
-  if (currentLine) lines.push(currentLine);
+  
+  if (currentLine) {
+    lines.push(currentLine.replace(new RegExp(NBSP, 'g'), ' '));
+  }
+  
   return lines;
 }
 
@@ -148,16 +192,29 @@ export function drawTextWithBold(
 ) {
   // First normalize the text to fix any malformed bold markers
   const normalizedText = normalizeBoldMarkers(text);
-  const parts = normalizedText.split(/(\*\*[^*]+\*\*)/g);
+  
+  // Split by **...** pattern, keeping the delimiters
+  // This regex captures bold markers as separate array elements
+  const parts = normalizedText.split(/(\*\*[^*]+\*\*)/g).filter(part => part !== '');
+  
   let offsetX = x;
   for (const part of parts) {
-    if (part.startsWith('**') && part.endsWith('**')) {
+    if (!part) continue;
+    
+    if (part.startsWith('**') && part.endsWith('**') && part.length > 4) {
+      // Bold text - extract content without markers
       const content = part.slice(2, -2);
-      page.drawText(content, { x: offsetX, y, size, font: fontBold, color });
-      offsetX += fontBold.widthOfTextAtSize(content, size);
+      if (content) {
+        page.drawText(content, { x: offsetX, y, size, font: fontBold, color });
+        offsetX += fontBold.widthOfTextAtSize(content, size);
+      }
     } else {
-      page.drawText(part, { x: offsetX, y, size, font, color });
-      offsetX += font.widthOfTextAtSize(part, size);
+      // Regular text - also clean up any stray ** that might have slipped through
+      const cleanPart = part.replace(/\*\*/g, '');
+      if (cleanPart) {
+        page.drawText(cleanPart, { x: offsetX, y, size, font, color });
+        offsetX += font.widthOfTextAtSize(cleanPart, size);
+      }
     }
   }
 }
