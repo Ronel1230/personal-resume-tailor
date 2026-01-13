@@ -15,6 +15,17 @@ export interface TemplateContext {
   PAGE_HEIGHT: number;
 }
 
+// Helper to normalize bold markers - fix newlines and extra whitespace inside **...**
+export function normalizeBoldMarkers(text: string): string {
+  // Match **...** patterns that may contain newlines or extra whitespace
+  // and normalize the content inside them
+  return text.replace(/\*\*([^*]*(?:\*(?!\*)[^*]*)*)\*\*/g, (match, content) => {
+    // Replace newlines and multiple spaces with a single space
+    const normalized = content.replace(/\s+/g, ' ').trim();
+    return `**${normalized}**`;
+  });
+}
+
 // Helper to parse resume text
 export function parseResume(resumeText: string): {
   headline: string;
@@ -25,7 +36,9 @@ export function parseResume(resumeText: string): {
   linkedin: string;
   body: string;
 } {
-  const lines = resumeText.split('\n');
+  // First normalize bold markers in the entire text
+  const normalizedText = normalizeBoldMarkers(resumeText);
+  const lines = normalizedText.split('\n');
   const info: string[] = [];
   let bodyStart = 0;
   for (let idx = 0; idx < lines.length; idx++) {
@@ -133,7 +146,9 @@ export function drawTextWithBold(
   size: number,
   color: RGB
 ) {
-  const parts = text.split(/(\*\*[^*]+\*\*)/g);
+  // First normalize the text to fix any malformed bold markers
+  const normalizedText = normalizeBoldMarkers(text);
+  const parts = normalizedText.split(/(\*\*[^*]+\*\*)/g);
   let offsetX = x;
   for (const part of parts) {
     if (part.startsWith('**') && part.endsWith('**')) {
