@@ -54,6 +54,10 @@ Include explicit database-related experience in the Professional Experience sect
 - In the Skills section: bold ONLY the category labels, NOT the individual skills (e.g., "**Languages:** JavaScript, TypeScript, Python" or "**Frontend:** React, Next.js, Redux").
 - Technical terms to bold include: programming languages, frameworks, libraries, databases, cloud services (AWS, Azure, GCP), DevOps tools, CI/CD platforms, and any other technical tools or platforms.
 - This markdown formatting is CRITICAL for PDF rendering - do not skip this step.
+- CRITICAL FORMATTING RULES:
+  - NEVER wrap job titles, company names, roles, or dates in bold markers.
+  - NEVER span bold markers across multiple lines - each **bold text** must start and end on the SAME line.
+  - Only bold individual technical terms, not entire phrases or sentences.
 
 Here is the base resume:
 
