@@ -3,7 +3,7 @@ import { TemplateContext, wrapText, wrapBulletText, formatDate, drawTextWithBold
 
 // TEMPLATE 4: CLASSIC CENTERED - Centered header with elegant spacing
 export async function renderTemplate4(context: TemplateContext): Promise<Uint8Array> {
-  const { pdfDoc, font, fontBold, name, email, phone, location, body, PAGE_WIDTH, PAGE_HEIGHT } = context;
+  const { pdfDoc, font, fontBold, name, email, phone, location, linkedin, body, PAGE_WIDTH, PAGE_HEIGHT } = context;
   let { page } = context;
   
   const BLACK = COLORS.BLACK;
@@ -35,7 +35,7 @@ export async function renderTemplate4(context: TemplateContext): Promise<Uint8Ar
     y -= NAME_SIZE + 6;
   }
   
-  const contactParts = [location, phone, email].filter(Boolean);
+  const contactParts = [location, phone, email, linkedin].filter(Boolean);
   if (contactParts.length > 0) {
     const contactText = contactParts.join('   •   ');
     const contactWidth = font.widthOfTextAtSize(contactText, CONTACT_SIZE);

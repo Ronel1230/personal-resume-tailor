@@ -10,6 +10,7 @@ export interface TemplateContext {
   email: string;
   phone: string;
   location: string;
+  linkedin: string;
   body: string;
   PAGE_WIDTH: number;
   PAGE_HEIGHT: number;

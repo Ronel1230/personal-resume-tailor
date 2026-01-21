@@ -3,7 +3,7 @@ import { TemplateContext, wrapText, wrapBulletText, formatDate, drawTextWithBold
 
 // TEMPLATE 1: BOLD HEADER - Strong name with horizontal rule
 export async function renderTemplate1(context: TemplateContext): Promise<Uint8Array> {
-  const { pdfDoc, font, fontBold, name, email, phone, location, body, PAGE_WIDTH, PAGE_HEIGHT } = context;
+  const { pdfDoc, font, fontBold, name, email, phone, location, linkedin, body, PAGE_WIDTH, PAGE_HEIGHT } = context;
   let { page } = context;
   
   const BLACK = COLORS.BLACK;
@@ -33,7 +33,7 @@ export async function renderTemplate1(context: TemplateContext): Promise<Uint8Ar
     y -= NAME_SIZE + 6;
   }
   
-  const contactParts = [email, phone, location].filter(Boolean);
+  const contactParts = [email, phone, location, linkedin].filter(Boolean);
   if (contactParts.length > 0) {
     page.drawText(contactParts.join('   |   '), { x: MARGIN_LEFT, y, size: CONTACT_SIZE, font, color: MEDIUM_GRAY });
     y -= CONTACT_SIZE + 8;

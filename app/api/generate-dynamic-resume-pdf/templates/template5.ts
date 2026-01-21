@@ -3,7 +3,7 @@ import { TemplateContext, wrapText, wrapBulletText, formatDate, drawTextWithBold
 
 // TEMPLATE 5: MODERN BLOCK - Large name with clean sections
 export async function renderTemplate5(context: TemplateContext): Promise<Uint8Array> {
-  const { pdfDoc, font, fontBold, name, email, phone, location, body, PAGE_WIDTH, PAGE_HEIGHT } = context;
+  const { pdfDoc, font, fontBold, name, email, phone, location, linkedin, body, PAGE_WIDTH, PAGE_HEIGHT } = context;
   let { page } = context;
   
   const BLACK = COLORS.BLACK;
@@ -34,7 +34,7 @@ export async function renderTemplate5(context: TemplateContext): Promise<Uint8Ar
     y -= NAME_SIZE + 8;
   }
   
-  const contactParts = [email, phone, location].filter(Boolean);
+  const contactParts = [email, phone, location, linkedin].filter(Boolean);
   if (contactParts.length > 0) {
     page.drawText(contactParts.join('   |   '), { x: MARGIN_LEFT, y, size: CONTACT_SIZE, font, color: MEDIUM_GRAY });
     y -= CONTACT_SIZE + 20;
