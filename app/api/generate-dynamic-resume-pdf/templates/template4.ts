@@ -41,7 +41,7 @@ export async function renderTemplate4(context: TemplateContext): Promise<Uint8Ar
     const contactWidth = font.widthOfTextAtSize(contactText, CONTACT_SIZE);
     const contactX = (PAGE_WIDTH - contactWidth) / 2;
     page.drawText(contactText, { x: contactX, y, size: CONTACT_SIZE, font, color: MEDIUM_GRAY });
-    y -= CONTACT_SIZE + 4;
+    y -= CONTACT_SIZE + 6;
   }
   
   if (linkedin) {

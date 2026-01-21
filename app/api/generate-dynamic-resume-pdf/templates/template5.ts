@@ -37,7 +37,7 @@ export async function renderTemplate5(context: TemplateContext): Promise<Uint8Ar
   const contactParts = [email, phone, location].filter(Boolean);
   if (contactParts.length > 0) {
     page.drawText(contactParts.join('   |   '), { x: MARGIN_LEFT, y, size: CONTACT_SIZE, font, color: MEDIUM_GRAY });
-    y -= CONTACT_SIZE + 4;
+    y -= CONTACT_SIZE + 6;
   }
   
   if (linkedin) {
