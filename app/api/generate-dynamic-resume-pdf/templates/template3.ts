@@ -1,5 +1,5 @@
 import { PDFPage, rgb } from 'pdf-lib';
-import { TemplateContext, wrapText, wrapBulletText, formatDate, drawTextWithBold, COLORS, SPACING, BULLET_INDENT } from '../utils';
+import { TemplateContext, wrapText, wrapBulletText, formatDate, drawTextWithBold, COLORS, SPACING, BULLET_INDENT, parseEducationLine, isEducationSection } from '../utils';
 
 // TEMPLATE 3: MINIMALIST - Clean and elegant with subtle grays
 export async function renderTemplate3(context: TemplateContext): Promise<Uint8Array> {
@@ -56,6 +56,8 @@ export async function renderTemplate3(context: TemplateContext): Promise<Uint8Ar
   const bodyLines = body.split('\n');
   let isFirstJob = true;
   let isFirstBulletAfterJob = false;
+  let currentSection = '';
+  let isFirstEducation = true;
   
   for (let i = 0; i < bodyLines.length; i++) {
     const line = bodyLines[i].trim();
@@ -75,6 +77,7 @@ export async function renderTemplate3(context: TemplateContext): Promise<Uint8Ar
         y = PAGE_HEIGHT - MARGIN_TOP;
       }
       
+      currentSection = line.slice(0, -1).toLowerCase();
       const sectionName = line.slice(0, -1);
       page.drawText(sectionName, { x: MARGIN_LEFT, y, size: SECTION_SIZE, font: fontBold, color: DARK_GRAY });
       y -= 4;
@@ -87,7 +90,32 @@ export async function renderTemplate3(context: TemplateContext): Promise<Uint8Ar
       y -= SPACING.AFTER_SECTION_HEADER;
       isFirstJob = true;
       isFirstBulletAfterJob = false;
+      isFirstEducation = true;
       continue;
+    }
+    
+    // Education entry (when in education section)
+    if (isEducationSection(currentSection)) {
+      const eduParsed = parseEducationLine(line);
+      if (eduParsed) {
+        if (!isFirstEducation) y -= SPACING.EDUCATION_GAP;
+        isFirstEducation = false;
+        
+        if (y < MARGIN_BOTTOM + 40) {
+          page = pdfDoc.addPage([PAGE_WIDTH, PAGE_HEIGHT]);
+          context.page = page;
+          y = PAGE_HEIGHT - MARGIN_TOP;
+        }
+        
+        // Draw degree (bold)
+        page.drawText(eduParsed.degree, { x: MARGIN_LEFT, y, size: JOB_TITLE_SIZE, font: fontBold, color: DARK_GRAY });
+        y -= JOB_TITLE_SIZE + 2;
+        
+        // Draw institution and year (regular, gray)
+        page.drawText(`${eduParsed.institution}  |  ${eduParsed.year}`, { x: MARGIN_LEFT, y, size: BODY_SIZE, font, color: MEDIUM_GRAY });
+        y -= BODY_SIZE + 6;
+        continue;
+      }
     }
     
     // Job line

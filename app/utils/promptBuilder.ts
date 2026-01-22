@@ -47,26 +47,24 @@ Include explicit database-related experience in the Professional Experience sect
 - Prefer non-rounded percentages when plausible (e.g., 33%, 47%, 92%) to convey precision.
 - Prioritize impact, metrics, and results over generic responsibilities in every bullet.
 
-17. MARKDOWN BOLD FORMATTING RULES (SECTION-SPECIFIC):
-- Use **double asterisks** for bold formatting in the PDF output.
-SUMMARY SECTION:
-- Bold all technical terms: languages, frameworks, tools, platforms, databases, cloud services.
-- Example: "Full Stack Developer with expertise in **React**, **Node.js**, and **AWS**"
-WORK EXPERIENCE SECTION:
-- Bold all technical terms mentioned in bullet points.
-- Example: "Architected microservices using **NestJS** and **PostgreSQL**"
-SKILLS SECTION (DIFFERENT RULE):
-- Bold ONLY the category labels (the text before the colon).
-- Do NOT bold any individual skills, technologies, or tools listed after the colon.
-- Correct: "**Languages:** JavaScript, TypeScript, Python, SQL"
-- Correct: "**Frontend:** React, Next.js, Redux Toolkit, Tailwind CSS"
-- WRONG: "**Languages:** **JavaScript**, **TypeScript**, **Python**"
-- WRONG: "Languages: **JavaScript**, **TypeScript**, **Python**"
-CRITICAL FORMATTING CONSTRAINTS:
-- NEVER bold job titles, company names, roles, section headers, or dates.
-- NEVER span bold markers across multiple lines - each **bold text** must start and end on the SAME line.
-- Bold only individual technical terms, not entire phrases or sentences.
-- This formatting is CRITICAL for PDF rendering.
+17. BOLD FORMATTING (**double asterisks**):
+
+BOLD ONLY THESE:
+- Technical terms in Summary text and Work Experience bullets (languages, frameworks, tools, databases, cloud services)
+- Category labels in Skills section (the word before the colon only)
+NEVER BOLD:
+- Section headers (Summary, Skills, Work Experience, Education)
+- Job titles, company names, dates, or any part of role lines
+- Individual skills listed after the colon in Skills section
+- Education details (degrees, universities, years)
+EXAMPLES:
+✓ Summary: ...expertise in **React**, **Node.js**, and **AWS**...
+✓ Software Engineer at RTA: Jul 2024 - Present (no bold anywhere)
+✓ • Built APIs using **FastAPI** and **PostgreSQL**
+✓ **Languages:** JavaScript, TypeScript, Python
+✗ **Summary:** / **AI/ML Engineer** / **Languages:** **JavaScript**, **Python**
+
+Rule: Each **bold** must start and end on the same line. When in doubt, don't bold.
 
 Here is the base resume:
 

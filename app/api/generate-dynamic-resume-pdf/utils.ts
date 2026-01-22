@@ -229,7 +229,32 @@ export const SPACING = {
   BULLET_LINE_HEIGHT: 1.5,    // Line height for bullets
   BULLET_GAP: 4,              // Extra space between bullets
   BEFORE_FIRST_BULLET: 4,     // Space before first bullet in a job
+  EDUCATION_GAP: 10,          // Space between education entries
 };
+
+// Helper to parse education line
+// Supports formats like:
+// - "Master's in Computer Science — Argosy University, 2014"
+// - "Bachelor's degree in Computer Science - University of Texas, 2010 - 2014"
+// - "Master's degree in Data Science - Arizona State University, 2019"
+export function parseEducationLine(line: string): { degree: string; institution: string; year: string } | null {
+  // Match pattern: Degree (—|-) Institution, Year(s)
+  const match = line.match(/^(.+?)\s*[—\-–]\s*(.+?),?\s*(\d{4}(?:\s*[-–]\s*\d{4})?)$/);
+  if (match) {
+    return {
+      degree: match[1].trim(),
+      institution: match[2].trim().replace(/,\s*$/, ''),
+      year: match[3].trim()
+    };
+  }
+  return null;
+}
+
+// Check if we're in education section
+export function isEducationSection(sectionName: string): boolean {
+  const lower = sectionName.toLowerCase();
+  return lower.includes('education') || lower.includes('academic');
+}
 
 // Color constants
 export const COLORS = {

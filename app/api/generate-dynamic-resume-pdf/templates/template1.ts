@@ -1,5 +1,5 @@
 import { PDFPage, rgb } from 'pdf-lib';
-import { TemplateContext, wrapText, wrapBulletText, formatDate, drawTextWithBold, COLORS, SPACING, BULLET_INDENT, BULLET_CHAR } from '../utils';
+import { TemplateContext, wrapText, wrapBulletText, formatDate, drawTextWithBold, COLORS, SPACING, BULLET_INDENT, BULLET_CHAR, parseEducationLine, isEducationSection } from '../utils';
 
 // TEMPLATE 1: BOLD HEADER - Strong name with horizontal rule
 export async function renderTemplate1(context: TemplateContext): Promise<Uint8Array> {
@@ -52,6 +52,7 @@ export async function renderTemplate1(context: TemplateContext): Promise<Uint8Ar
   let isFirstJob = true;
   let isFirstBulletAfterJob = false;
   let currentSection = '';
+  let isFirstEducation = true;
   
   // Helper to wrap skills line with proper indent for content after category
   const wrapSkillsLine = (text: string, maxWidth: number): string[] => {
@@ -111,7 +112,32 @@ export async function renderTemplate1(context: TemplateContext): Promise<Uint8Ar
       y -= SPACING.AFTER_SECTION_HEADER;
       isFirstJob = true;
       isFirstBulletAfterJob = false;
+      isFirstEducation = true;
       continue;
+    }
+    
+    // Education entry (when in education section)
+    if (isEducationSection(currentSection)) {
+      const eduParsed = parseEducationLine(line);
+      if (eduParsed) {
+        if (!isFirstEducation) y -= SPACING.EDUCATION_GAP;
+        isFirstEducation = false;
+        
+        if (y < MARGIN_BOTTOM + 40) {
+          page = pdfDoc.addPage([PAGE_WIDTH, PAGE_HEIGHT]);
+          context.page = page;
+          y = PAGE_HEIGHT - MARGIN_TOP;
+        }
+        
+        // Draw degree (bold)
+        page.drawText(eduParsed.degree, { x: MARGIN_LEFT, y, size: JOB_TITLE_SIZE, font: fontBold, color: BLACK });
+        y -= JOB_TITLE_SIZE + 2;
+        
+        // Draw institution and year (regular, gray)
+        page.drawText(`${eduParsed.institution}  |  ${eduParsed.year}`, { x: MARGIN_LEFT, y, size: BODY_SIZE, font, color: MEDIUM_GRAY });
+        y -= BODY_SIZE + 6;
+        continue;
+      }
     }
     
     // Job line
