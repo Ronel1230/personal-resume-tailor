@@ -89,6 +89,16 @@ export async function renderTemplate4(context: TemplateContext): Promise<Uint8Ar
       currentSection = line.slice(0, -1).toLowerCase();
       const sectionName = line.slice(0, -1);
       page.drawText(sectionName, { x: MARGIN_LEFT, y, size: SECTION_SIZE, font: fontBold, color: CHARCOAL });
+      
+      // Draw underline beneath section header
+      const sectionWidth = fontBold.widthOfTextAtSize(sectionName, SECTION_SIZE);
+      page.drawLine({
+        start: { x: MARGIN_LEFT, y: y - 2 },
+        end: { x: MARGIN_LEFT + sectionWidth, y: y - 2 },
+        thickness: 0.75,
+        color: CHARCOAL
+      });
+      
       y -= SPACING.AFTER_SECTION_HEADER;
       isFirstJob = true;
       isFirstBulletAfterJob = false;
