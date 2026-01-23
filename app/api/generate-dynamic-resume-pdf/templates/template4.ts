@@ -93,9 +93,9 @@ export async function renderTemplate4(context: TemplateContext): Promise<Uint8Ar
       // Draw underline beneath section header
       const sectionWidth = fontBold.widthOfTextAtSize(sectionName, SECTION_SIZE);
       page.drawLine({
-        start: { x: MARGIN_LEFT, y: y - 2 },
-        end: { x: MARGIN_LEFT + sectionWidth, y: y - 2 },
-        thickness: 0.75,
+        start: { x: MARGIN_LEFT, y: y - 5 },
+        end: { x: MARGIN_LEFT + sectionWidth, y: y - 5 },
+        thickness: 1.5,
         color: CHARCOAL
       });
       
