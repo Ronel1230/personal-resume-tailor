@@ -34,14 +34,9 @@ export async function renderTemplate5(context: TemplateContext): Promise<Uint8Ar
     y -= NAME_SIZE + 8;
   }
   
-  const contactParts = [email, phone, location].filter(Boolean);
+  const contactParts = [email, phone, location, linkedin].filter(Boolean);
   if (contactParts.length > 0) {
     page.drawText(contactParts.join('   |   '), { x: MARGIN_LEFT, y, size: CONTACT_SIZE, font, color: MEDIUM_GRAY });
-    y -= CONTACT_SIZE + 6;
-  }
-  
-  if (linkedin) {
-    page.drawText(linkedin, { x: MARGIN_LEFT, y, size: CONTACT_SIZE, font, color: MEDIUM_GRAY });
     y -= CONTACT_SIZE + 16;
   }
   
