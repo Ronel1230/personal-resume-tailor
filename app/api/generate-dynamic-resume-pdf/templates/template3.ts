@@ -18,7 +18,7 @@ export async function renderTemplate3(context: TemplateContext): Promise<Uint8Ar
   const CONTENT_WIDTH = PAGE_WIDTH - MARGIN_LEFT - MARGIN_RIGHT;
   
   // Typography
-  const NAME_SIZE = 20;
+  const NAME_SIZE = 26;
   const CONTACT_SIZE = 8.5;
   const SECTION_SIZE = 10;
   const JOB_TITLE_SIZE = 9.5;
@@ -36,16 +36,8 @@ export async function renderTemplate3(context: TemplateContext): Promise<Uint8Ar
   const contactParts = [location, phone, email, linkedin].filter(Boolean);
   if (contactParts.length > 0) {
     page.drawText(contactParts.join('   •   '), { x: MARGIN_LEFT, y, size: CONTACT_SIZE, font, color: MEDIUM_GRAY });
-    y -= CONTACT_SIZE + 6;
+    y -= CONTACT_SIZE + 12;
   }
-  
-  page.drawLine({
-    start: { x: MARGIN_LEFT, y },
-    end: { x: PAGE_WIDTH - MARGIN_RIGHT, y },
-    thickness: 0.5,
-    color: LIGHT_GRAY
-  });
-  y -= 20;
   
   // === BODY ===
   const bodyLines = body.split('\n');
@@ -74,8 +66,19 @@ export async function renderTemplate3(context: TemplateContext): Promise<Uint8Ar
       
       currentSection = line.slice(0, -1).toLowerCase();
       const sectionName = line.slice(0, -1);
+      
+      // Draw line ABOVE section header
+      page.drawLine({
+        start: { x: MARGIN_LEFT, y: y + 4 },
+        end: { x: PAGE_WIDTH - MARGIN_RIGHT, y: y + 4 },
+        thickness: 0.4,
+        color: LIGHT_GRAY
+      });
+      
       page.drawText(sectionName, { x: MARGIN_LEFT, y, size: SECTION_SIZE, font: fontBold, color: DARK_GRAY });
       y -= 4;
+      
+      // Draw line BELOW section header
       page.drawLine({
         start: { x: MARGIN_LEFT, y },
         end: { x: PAGE_WIDTH - MARGIN_RIGHT, y },
