@@ -99,7 +99,7 @@ export async function renderTemplate4(context: TemplateContext): Promise<Uint8Ar
         color: CHARCOAL
       });
       
-      y -= SPACING.AFTER_SECTION_HEADER;
+      y -= SPACING.AFTER_SECTION_HEADER + 8; // Extra space for underline
       isFirstJob = true;
       isFirstBulletAfterJob = false;
       isFirstEducation = true;
