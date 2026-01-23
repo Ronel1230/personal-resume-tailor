@@ -69,8 +69,8 @@ export async function renderTemplate3(context: TemplateContext): Promise<Uint8Ar
       
       // Draw line ABOVE section header
       page.drawLine({
-        start: { x: MARGIN_LEFT, y: y + 4 },
-        end: { x: PAGE_WIDTH - MARGIN_RIGHT, y: y + 4 },
+        start: { x: MARGIN_LEFT, y: y + 12 },
+        end: { x: PAGE_WIDTH - MARGIN_RIGHT, y: y + 12 },
         thickness: 0.4,
         color: LIGHT_GRAY
       });
