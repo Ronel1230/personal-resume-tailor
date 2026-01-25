@@ -91,7 +91,6 @@ export async function POST(req: NextRequest) {
         { role: 'system', content: 'You are a helpful assistant for creating professional resume content.' },
         { role: 'user', content: prompt }
       ],
-      temperature: 0.7,
       max_completion_tokens: 7000
     });
 
