@@ -86,13 +86,13 @@ export async function POST(req: NextRequest) {
     const prompt = buildPrompt(baseResume, jobDescription, customPrompt);
 
     const completion = await openai.chat.completions.create({
-      model: process.env.OPENAI_VERSION || 'gpt-3.5-turbo',
+      model: process.env.OPENAI_VERSION || 'gpt-4o',
       messages: [
         { role: 'system', content: 'You are a helpful assistant for creating professional resume content.' },
         { role: 'user', content: prompt }
       ],
       temperature: 0.7,
-      max_tokens: 7000
+      max_completion_tokens: 7000
     });
 
     const tailoredResume = completion.choices[0].message.content || '';
