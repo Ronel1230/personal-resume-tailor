@@ -10,6 +10,31 @@ import { renderTemplate3 } from './templates/template3';
 import { renderTemplate4 } from './templates/template4';
 import { renderTemplate5 } from './templates/template5';
 
+// Retry helper for OpenAI API calls
+async function withRetry<T>(
+  fn: () => Promise<T>,
+  maxAttempts: number = 3,
+  delayMs: number = 1000
+): Promise<T> {
+  let lastError: Error | null = null;
+  
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      return await fn();
+    } catch (error) {
+      lastError = error instanceof Error ? error : new Error(String(error));
+      console.log(`OpenAI API attempt ${attempt}/${maxAttempts} failed: ${lastError.message}`);
+      
+      if (attempt < maxAttempts) {
+        // Wait before retrying, with exponential backoff
+        await new Promise(resolve => setTimeout(resolve, delayMs * attempt));
+      }
+    }
+  }
+  
+  throw lastError;
+}
+
 // Template router - routes to appropriate template renderer
 async function generateResumePdf(resumeText: string, template: number = 1): Promise<Uint8Array> {
   const parsed = parseResume(resumeText);
@@ -81,18 +106,20 @@ export async function POST(req: NextRequest) {
     const customPrompt = profile?.customPrompt;
     const pdfTemplate = profile?.pdfTemplate || 1;
     
-    // 3. Tailor resume with OpenAI
+    // 3. Tailor resume with OpenAI (with retry logic for reliability)
     const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
     const prompt = buildPrompt(baseResume, jobDescription, customPrompt);
 
-    const completion = await openai.chat.completions.create({
-      model: process.env.OPENAI_VERSION || 'gpt-4o',
-      messages: [
-        { role: 'system', content: 'You are a helpful assistant for creating professional resume content.' },
-        { role: 'user', content: prompt }
-      ],
-      max_completion_tokens: 7000
-    });
+    const completion = await withRetry(async () => {
+      return await openai.chat.completions.create({
+        model: process.env.OPENAI_VERSION || 'gpt-4o',
+        messages: [
+          { role: 'system', content: 'You are a helpful assistant for creating professional resume content.' },
+          { role: 'user', content: prompt }
+        ],
+        max_completion_tokens: 7000
+      });
+    }, 3, 1000); // Retry up to 3 times with 1s initial delay (exponential backoff)
 
     const tailoredResume = completion.choices[0].message.content || '';
 
