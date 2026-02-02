@@ -51,17 +51,25 @@ Include explicit database-related experience in the Professional Experience sect
 
 BOLD ONLY THESE:
 - Technical terms in Summary text and Work Experience bullets (languages, frameworks, tools, databases, cloud services)
-- Category labels in Skills section (the word before the colon only)
+- ONLY the category/group label in Skills section (the word before the colon, including the colon)
 NEVER BOLD:
 - Section headers (Summary, Skills, Work Experience, Education)
 - Job titles, company names, dates, or any part of role lines
-- Individual skills listed after the colon in Skills section
+- ANY individual skills listed after the colon in Skills section - NEVER bold these, they must be plain text
 - Education details (degrees, universities, years)
+
+SKILLS SECTION BOLD RULE (CRITICAL):
+In the Skills section, ONLY bold the category name before the colon. The skills themselves after the colon must NEVER be bold.
+✓ CORRECT: • **Languages:** JavaScript, TypeScript, Python, SQL, HTML5, CSS3
+✗ WRONG: • **Languages:** **JavaScript**, **TypeScript**, **Python**
+✗ WRONG: • Languages: **JavaScript**, **TypeScript**, **Python**
+
 EXAMPLES:
 ✓ Summary: ...expertise in **React**, **Node.js**, and **AWS**...
 ✓ Software Engineer at RTA: Jul 2024 - Present (no bold anywhere)
 ✓ • Built APIs using **FastAPI** and **PostgreSQL**
-✓ **Languages:** JavaScript, TypeScript, Python
+✓ • **Languages:** JavaScript, TypeScript, Python
+✓ • **Frontend:** React, Next.js, Vue.js, Tailwind CSS
 ✗ **Summary:** / **AI/ML Engineer** / **Languages:** **JavaScript**, **Python**
 
 Rule: Each **bold** must start and end on the same line. When in doubt, don't bold.

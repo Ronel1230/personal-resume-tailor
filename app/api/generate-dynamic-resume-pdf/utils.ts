@@ -237,16 +237,36 @@ export const SPACING = {
 // - "Master's in Computer Science — Argosy University, 2014"
 // - "Bachelor's degree in Computer Science - University of Texas, 2010 - 2014"
 // - "Master's degree in Data Science - Arizona State University, 2019"
+// - "Bachelor's Degree in Computer Science, University of Barcelona, 2019" (comma-separated)
 export function parseEducationLine(line: string): { degree: string; institution: string; year: string } | null {
-  // Match pattern: Degree (—|-) Institution, Year(s)
-  const match = line.match(/^(.+?)\s*[—\-–]\s*(.+?),?\s*(\d{4}(?:\s*[-–]\s*\d{4})?)$/);
-  if (match) {
+  // First, extract year(s) from the end of the line
+  const yearMatch = line.match(/,?\s*(\d{4}(?:\s*[-–—]\s*\d{4})?)\s*$/);
+  if (!yearMatch) return null;
+  
+  const year = yearMatch[1].trim();
+  const beforeYear = line.slice(0, line.length - yearMatch[0].length).trim();
+  
+  // Try pattern with dash/em-dash/en-dash separator: "Degree — Institution" or "Degree - Institution"
+  const dashMatch = beforeYear.match(/^(.+?)\s*[—\-–]\s*(.+)$/);
+  if (dashMatch) {
     return {
-      degree: match[1].trim(),
-      institution: match[2].trim().replace(/,\s*$/, ''),
-      year: match[3].trim()
+      degree: dashMatch[1].trim(),
+      institution: dashMatch[2].trim().replace(/,\s*$/, ''),
+      year
     };
   }
+  
+  // Try comma-separated format: "Degree, Institution" (find last comma as separator)
+  const lastCommaIndex = beforeYear.lastIndexOf(',');
+  if (lastCommaIndex > 0) {
+    const degree = beforeYear.slice(0, lastCommaIndex).trim();
+    const institution = beforeYear.slice(lastCommaIndex + 1).trim();
+    // Only accept if both parts are non-empty and institution looks reasonable
+    if (degree && institution && institution.length > 2) {
+      return { degree, institution, year };
+    }
+  }
+  
   return null;
 }
 
