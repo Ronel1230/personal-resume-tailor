@@ -110,8 +110,8 @@ export async function POST(req: NextRequest) {
     const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
     const prompt = buildPrompt(baseResume, jobDescription, customPrompt);
 
-    const completion = await withRetry(async () => {
-      return await openai.chat.completions.create({
+    const tailoredResume = await withRetry(async () => {
+      const completion = await openai.chat.completions.create({
         model: process.env.OPENAI_VERSION || 'gpt-4o',
         messages: [
           { role: 'system', content: 'You are a helpful assistant for creating professional resume content.' },
@@ -119,16 +119,16 @@ export async function POST(req: NextRequest) {
         ],
         max_completion_tokens: 7000
       });
+
+      const content = completion.choices[0]?.message?.content;
+      
+      // Throw error if content is empty so retry logic kicks in
+      if (!content || content.trim().length === 0) {
+        throw new Error('OpenAI returned empty response content');
+      }
+      
+      return content;
     }, 3, 1000); // Retry up to 3 times with 1s initial delay (exponential backoff)
-
-    const tailoredResume = completion.choices[0].message.content || '';
-
-    if (!tailoredResume) {
-      return new NextResponse(
-        JSON.stringify({ error: 'Failed to generate tailored resume content' }),
-        { status: 500, headers: { 'Content-Type': 'application/json' } }
-      );
-    }
 
     // 4. Generate PDF with template
     const pdfBytes = await generateResumePdf(tailoredResume, pdfTemplate);
