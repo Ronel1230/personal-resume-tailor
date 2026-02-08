@@ -1,14 +1,6 @@
-// Helper to build OpenAI prompt
-export function buildPrompt(baseResume: string, jobDescription: string, customPrompt?: string) {
-  // If custom prompt is provided, use it with placeholders replaced
-  if (customPrompt) {
-    return customPrompt
-      .replace(/\${baseResume}/g, baseResume)
-      .replace(/\${jobDescription}/g, jobDescription);
-  }
-
-  // Otherwise, use the default prompt
-  return `
+// Single source of truth for the default prompt template.
+// Use \${baseResume} and \${jobDescription} as placeholders when editing.
+export const DEFAULT_PROMPT_TEMPLATE = `
 You are a world-class technical resume assistant.
 
 SYSTEM INSTRUCTION: Make the resume align as closely as possible with the Job Description (JD). Must proactively REPLACE, REPHRASE, and ADD bullet points under each Experience entry, especially recent/current roles, to ensure the language, skills, and technologies match the JD specifically. Do NOT leave any Experience section or bullet point unchanged if it could better reflect or incorporate keywords, duties, or requirements from the JD. Acceptable and encouraged to write NEW bullet points where there are relevant experiences (even if not previously mentioned). Prioritize jobs/roles closest to the desired job.
@@ -80,11 +72,11 @@ Rule: Each **bold** must start and end on the same line. When in doubt, don't bo
 
 Here is the base resume:
 
-${baseResume}
+\${baseResume}
 
 Here is the target job description:
 
-${jobDescription}
+\${jobDescription}
 
 ANTI-DETECTION / HUMANIZATION RULES:
 
@@ -103,6 +95,13 @@ Before outputting, perform a final pass to:
 - Guarantee every section has both high ATS keyword density and human readability balance.
 
 Output the improved resume as plain text, exactly following the original resume's format—including the unchanged headline at the top. Clearly label sections (Summary, Professional Experience, Skills, Education, etc) with original spacing, section order, and no decorative lines or symbols.
-  `;
+`.trim();
+
+// Helper to build OpenAI prompt
+export function buildPrompt(baseResume: string, jobDescription: string, customPrompt?: string) {
+  const template = customPrompt ?? DEFAULT_PROMPT_TEMPLATE;
+  return template
+    .replace(/\$\{baseResume\}/g, baseResume)
+    .replace(/\$\{jobDescription\}/g, jobDescription);
 }
 
