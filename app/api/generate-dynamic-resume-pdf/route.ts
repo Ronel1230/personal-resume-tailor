@@ -13,7 +13,7 @@ import { renderTemplate5 } from './templates/template5';
 // Retry helper for OpenAI API calls
 async function withRetry<T>(
   fn: () => Promise<T>,
-  maxAttempts: number = 3,
+  maxAttempts: number = 5,
   delayMs: number = 1000
 ): Promise<T> {
   let lastError: Error | null = null;
