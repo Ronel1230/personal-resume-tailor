@@ -69,6 +69,11 @@ export function parseResume(resumeText: string): {
   let bodyStart = 0;
   for (let idx = 0; idx < lines.length; idx++) {
     if (lines[idx].trim()) info.push(lines[idx].trim());
+    // Header can have 5 lines (no LinkedIn) or 6 lines (with LinkedIn)
+    if (info.length === 5) {
+      bodyStart = idx + 1;
+      break;
+    }
     if (info.length === 6) {
       bodyStart = idx + 1;
       break;
