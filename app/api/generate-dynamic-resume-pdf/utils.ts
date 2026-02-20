@@ -315,7 +315,7 @@ export function isEducationSection(sectionName: string): boolean {
   return lower.includes('education') || lower.includes('academic');
 }
 
-// Pre-scan body lines to get max category indent for Skills section (so continuation lines align)
+// Pre-scan body lines to get min category indent for Skills section (so continuation lines use leftmost content start)
 export function getMaxSkillsContentIndent(
   bodyLines: string[],
   font: PDFFont,
@@ -323,7 +323,7 @@ export function getMaxSkillsContentIndent(
   fontSize: number
 ): number {
   let inSkills = false;
-  let maxIndent = 0;
+  let minIndent = Number.MAX_VALUE;
   const bulletWidth = font.widthOfTextAtSize(BULLET_CHAR + '   ', fontSize);
   const skillLineRe = /^[\-\·•]\s*(\*\*[^*]+\*\*:?|[^:]+:)\s*(.*)$/;
   for (const bl of bodyLines) {
@@ -339,11 +339,11 @@ export function getMaxSkillsContentIndent(
       const categoryDisplay = m[1].replace(/\*\*/g, '') + ' ';
       const cw = fontBold.widthOfTextAtSize(categoryDisplay, fontSize);
       const indent = bulletWidth + cw;
-      if (indent > maxIndent) maxIndent = indent;
+      if (indent < minIndent) minIndent = indent;
     }
   }
-  if (maxIndent === 0) maxIndent = bulletWidth + fontBold.widthOfTextAtSize('Languages: ', fontSize);
-  return maxIndent;
+  if (minIndent === Number.MAX_VALUE) minIndent = bulletWidth + fontBold.widthOfTextAtSize('Languages: ', fontSize);
+  return minIndent;
 }
 
 // Color constants
