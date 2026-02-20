@@ -1,5 +1,5 @@
 import { PDFPage, rgb } from 'pdf-lib';
-import { TemplateContext, wrapText, wrapBulletText, formatDate, drawTextWithBold, COLORS, SPACING, BULLET_INDENT, BULLET_CHAR, parseEducationLine, isEducationSection } from '../utils';
+import { TemplateContext, wrapText, wrapBulletText, formatDate, drawTextWithBold, COLORS, SPACING, BULLET_INDENT, BULLET_CHAR, parseEducationLine, isEducationSection, splitIntoBulletLines, getMaxSkillsContentIndent } from '../utils';
 
 // TEMPLATE 2: ACCENT BAR - Navy left accent bar
 export async function renderTemplate2(context: TemplateContext): Promise<Uint8Array> {
@@ -52,6 +52,9 @@ export async function renderTemplate2(context: TemplateContext): Promise<Uint8Ar
   let currentSection = '';
   let isFirstEducation = true;
 
+  const maxSkillContentIndent = getMaxSkillsContentIndent(bodyLines, font, fontBold, BODY_SIZE);
+  const spaceWidthForSkills = font.widthOfTextAtSize(' ', BODY_SIZE);
+
   const wrapSkillsLine = (text: string, maxWidth: number): string[] => {
     const skillMatch = text.match(/^[\-\·•]\s*(\*\*[^*]+\*\*:?|[^:]+:)\s*(.*)$/);
     if (!skillMatch) return wrapText(text, font, BODY_SIZE, maxWidth);
@@ -60,12 +63,12 @@ export async function renderTemplate2(context: TemplateContext): Promise<Uint8Ar
     const categoryDisplayText = category.replace(/\*\*/g, '');
     const bulletWidth = font.widthOfTextAtSize(BULLET_CHAR + '   ', BODY_SIZE);
     const categoryWidth = fontBold.widthOfTextAtSize(categoryDisplayText + ' ', BODY_SIZE);
-    const contentIndent = bulletWidth + categoryWidth;
     const wrappedContent = wrapText(content, font, BODY_SIZE, maxWidth - categoryWidth - bulletWidth);
     const lines: string[] = [];
+    const continuationSpaces = ' '.repeat(Math.max(0, Math.ceil(maxSkillContentIndent / spaceWidthForSkills)));
     for (let i = 0; i < wrappedContent.length; i++) {
       if (i === 0) lines.push(BULLET_CHAR + '   ' + category + ' ' + wrappedContent[i]);
-      else lines.push(' '.repeat(Math.ceil(contentIndent / font.widthOfTextAtSize(' ', BODY_SIZE))) + wrappedContent[i]);
+      else lines.push(continuationSpaces + wrappedContent[i]);
     }
     return lines;
   };
@@ -175,28 +178,37 @@ export async function renderTemplate2(context: TemplateContext): Promise<Uint8Ar
       continue;
     }
     
-    // Bullet
-    const wrapped = wrapBulletText(line, font, BODY_SIZE, CONTENT_WIDTH - BULLET_INDENT);
-    
-    if (wrapped.hasBullet && isFirstBulletAfterJob) {
-      y -= SPACING.BEFORE_FIRST_BULLET;
-      isFirstBulletAfterJob = false;
+    // Bullet or text (in Experience, split paragraph into bullets if no bullet chars)
+    const isExperienceSection = currentSection.includes('experience') || currentSection.includes('professional');
+    let linesToRender = [line];
+    if (isExperienceSection && !/^[\-\·•]\s/.test(line)) {
+      const bulletLines = splitIntoBulletLines(line);
+      if (bulletLines.length > 1) linesToRender = bulletLines;
     }
     
-    for (const wline of wrapped.lines) {
-      if (y < MARGIN_BOTTOM) {
-        page = pdfDoc.addPage([PAGE_WIDTH, PAGE_HEIGHT]);
-        context.page = page;
-        drawAccent(page);
-        y = PAGE_HEIGHT - MARGIN_TOP;
+    for (const singleLine of linesToRender) {
+      const wrapped = wrapBulletText(singleLine, font, BODY_SIZE, CONTENT_WIDTH - BULLET_INDENT);
+      
+      if (wrapped.hasBullet && isFirstBulletAfterJob) {
+        y -= SPACING.BEFORE_FIRST_BULLET;
+        isFirstBulletAfterJob = false;
       }
       
-      const xPos = wrapped.hasBullet ? MARGIN_LEFT + BULLET_INDENT : MARGIN_LEFT;
-      drawTextWithBold(page, wline, xPos, y, font, fontBold, BODY_SIZE, BLACK);
-      y -= LINE_HEIGHT;
+      for (const wline of wrapped.lines) {
+        if (y < MARGIN_BOTTOM) {
+          page = pdfDoc.addPage([PAGE_WIDTH, PAGE_HEIGHT]);
+          context.page = page;
+          drawAccent(page);
+          y = PAGE_HEIGHT - MARGIN_TOP;
+        }
+        
+        const xPos = wrapped.hasBullet ? MARGIN_LEFT + BULLET_INDENT : MARGIN_LEFT;
+        drawTextWithBold(page, wline, xPos, y, font, fontBold, BODY_SIZE, BLACK);
+        y -= LINE_HEIGHT;
+      }
+      
+      if (wrapped.hasBullet) y -= SPACING.BULLET_GAP;
     }
-    
-    if (wrapped.hasBullet) y -= SPACING.BULLET_GAP;
   }
   
   return await pdfDoc.save();

@@ -181,6 +181,18 @@ export function wrapText(text: string, font: PDFFont, size: number, maxWidth: nu
 export const BULLET_CHAR = '•';
 export const BULLET_INDENT = 10; // Indent before bullet from margin
 
+// Split a paragraph into bullet-sized sentences (for experience when model omits bullets)
+export function splitIntoBulletLines(text: string): string[] {
+  const trimmed = text.trim();
+  if (!trimmed) return [];
+  // Already looks like a single bullet (starts with bullet char)
+  if (/^[\-\·•]\s/.test(trimmed)) return [trimmed];
+  // Split on period followed by space and capital letter (sentence boundary)
+  const sentences = trimmed.split(/(?<=\.)\s+(?=[A-Z])/).map((s) => s.trim()).filter(Boolean);
+  if (sentences.length <= 1) return [trimmed];
+  return sentences.map((s) => (s.match(/^[\-\·•]\s/) ? s : BULLET_CHAR + ' ' + s));
+}
+
 // Helper to wrap bullet text with indent
 export function wrapBulletText(
   text: string,
@@ -301,6 +313,37 @@ export function parseEducationLine(line: string): { degree: string; institution:
 export function isEducationSection(sectionName: string): boolean {
   const lower = sectionName.toLowerCase();
   return lower.includes('education') || lower.includes('academic');
+}
+
+// Pre-scan body lines to get max category indent for Skills section (so continuation lines align)
+export function getMaxSkillsContentIndent(
+  bodyLines: string[],
+  font: PDFFont,
+  fontBold: PDFFont,
+  fontSize: number
+): number {
+  let inSkills = false;
+  let maxIndent = 0;
+  const bulletWidth = font.widthOfTextAtSize(BULLET_CHAR + '   ', fontSize);
+  const skillLineRe = /^[\-\·•]\s*(\*\*[^*]+\*\*:?|[^:]+:)\s*(.*)$/;
+  for (const bl of bodyLines) {
+    const line = bl.trim();
+    if (line.endsWith(':')) {
+      const section = line.slice(0, -1).toLowerCase();
+      inSkills = section.includes('skill') || section.includes('technologies');
+      continue;
+    }
+    if (!inSkills || !line) continue;
+    const m = line.match(skillLineRe);
+    if (m) {
+      const categoryDisplay = m[1].replace(/\*\*/g, '') + ' ';
+      const cw = fontBold.widthOfTextAtSize(categoryDisplay, fontSize);
+      const indent = bulletWidth + cw;
+      if (indent > maxIndent) maxIndent = indent;
+    }
+  }
+  if (maxIndent === 0) maxIndent = bulletWidth + fontBold.widthOfTextAtSize('Languages: ', fontSize);
+  return maxIndent;
 }
 
 // Color constants
