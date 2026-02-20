@@ -43,32 +43,10 @@ Include explicit database-related experience in the Professional Experience sect
 - Prefer non-rounded percentages when plausible (e.g., 33%, 47%, 92%) to convey precision.
 - Prioritize impact, metrics, and results over generic responsibilities in every bullet.
 
-17. BOLD FORMATTING (**double asterisks**):
-
-BOLD ONLY THESE:
-- Technical terms in Summary text and Work Experience bullets (languages, frameworks, tools, databases, cloud services)
-- ONLY the category/group label in Skills section (the word before the colon, including the colon)
-NEVER BOLD:
-- Section headers (Summary, Skills, Work Experience, Education)
-- Job titles, company names, dates, or any part of role lines
-- ANY individual skills listed after the colon in Skills section - NEVER bold these, they must be plain text
-- Education details (degrees, universities, years)
-
-SKILLS SECTION BOLD RULE (CRITICAL):
-In the Skills section, ONLY bold the category name before the colon. The skills themselves after the colon must NEVER be bold.
-✓ CORRECT: • **Languages:** JavaScript, TypeScript, Python, SQL, HTML5, CSS3
-✗ WRONG: • **Languages:** **JavaScript**, **TypeScript**, **Python**
-✗ WRONG: • Languages: **JavaScript**, **TypeScript**, **Python**
-
-EXAMPLES:
-✓ Summary: ...expertise in **React**, **Node.js**, and **AWS**...
-✓ Software Engineer at RTA: Jul 2024 - Present (no bold anywhere)
-✓ • Built APIs using **FastAPI** and **PostgreSQL**
-✓ • **Languages:** JavaScript, TypeScript, Python
-✓ • **Frontend:** React, Next.js, Vue.js, Tailwind CSS
-✗ **Summary:** / **AI/ML Engineer** / **Languages:** **JavaScript**, **Python**
-
-Rule: Each **bold** must start and end on the same line. When in doubt, don't bold.
+17. BOLD IN SKILLS SECTION ONLY: Use **double asterisks** only for the category label in the Skills section (the word before the colon, including the colon). Do not bold anything else anywhere in the resume.
+   - CORRECT: • **Languages:** JavaScript, TypeScript, Python
+   - CORRECT: • **Frontend:** React, Next.js, Vue.js
+   - Do NOT bold section headers, Summary text, Experience bullets, job titles, company names, or the individual skills listed after the colon.
 
 Here is the base resume:
 

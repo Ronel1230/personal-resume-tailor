@@ -185,7 +185,7 @@ export function wrapBulletText(
   return { lines, hasBullet };
 }
 
-// Helper to draw text with bold segments (markdown **bold**)
+// Helper to draw text with bold segments (markdown **bold**) — used for skills category labels only
 export function drawTextWithBold(
   page: PDFPage,
   text: string,
@@ -196,26 +196,20 @@ export function drawTextWithBold(
   size: number,
   color: RGB
 ) {
-  // First normalize the text to fix any malformed bold markers
   const normalizedText = normalizeBoldMarkers(text);
-  
-  // Split by **...** pattern, keeping the delimiters
-  // This regex captures bold markers as separate array elements
   const parts = normalizedText.split(/(\*\*[^*]+\*\*)/g).filter(part => part !== '');
-  
+
   let offsetX = x;
   for (const part of parts) {
     if (!part) continue;
-    
+
     if (part.startsWith('**') && part.endsWith('**') && part.length > 4) {
-      // Bold text - extract content without markers
       const content = part.slice(2, -2);
       if (content) {
         page.drawText(content, { x: offsetX, y, size, font: fontBold, color });
         offsetX += fontBold.widthOfTextAtSize(content, size);
       }
     } else {
-      // Regular text - also clean up any stray ** that might have slipped through
       const cleanPart = part.replace(/\*\*/g, '');
       if (cleanPart) {
         page.drawText(cleanPart, { x: offsetX, y, size, font, color });

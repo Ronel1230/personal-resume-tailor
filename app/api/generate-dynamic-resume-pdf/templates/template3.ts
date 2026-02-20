@@ -1,5 +1,5 @@
 import { PDFPage, rgb } from 'pdf-lib';
-import { TemplateContext, wrapText, wrapBulletText, formatDate, drawTextWithBold, COLORS, SPACING, BULLET_INDENT, parseEducationLine, isEducationSection } from '../utils';
+import { TemplateContext, wrapText, wrapBulletText, formatDate, drawTextWithBold, COLORS, SPACING, BULLET_INDENT, BULLET_CHAR, parseEducationLine, isEducationSection } from '../utils';
 
 // TEMPLATE 3: MINIMALIST - Clean and elegant with subtle grays
 export async function renderTemplate3(context: TemplateContext): Promise<Uint8Array> {
@@ -45,7 +45,25 @@ export async function renderTemplate3(context: TemplateContext): Promise<Uint8Ar
   let isFirstBulletAfterJob = false;
   let currentSection = '';
   let isFirstEducation = true;
-  
+
+  const wrapSkillsLine = (text: string, maxWidth: number): string[] => {
+    const skillMatch = text.match(/^[\-\·•]\s*(\*\*[^*]+\*\*:?|[^:]+:)\s*(.*)$/);
+    if (!skillMatch) return wrapText(text, font, BODY_SIZE, maxWidth);
+    const category = skillMatch[1];
+    const content = skillMatch[2];
+    const categoryDisplayText = category.replace(/\*\*/g, '');
+    const bulletWidth = font.widthOfTextAtSize(BULLET_CHAR + '   ', BODY_SIZE);
+    const categoryWidth = fontBold.widthOfTextAtSize(categoryDisplayText + ' ', BODY_SIZE);
+    const contentIndent = bulletWidth + categoryWidth;
+    const wrappedContent = wrapText(content, font, BODY_SIZE, maxWidth - categoryWidth - bulletWidth);
+    const lines: string[] = [];
+    for (let i = 0; i < wrappedContent.length; i++) {
+      if (i === 0) lines.push(BULLET_CHAR + '   ' + category + ' ' + wrappedContent[i]);
+      else lines.push(' '.repeat(Math.ceil(contentIndent / font.widthOfTextAtSize(' ', BODY_SIZE))) + wrappedContent[i]);
+    }
+    return lines;
+  };
+
   for (let i = 0; i < bodyLines.length; i++) {
     const line = bodyLines[i].trim();
     
@@ -137,6 +155,24 @@ export async function renderTemplate3(context: TemplateContext): Promise<Uint8Ar
       page.drawText(`${company.trim()}  |  ${periodFormatted}`, { x: MARGIN_LEFT, y, size: BODY_SIZE, font, color: MEDIUM_GRAY });
       y -= SPACING.AFTER_JOB_HEADER;
       isFirstBulletAfterJob = true;
+      continue;
+    }
+
+    const isSkillsSection = currentSection.includes('skill') || currentSection.includes('technologies');
+    const isSkillLine = line.match(/^[\-\·•]\s*(\*\*[^*]+\*\*:?|[A-Za-z &\/]+:)\s*.+$/);
+    if (isSkillsSection && isSkillLine) {
+      const wrappedLines = wrapSkillsLine(line, CONTENT_WIDTH - BULLET_INDENT);
+      for (let j = 0; j < wrappedLines.length; j++) {
+        if (y < MARGIN_BOTTOM) {
+          page = pdfDoc.addPage([PAGE_WIDTH, PAGE_HEIGHT]);
+          context.page = page;
+          y = PAGE_HEIGHT - MARGIN_TOP;
+        }
+        const xPos = MARGIN_LEFT + BULLET_INDENT;
+        drawTextWithBold(page, wrappedLines[j], xPos, y, font, fontBold, BODY_SIZE, DARK_GRAY);
+        y -= LINE_HEIGHT;
+      }
+      y -= SPACING.BULLET_GAP;
       continue;
     }
     
