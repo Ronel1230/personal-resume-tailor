@@ -1,5 +1,5 @@
 import { PDFPage, rgb } from 'pdf-lib';
-import { TemplateContext, wrapText, wrapBulletText, formatDate, drawTextWithBold, COLORS, SPACING, BULLET_INDENT, BULLET_CHAR, parseEducationLine, isEducationSection, splitIntoBulletLines, getMaxSkillsContentIndent } from '../utils';
+import { TemplateContext, wrapText, wrapBulletText, formatDate, drawTextWithBold, COLORS, SPACING, BULLET_INDENT, BULLET_CHAR, SKILL_CONTINUATION_INDENT, parseEducationLine, isEducationSection, splitIntoBulletLines } from '../utils';
 
 // TEMPLATE 1: BOLD HEADER - Strong name with horizontal rule
 export async function renderTemplate1(context: TemplateContext): Promise<Uint8Array> {
@@ -54,11 +54,9 @@ export async function renderTemplate1(context: TemplateContext): Promise<Uint8Ar
   let currentSection = '';
   let isFirstEducation = true;
   
-  // Fixed content indent for all skill categories so continuation lines align
-  const maxSkillContentIndent = getMaxSkillsContentIndent(bodyLines, font, fontBold, BODY_SIZE);
   const spaceWidthForSkills = font.widthOfTextAtSize(' ', BODY_SIZE);
 
-  // Helper to wrap skills line with proper indent for content after category
+  // Helper to wrap skills line with small fixed indent for continuation
   const wrapSkillsLine = (text: string, maxWidth: number): string[] => {
     // Match pattern like "• Category: content" or "**Category:** content"
     const skillMatch = text.match(/^[\-\·•]\s*(\*\*[^*]+\*\*:?|[^:]+:)\s*(.*)$/);
@@ -76,7 +74,7 @@ export async function renderTemplate1(context: TemplateContext): Promise<Uint8Ar
     const wrappedContent = wrapText(content, font, BODY_SIZE, firstLineContentWidth);
     
     const lines: string[] = [];
-    const continuationSpaces = ' '.repeat(Math.max(0, Math.ceil(maxSkillContentIndent / spaceWidthForSkills)));
+    const continuationSpaces = ' '.repeat(Math.max(0, Math.ceil(SKILL_CONTINUATION_INDENT / spaceWidthForSkills)));
     for (let i = 0; i < wrappedContent.length; i++) {
       if (i === 0) {
         lines.push(BULLET_CHAR + '   ' + category + ' ' + wrappedContent[i]);

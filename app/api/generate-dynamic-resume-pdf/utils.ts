@@ -180,6 +180,8 @@ export function wrapText(text: string, font: PDFFont, size: number, maxWidth: nu
 // Bullet character and indent
 export const BULLET_CHAR = '•';
 export const BULLET_INDENT = 10; // Indent before bullet from margin
+/** Small fixed indent for skills section continuation lines (points) */
+export const SKILL_CONTINUATION_INDENT = 12;
 
 // Split a paragraph into bullet-sized sentences (for experience when model omits bullets)
 export function splitIntoBulletLines(text: string): string[] {
@@ -313,37 +315,6 @@ export function parseEducationLine(line: string): { degree: string; institution:
 export function isEducationSection(sectionName: string): boolean {
   const lower = sectionName.toLowerCase();
   return lower.includes('education') || lower.includes('academic');
-}
-
-// Pre-scan body lines to get min category indent for Skills section (so continuation lines use leftmost content start)
-export function getMaxSkillsContentIndent(
-  bodyLines: string[],
-  font: PDFFont,
-  fontBold: PDFFont,
-  fontSize: number
-): number {
-  let inSkills = false;
-  let minIndent = Number.MAX_VALUE;
-  const bulletWidth = font.widthOfTextAtSize(BULLET_CHAR + '   ', fontSize);
-  const skillLineRe = /^[\-\·•]\s*(\*\*[^*]+\*\*:?|[^:]+:)\s*(.*)$/;
-  for (const bl of bodyLines) {
-    const line = bl.trim();
-    if (line.endsWith(':')) {
-      const section = line.slice(0, -1).toLowerCase();
-      inSkills = section.includes('skill') || section.includes('technologies');
-      continue;
-    }
-    if (!inSkills || !line) continue;
-    const m = line.match(skillLineRe);
-    if (m) {
-      const categoryDisplay = m[1].replace(/\*\*/g, '') + ' ';
-      const cw = fontBold.widthOfTextAtSize(categoryDisplay, fontSize);
-      const indent = bulletWidth + cw;
-      if (indent < minIndent) minIndent = indent;
-    }
-  }
-  if (minIndent === Number.MAX_VALUE) minIndent = bulletWidth + fontBold.widthOfTextAtSize('Languages: ', fontSize);
-  return minIndent;
 }
 
 // Color constants

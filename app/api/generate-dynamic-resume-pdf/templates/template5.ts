@@ -1,5 +1,5 @@
 import { PDFPage, rgb } from 'pdf-lib';
-import { TemplateContext, wrapText, wrapBulletText, formatDate, drawTextWithBold, COLORS, SPACING, BULLET_INDENT, BULLET_CHAR, parseEducationLine, isEducationSection, splitIntoBulletLines, getMaxSkillsContentIndent } from '../utils';
+import { TemplateContext, wrapText, wrapBulletText, formatDate, drawTextWithBold, COLORS, SPACING, BULLET_INDENT, BULLET_CHAR, SKILL_CONTINUATION_INDENT, parseEducationLine, isEducationSection, splitIntoBulletLines } from '../utils';
 
 // TEMPLATE 5: MODERN BLOCK - Large name with clean sections
 export async function renderTemplate5(context: TemplateContext): Promise<Uint8Array> {
@@ -47,7 +47,6 @@ export async function renderTemplate5(context: TemplateContext): Promise<Uint8Ar
   let currentSection = '';
   let isFirstEducation = true;
 
-  const maxSkillContentIndent = getMaxSkillsContentIndent(bodyLines, font, fontBold, BODY_SIZE);
   const spaceWidthForSkills = font.widthOfTextAtSize(' ', BODY_SIZE);
 
   const wrapSkillsLine = (text: string, maxWidth: number): string[] => {
@@ -60,7 +59,7 @@ export async function renderTemplate5(context: TemplateContext): Promise<Uint8Ar
     const categoryWidth = fontBold.widthOfTextAtSize(categoryDisplayText + ' ', BODY_SIZE);
     const wrappedContent = wrapText(content, font, BODY_SIZE, maxWidth - categoryWidth - bulletWidth);
     const lines: string[] = [];
-    const continuationSpaces = ' '.repeat(Math.max(0, Math.ceil(maxSkillContentIndent / spaceWidthForSkills)));
+    const continuationSpaces = ' '.repeat(Math.max(0, Math.ceil(SKILL_CONTINUATION_INDENT / spaceWidthForSkills)));
     for (let i = 0; i < wrappedContent.length; i++) {
       if (i === 0) lines.push(BULLET_CHAR + '   ' + category + ' ' + wrappedContent[i]);
       else lines.push(continuationSpaces + wrappedContent[i]);
