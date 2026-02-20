@@ -52,7 +52,20 @@ export function normalizeBoldMarkers(text: string): string {
   return normalized;
 }
 
-// Helper to parse resume text
+// Patterns to classify contact header lines (phone optional)
+function looksLikeEmail(line: string): boolean {
+  return /@/.test(line) && /^[^\s@]+@[^\s@]+\.[^\s@]+/.test(line.trim());
+}
+function looksLikePhone(line: string): boolean {
+  const digits = line.replace(/\D/g, '');
+  return digits.length >= 7 && digits.length <= 15 && /^[\d\s+\-().]+$/.test(line.trim());
+}
+function looksLikeLinkedIn(line: string): boolean {
+  return /linkedin\.com/i.test(line);
+}
+
+// Helper to parse resume text. Header: headline, name, then 2–4 contact lines in any order.
+// Contact lines are classified by content (email, phone, location, linkedin). Phone is optional.
 export function parseResume(resumeText: string): {
   headline: string;
   name: string;
@@ -62,24 +75,39 @@ export function parseResume(resumeText: string): {
   linkedin: string;
   body: string;
 } {
-  // First normalize bold markers in the entire text
   const normalizedText = normalizeBoldMarkers(resumeText);
   const lines = normalizedText.split('\n');
   const info: string[] = [];
   let bodyStart = 0;
   for (let idx = 0; idx < lines.length; idx++) {
     if (lines[idx].trim()) info.push(lines[idx].trim());
-    // Header can have 5 lines (no LinkedIn) or 6 lines (with LinkedIn)
-    if (info.length === 5) {
+    // Header: 2 fixed (headline, name) + 2–4 contact lines
+    if (info.length >= 4 && info.length <= 6) {
       bodyStart = idx + 1;
       break;
     }
-    if (info.length === 6) {
+    if (info.length > 6) {
       bodyStart = idx + 1;
       break;
     }
   }
-  const [headline = '', name = '', email = '', phone = '', location = '', linkedin = ''] = info;
+  const headline = info[0] ?? '';
+  const name = info[1] ?? '';
+  const contactLines = info.slice(2); // remaining header lines
+
+  let email = '';
+  let phone = '';
+  let linkedin = '';
+  const locationParts: string[] = [];
+
+  for (const line of contactLines) {
+    if (looksLikeEmail(line)) email = line;
+    else if (looksLikePhone(line)) phone = line;
+    else if (looksLikeLinkedIn(line)) linkedin = line;
+    else locationParts.push(line);
+  }
+  const location = locationParts.join('  |  ').trim();
+
   while (bodyStart < lines.length && !lines[bodyStart].trim()) bodyStart++;
   const body = lines.slice(bodyStart).join('\n');
   return { headline, name, email, phone, location, linkedin, body };
