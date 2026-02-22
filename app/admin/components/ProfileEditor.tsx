@@ -39,7 +39,12 @@ export default function ProfileEditor({ profiles, onUpdate }: ProfileEditorProps
       name: '',
       resumeText: '',
       customPrompt: undefined,
-      pdfTemplate: 1
+      pdfTemplate: 1,
+      phone: '',
+      linkedin: '',
+      github: '',
+      lastCompany: '',
+      university: '',
     });
     setIsCreating(true);
     setError('');
@@ -73,14 +78,24 @@ export default function ProfileEditor({ profiles, onUpdate }: ProfileEditorProps
             name: editingProfile.name,
             resumeText: editingProfile.resumeText,
             customPrompt: editingProfile.customPrompt || undefined,
-            pdfTemplate: editingProfile.pdfTemplate || 1
+            pdfTemplate: editingProfile.pdfTemplate || 1,
+            phone: editingProfile.phone || undefined,
+            linkedin: editingProfile.linkedin || undefined,
+            github: editingProfile.github || undefined,
+            lastCompany: editingProfile.lastCompany || undefined,
+            university: editingProfile.university || undefined,
           }
         : {
             oldName: profiles.find(p => p.name === editingProfile.name)?.name || editingProfile.name,
             name: editingProfile.name,
             resumeText: editingProfile.resumeText,
             customPrompt: editingProfile.customPrompt || undefined,
-            pdfTemplate: editingProfile.pdfTemplate || 1
+            pdfTemplate: editingProfile.pdfTemplate || 1,
+            phone: editingProfile.phone || undefined,
+            linkedin: editingProfile.linkedin || undefined,
+            github: editingProfile.github || undefined,
+            lastCompany: editingProfile.lastCompany || undefined,
+            university: editingProfile.university || undefined,
           };
 
       const response = await fetch(url, {
@@ -199,6 +214,63 @@ export default function ProfileEditor({ profiles, onUpdate }: ProfileEditorProps
                   rows={12}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono text-sm text-gray-900"
                   placeholder="Paste the full resume text here..."
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Contact Info (per profile) */}
+          <div className="border-b border-gray-200 pb-6">
+            <h3 className="text-lg font-semibold text-gray-800 mb-4">Contact Info</h3>
+            <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+                <input
+                  type="text"
+                  value={editingProfile.phone ?? ''}
+                  onChange={(e) => setEditingProfile({ ...editingProfile, phone: e.target.value })}
+                  placeholder="+1 234 567 8900"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">LinkedIn</label>
+                <input
+                  type="url"
+                  value={editingProfile.linkedin ?? ''}
+                  onChange={(e) => setEditingProfile({ ...editingProfile, linkedin: e.target.value })}
+                  placeholder="https://linkedin.com/in/username"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">GitHub</label>
+                <input
+                  type="url"
+                  value={editingProfile.github ?? ''}
+                  onChange={(e) => setEditingProfile({ ...editingProfile, github: e.target.value })}
+                  placeholder="https://github.com/username"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Last Company</label>
+                <input
+                  type="text"
+                  value={editingProfile.lastCompany ?? ''}
+                  onChange={(e) => setEditingProfile({ ...editingProfile, lastCompany: e.target.value })}
+                  placeholder="Company name"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+                />
+              </div>
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1">University</label>
+                <input
+                  type="text"
+                  value={editingProfile.university ?? ''}
+                  onChange={(e) => setEditingProfile({ ...editingProfile, university: e.target.value })}
+                  placeholder="University name"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
                 />
               </div>
             </div>

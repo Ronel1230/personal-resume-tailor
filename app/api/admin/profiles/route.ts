@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const { name, resumeText, customPrompt, pdfTemplate } = await req.json();
+    const { name, resumeText, customPrompt, pdfTemplate, phone, linkedin, github, lastCompany, university } = await req.json();
     
     if (!name || !resumeText) {
       return NextResponse.json(
@@ -60,6 +60,11 @@ export async function POST(req: NextRequest) {
         resumeText,
         customPrompt: customPrompt || null,
         pdfTemplate: pdfTemplate || 1,
+        phone: phone || null,
+        linkedin: linkedin || null,
+        github: github || null,
+        lastCompany: lastCompany || null,
+        university: university || null,
       },
     });
 
@@ -79,7 +84,7 @@ export async function PUT(req: NextRequest) {
   }
 
   try {
-    const { oldName, name, resumeText, customPrompt, pdfTemplate } = await req.json();
+    const { oldName, name, resumeText, customPrompt, pdfTemplate, phone, linkedin, github, lastCompany, university } = await req.json();
     
     if (!oldName || !name || !resumeText) {
       return NextResponse.json(
@@ -121,6 +126,11 @@ export async function PUT(req: NextRequest) {
         resumeText,
         customPrompt: customPrompt || null,
         pdfTemplate: pdfTemplate || 1,
+        phone: phone || null,
+        linkedin: linkedin || null,
+        github: github || null,
+        lastCompany: lastCompany || null,
+        university: university || null,
       },
     });
 

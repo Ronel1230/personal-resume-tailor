@@ -12,6 +12,11 @@ export async function getBaseResumes(): Promise<BaseResumeProfile[]> {
     resumeText: profile.resumeText,
     customPrompt: profile.customPrompt || undefined,
     pdfTemplate: profile.pdfTemplate,
+    phone: profile.phone ?? undefined,
+    linkedin: profile.linkedin ?? undefined,
+    github: profile.github ?? undefined,
+    lastCompany: profile.lastCompany ?? undefined,
+    university: profile.university ?? undefined,
   }));
 }
 
@@ -30,6 +35,11 @@ export async function getBaseResumeByName(name: string | null | undefined): Prom
     resumeText: profile.resumeText,
     customPrompt: profile.customPrompt || undefined,
     pdfTemplate: profile.pdfTemplate,
+    phone: profile.phone ?? undefined,
+    linkedin: profile.linkedin ?? undefined,
+    github: profile.github ?? undefined,
+    lastCompany: profile.lastCompany ?? undefined,
+    university: profile.university ?? undefined,
   };
 }
 

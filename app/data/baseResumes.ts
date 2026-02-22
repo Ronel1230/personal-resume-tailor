@@ -5,6 +5,11 @@ export type BaseResumeProfile = {
   resumeText: string; // full plain-text resume template
   customPrompt?: string; // optional custom prompt for this profile
   pdfTemplate?: number; // PDF template identifier (e.g., 'default', 'modern', 'classic')
+  phone?: string;
+  linkedin?: string;
+  github?: string;
+  lastCompany?: string;
+  university?: string;
 };
 
 // Import all profiles from individual files (used only for seeding)

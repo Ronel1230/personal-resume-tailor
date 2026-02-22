@@ -20,7 +20,8 @@ export default function Home() {
 
   useEffect(() => {
     if (profileName === null) return;
-    fetch('/api/contact-info')
+    const params = new URLSearchParams({ profile: profileName });
+    fetch(`/api/contact-info?${params}`)
       .then((res) => res.ok ? res.json() : null)
       .then((data) => data && setContactInfo(data))
       .catch(() => {});

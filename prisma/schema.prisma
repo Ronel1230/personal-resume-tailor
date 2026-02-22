@@ -16,21 +16,14 @@ model Profile {
   resumeText  String   @db.Text
   customPrompt String? @db.Text
   pdfTemplate Int      @default(1)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  @@map("profiles")
-}
-
-model ContactInfo {
-  id          String   @id @default("default")
   phone       String?
   linkedin    String?
   github      String?
   lastCompany String?
   university  String?
+  createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  @@map("contact_info")
+  @@map("profiles")
 }
 
