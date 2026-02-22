@@ -1,5 +1,13 @@
 'use client';
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
+
+type ContactInfo = {
+  phone: string;
+  linkedin: string;
+  github: string;
+  lastCompany: string;
+  university: string;
+};
 
 export default function Home() {
   const formRef = useRef<HTMLFormElement>(null);
@@ -7,6 +15,28 @@ export default function Home() {
   const [gateInput, setGateInput] = useState('');
   const [gateError, setGateError] = useState('');
   const [gateLoading, setGateLoading] = useState(false);
+  const [contactInfo, setContactInfo] = useState<ContactInfo | null>(null);
+  const [copyFeedback, setCopyFeedback] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (profileName === null) return;
+    fetch('/api/contact-info')
+      .then((res) => res.ok ? res.json() : null)
+      .then((data) => data && setContactInfo(data))
+      .catch(() => {});
+  }, [profileName]);
+
+  const copyToClipboard = async (label: string, value: string) => {
+    if (!value.trim()) return;
+    try {
+      await navigator.clipboard.writeText(value.trim());
+      setCopyFeedback(label);
+      setTimeout(() => setCopyFeedback(null), 1500);
+    } catch {
+      setCopyFeedback('Failed to copy');
+      setTimeout(() => setCopyFeedback(null), 1500);
+    }
+  };
 
   const handleGateSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -71,11 +101,45 @@ export default function Home() {
     );
   }
 
+  const contactFields: { key: keyof ContactInfo; label: string }[] = [
+    { key: 'phone', label: 'Phone' },
+    { key: 'linkedin', label: 'LinkedIn' },
+    { key: 'github', label: 'GitHub' },
+    { key: 'lastCompany', label: 'Last Company' },
+    { key: 'university', label: 'University' },
+  ];
+
   return (
     <main className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
       <div className="bg-white shadow-lg rounded-lg p-8 w-full max-w-xl">
         <h1 className="text-2xl font-bold mb-6 text-center text-gray-800">Dynamic Resume PDF Generator</h1>
         <p className="text-sm text-gray-500 mb-4 text-center">Profile: {profileName}</p>
+
+        {contactInfo && (
+          <div className="mb-6">
+            <p className="text-sm font-medium text-gray-700 mb-2">Copy to clipboard:</p>
+            <div className="flex flex-wrap gap-2">
+              {contactFields.map(({ key, label }) => {
+                const value = contactInfo[key]?.trim() ?? '';
+                return (
+                  <button
+                    key={key}
+                    type="button"
+                    onClick={() => copyToClipboard(label, value)}
+                    disabled={!value}
+                    className="px-3 py-1.5 text-sm bg-gray-100 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed rounded-md border border-gray-300 text-gray-800 transition-colors"
+                  >
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
+            {copyFeedback && (
+              <p className="text-xs text-green-600 mt-2">Copied: {copyFeedback}</p>
+            )}
+          </div>
+        )}
+
         <form
           ref={formRef}
           action="/api/generate-dynamic-resume-pdf"

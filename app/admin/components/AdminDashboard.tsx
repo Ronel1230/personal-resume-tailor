@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import ProfileEditor from './ProfileEditor';
+import ContactInfoEditor from './ContactInfoEditor';
 import { BaseResumeProfile } from '@/app/data/baseResumes';
 
 interface AdminDashboardProps {
@@ -61,10 +62,13 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
             <p className="mt-4 text-gray-600">Loading...</p>
           </div>
         ) : (
-          <ProfileEditor
-            profiles={profiles}
-            onUpdate={handleProfileUpdate}
-          />
+          <div className="space-y-6">
+            <ContactInfoEditor />
+            <ProfileEditor
+              profiles={profiles}
+              onUpdate={handleProfileUpdate}
+            />
+          </div>
         )}
       </div>
     </div>

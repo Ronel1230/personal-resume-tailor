@@ -22,3 +22,15 @@ model Profile {
   @@map("profiles")
 }
 
+model ContactInfo {
+  id          String   @id @default("default")
+  phone       String?
+  linkedin    String?
+  github      String?
+  lastCompany String?
+  university  String?
+  updatedAt   DateTime @updatedAt
+
+  @@map("contact_info")
+}
+
