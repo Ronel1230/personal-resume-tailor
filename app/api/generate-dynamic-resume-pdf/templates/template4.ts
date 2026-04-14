@@ -35,19 +35,12 @@ export async function renderTemplate4(context: TemplateContext): Promise<Uint8Ar
     y -= NAME_SIZE + 6;
   }
   
-  const contactParts = [location, phone, email].filter(Boolean);
+  const contactParts = [location, phone, email, linkedin].filter(Boolean);
   if (contactParts.length > 0) {
     const contactText = contactParts.join('   •   ');
     const contactWidth = font.widthOfTextAtSize(contactText, CONTACT_SIZE);
     const contactX = (PAGE_WIDTH - contactWidth) / 2;
     page.drawText(contactText, { x: contactX, y, size: CONTACT_SIZE, font, color: MEDIUM_GRAY });
-    y -= CONTACT_SIZE + 6;
-  }
-  
-  if (linkedin) {
-    const linkedinWidth = font.widthOfTextAtSize(linkedin, CONTACT_SIZE);
-    const linkedinX = (PAGE_WIDTH - linkedinWidth) / 2;
-    page.drawText(linkedin, { x: linkedinX, y, size: CONTACT_SIZE, font, color: MEDIUM_GRAY });
     y -= CONTACT_SIZE + 10;
   }
   

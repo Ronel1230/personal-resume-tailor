@@ -64,6 +64,22 @@ function looksLikeLinkedIn(line: string): boolean {
   return /linkedin\.com/i.test(line);
 }
 
+/** Experience lines in this app look like "Role at Company: dates" */
+function looksLikeJobLine(line: string): boolean {
+  return /^.+?\s+at\s+.+\s*:\s*/.test(line.trim());
+}
+
+/** First line of resume body (section, bullet, or job row) — not a contact continuation */
+function looksLikeBodyStart(line: string): boolean {
+  const t = line.trim();
+  if (!t) return false;
+  if (/^[\-\·•]\s/.test(t)) return true;
+  if (looksLikeJobLine(t)) return true;
+  // Short section title ending with colon, e.g. "Experience:" or "EXPERIENCE:"
+  if (t.length <= 50 && /^[A-Za-z]/.test(t) && /:\s*$/.test(t)) return true;
+  return false;
+}
+
 // Helper to parse resume text. Header: headline, name, then 2–4 contact lines in any order.
 // Contact lines are classified by content (email, phone, location, linkedin). Phone is optional.
 export function parseResume(resumeText: string): {
@@ -80,16 +96,34 @@ export function parseResume(resumeText: string): {
   const info: string[] = [];
   let bodyStart = 0;
   for (let idx = 0; idx < lines.length; idx++) {
-    if (lines[idx].trim()) info.push(lines[idx].trim());
-    // Header: 2 fixed (headline, name) + 2–4 contact lines
-    if (info.length >= 4 && info.length <= 6) {
+    const trimmed = lines[idx].trim();
+    if (!trimmed) continue;
+
+    info.push(trimmed);
+
+    // Header: 2 fixed (headline, name) + 2–4 contact lines (max 6 info lines total)
+    if (info.length < 4) continue;
+
+    if (info.length >= 6) {
       bodyStart = idx + 1;
       break;
     }
-    if (info.length > 6) {
-      bodyStart = idx + 1;
-      break;
+
+    // At 4–5 lines we may still have another contact row (e.g. LinkedIn on its own line).
+    let j = idx + 1;
+    while (j < lines.length && !lines[j].trim()) j++;
+    if (j < lines.length) {
+      const next = lines[j].trim();
+      if (looksLikeEmail(next) || looksLikePhone(next) || looksLikeLinkedIn(next)) {
+        continue;
+      }
+      if (info.length < 6 && !looksLikeBodyStart(next)) {
+        continue;
+      }
     }
+
+    bodyStart = idx + 1;
+    break;
   }
   const headline = info[0] ?? '';
   const name = info[1] ?? '';
