@@ -297,14 +297,14 @@ export function drawTextWithBold(
 
 // Spacing constants
 export const SPACING = {
-  SECTION_GAP: 18,            // Space before a new section header
-  AFTER_SECTION_HEADER: 14,   // Space after section header
-  JOB_GAP: 14,                // Space between jobs
-  AFTER_JOB_HEADER: 12,       // Space after job title + company line
-  BULLET_LINE_HEIGHT: 1.5,    // Line height for bullets
-  BULLET_GAP: 4,              // Extra space between bullets
-  BEFORE_FIRST_BULLET: 4,     // Space before first bullet in a job
-  EDUCATION_GAP: 10,          // Space between education entries
+  SECTION_GAP: 20,            // Space before a new section header
+  AFTER_SECTION_HEADER: 16,   // Space after section header
+  JOB_GAP: 16,                // Space between jobs
+  AFTER_JOB_HEADER: 14,       // Space after job title + company line
+  BULLET_LINE_HEIGHT: 1.65,   // Line height for bullets and wrapped body text
+  BULLET_GAP: 6,              // Extra space between bullets
+  BEFORE_FIRST_BULLET: 6,     // Space before first bullet in a job
+  EDUCATION_GAP: 12,          // Space between education entries
 };
 
 // Helper to parse education line

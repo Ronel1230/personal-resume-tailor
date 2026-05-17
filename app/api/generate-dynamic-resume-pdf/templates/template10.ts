@@ -21,16 +21,16 @@ export async function renderTemplate10(context: TemplateContext): Promise<Uint8A
   const SECTION_SIZE = 10.5;
   const JOB_TITLE_SIZE = 10;
   const BODY_SIZE = 9.5;
-  const LINE_HEIGHT = BODY_SIZE * 1.4;
+  const LINE_HEIGHT = BODY_SIZE * 1.6;
 
   const compactSpacing = {
-    SECTION_GAP: 12,
-    AFTER_SECTION_HEADER: 10,
-    JOB_GAP: 10,
-    AFTER_JOB_HEADER: 8,
-    BEFORE_FIRST_BULLET: 3,
-    BULLET_GAP: 2,
-    EDUCATION_GAP: 7,
+    SECTION_GAP: 14,
+    AFTER_SECTION_HEADER: 12,
+    JOB_GAP: 12,
+    AFTER_JOB_HEADER: 10,
+    BEFORE_FIRST_BULLET: 5,
+    BULLET_GAP: 4,
+    EDUCATION_GAP: 9,
   };
 
   let y = PAGE_HEIGHT - MARGIN_TOP;
@@ -76,7 +76,7 @@ export async function renderTemplate10(context: TemplateContext): Promise<Uint8A
     const line = bodyLines[i].trim();
 
     if (!line) {
-      y -= 2;
+      y -= 3;
       continue;
     }
 
@@ -112,9 +112,9 @@ export async function renderTemplate10(context: TemplateContext): Promise<Uint8A
         }
 
         page.drawText(eduParsed.degree, { x: MARGIN_LEFT, y, size: JOB_TITLE_SIZE, font: fontBold, color: BLACK });
-        y -= JOB_TITLE_SIZE + 1;
+        y -= JOB_TITLE_SIZE + 3;
         page.drawText(`${eduParsed.institution}  |  ${eduParsed.year}`, { x: MARGIN_LEFT, y, size: BODY_SIZE, font, color: MEDIUM_GRAY });
-        y -= BODY_SIZE + 4;
+        y -= BODY_SIZE + 6;
         continue;
       }
     }
@@ -133,7 +133,7 @@ export async function renderTemplate10(context: TemplateContext): Promise<Uint8A
       }
 
       page.drawText(jobTitle.trim(), { x: MARGIN_LEFT, y, size: JOB_TITLE_SIZE, font: fontBold, color: BLACK });
-      y -= JOB_TITLE_SIZE + 1;
+      y -= JOB_TITLE_SIZE + 3;
       const periodFormatted = formatDate(period.trim());
       page.drawText(`${company.trim()}  |  ${periodFormatted}`, { x: MARGIN_LEFT, y, size: BODY_SIZE, font, color: MEDIUM_GRAY });
       y -= compactSpacing.AFTER_JOB_HEADER;

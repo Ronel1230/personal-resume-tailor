@@ -76,7 +76,7 @@ export async function renderTemplate2(context: TemplateContext): Promise<Uint8Ar
     const line = bodyLines[i].trim();
     
     if (!line) {
-      y -= 3;
+      y -= 4;
       continue;
     }
     
@@ -124,11 +124,11 @@ export async function renderTemplate2(context: TemplateContext): Promise<Uint8Ar
         
         // Draw degree (bold)
         page.drawText(eduParsed.degree, { x: MARGIN_LEFT, y, size: JOB_TITLE_SIZE, font: fontBold, color: BLACK });
-        y -= JOB_TITLE_SIZE + 2;
+        y -= JOB_TITLE_SIZE + 4;
         
         // Draw institution and year (regular, gray)
         page.drawText(`${eduParsed.institution}  |  ${eduParsed.year}`, { x: MARGIN_LEFT, y, size: BODY_SIZE, font, color: MEDIUM_GRAY });
-        y -= BODY_SIZE + 6;
+        y -= BODY_SIZE + 8;
         continue;
       }
     }
@@ -149,7 +149,7 @@ export async function renderTemplate2(context: TemplateContext): Promise<Uint8Ar
       }
       
       page.drawText(jobTitle.trim(), { x: MARGIN_LEFT, y, size: JOB_TITLE_SIZE, font: fontBold, color: BLACK });
-      y -= JOB_TITLE_SIZE + 2;
+      y -= JOB_TITLE_SIZE + 4;
       
       const periodFormatted = formatDate(period.trim());
       page.drawText(`${company.trim()}  |  ${periodFormatted}`, { x: MARGIN_LEFT, y, size: BODY_SIZE, font, color: MEDIUM_GRAY });
