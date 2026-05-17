@@ -18,11 +18,11 @@ export async function renderTemplate1(context: TemplateContext): Promise<Uint8Ar
   const CONTENT_WIDTH = PAGE_WIDTH - MARGIN_LEFT - MARGIN_RIGHT;
   
   // Typography
-  const NAME_SIZE = 26;
-  const CONTACT_SIZE = 9;
-  const SECTION_SIZE = 11;
-  const JOB_TITLE_SIZE = 10;
-  const BODY_SIZE = 9.5;
+  const NAME_SIZE = 27;
+  const CONTACT_SIZE = 10;
+  const SECTION_SIZE = 12;
+  const JOB_TITLE_SIZE = 11;
+  const BODY_SIZE = 10.5;
   const LINE_HEIGHT = BODY_SIZE * SPACING.BULLET_LINE_HEIGHT;
   
   let y = PAGE_HEIGHT - MARGIN_TOP;

@@ -10,11 +10,16 @@ interface ProfileEditorProps {
 
 // PDF Template options
 const PDF_TEMPLATES = [
-  { value: 1, label: 'Template1' },
-  { value: 2, label: 'Template2' },
-  { value: 3, label: 'Template3' },
-  { value: 4, label: 'Template4' },
-  { value: 5, label: 'Template5' },
+  { value: 1, label: 'Template1 - Bold Header' },
+  { value: 2, label: 'Template2 - Accent Bar' },
+  { value: 3, label: 'Template3 - Minimalist' },
+  { value: 4, label: 'Template4 - Centered Classic' },
+  { value: 5, label: 'Template5 - Modern Block' },
+  { value: 6, label: 'Template6 - Teal Banner' },
+  { value: 7, label: 'Template7 - Split Header' },
+  { value: 8, label: 'Template8 - Boxed Sections' },
+  { value: 9, label: 'Template9 - Double Rule' },
+  { value: 10, label: 'Template10 - Compact' },
 ];
 
 export default function ProfileEditor({ profiles, onUpdate }: ProfileEditorProps) {
