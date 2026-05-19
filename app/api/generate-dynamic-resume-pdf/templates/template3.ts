@@ -1,5 +1,5 @@
 import { PDFPage, rgb } from 'pdf-lib';
-import { TemplateContext, wrapText, wrapBulletText, formatDate, drawTextWithBold, COLORS, SPACING, BULLET_INDENT, BULLET_CHAR, SKILL_CONTINUATION_INDENT, parseEducationLine, isEducationSection, splitIntoBulletLines, toWinAnsiSafe } from '../utils';
+import { TemplateContext, wrapText, wrapBulletText, formatDate, drawTextWithBold, COLORS, SPACING, BULLET_INDENT, BULLET_CHAR, SKILL_CONTINUATION_INDENT, parseEducationLine, isEducationSection, splitIntoBulletLines } from '../utils';
 
 // TEMPLATE 3: MINIMALIST - Clean and elegant with subtle grays
 export async function renderTemplate3(context: TemplateContext): Promise<Uint8Array> {
@@ -35,7 +35,7 @@ export async function renderTemplate3(context: TemplateContext): Promise<Uint8Ar
   
   const contactParts = [location, phone, email, linkedin].filter(Boolean);
   if (contactParts.length > 0) {
-    page.drawText(toWinAnsiSafe(contactParts.join(`   ${BULLET_CHAR}   `)), { x: MARGIN_LEFT, y, size: CONTACT_SIZE, font, color: MEDIUM_GRAY });
+    page.drawText(contactParts.join('   |   '), { x: MARGIN_LEFT, y, size: CONTACT_SIZE, font, color: MEDIUM_GRAY });
     y -= CONTACT_SIZE + 12;
   }
   

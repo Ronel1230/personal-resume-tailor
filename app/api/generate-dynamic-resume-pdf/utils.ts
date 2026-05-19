@@ -1,9 +1,9 @@
 import { PDFDocument, PDFFont, PDFPage, RGB, rgb } from 'pdf-lib';
 
-/** Bullet glyph supported by pdf-lib StandardFonts (WinAnsi code point 149). */
-export const BULLET_CHAR = '\x95';
+/** Bullet glyph for StandardFonts (WinAnsi maps byte 149 to U+2022, not U+0095). */
+export const BULLET_CHAR = '\u2022';
 
-// Unicode punctuation that StandardFonts cannot encode (WinAnsi) -> ASCII-safe replacements
+// Unicode punctuation that StandardFonts cannot encode (WinAnsi) -> safe replacements
 const WIN_ANSI_REPLACEMENTS: ReadonlyArray<[string, string]> = [
   ['\u2192', '->'], ['\u2190', '<-'], ['\u2194', '<->'],
   ['\u21D2', '=>'], ['\u21D0', '<='],
@@ -11,10 +11,15 @@ const WIN_ANSI_REPLACEMENTS: ReadonlyArray<[string, string]> = [
   ['\u2018', "'"], ['\u2019', "'"], ['\u201A', "'"], ['\u201B', "'"],
   ['\u201C', '"'], ['\u201D', '"'], ['\u201E', '"'], ['\u201F', '"'],
   ['\u2026', '...'],
-  ['\u2022', BULLET_CHAR], ['\u2023', BULLET_CHAR], ['\u25E6', BULLET_CHAR],
+  // Normalize alternate bullets to WinAnsi bullet; never use U+0095 (\x95) — pdf-lib rejects it
+  ['\x95', BULLET_CHAR], ['\u0095', BULLET_CHAR],
+  ['\u2023', BULLET_CHAR], ['\u25E6', BULLET_CHAR],
   ['\u25AA', BULLET_CHAR], ['\u25CF', BULLET_CHAR], ['\u00B7', BULLET_CHAR],
   ['\u200B', ''], ['\u200C', ''], ['\u200D', ''], ['\uFEFF', ''],
 ];
+
+/** Matches leading bullet markers from model output or prior sanitization. */
+const BULLET_PREFIX_RE = /^[-*•\u00B7\u2022\u2023]\s*/;
 
 /** Normalize text so pdf-lib StandardFonts (WinAnsi) can encode every character. */
 export function toWinAnsiSafe(text: string): string {
@@ -98,7 +103,7 @@ function looksLikeJobLine(line: string): boolean {
 function looksLikeBodyStart(line: string): boolean {
   const t = line.trim();
   if (!t) return false;
-  if (/^[\-\x95\u00B7\u2022]\s/.test(t)) return true;
+  if (BULLET_PREFIX_RE.test(t)) return true;
   if (looksLikeJobLine(t)) return true;
   // Short section title ending with colon, e.g. "Experience:" or "EXPERIENCE:"
   if (t.length <= 50 && /^[A-Za-z]/.test(t) && /:\s*$/.test(t)) return true;
@@ -246,11 +251,11 @@ export function splitIntoBulletLines(text: string): string[] {
   const trimmed = text.trim();
   if (!trimmed) return [];
   // Already looks like a single bullet (starts with bullet char)
-  if (/^[\-\x95\u00B7\u2022]\s/.test(trimmed)) return [trimmed];
+  if (BULLET_PREFIX_RE.test(trimmed)) return [trimmed];
   // Split on period followed by space and capital letter (sentence boundary)
   const sentences = trimmed.split(/(?<=\.)\s+(?=[A-Z])/).map((s) => s.trim()).filter(Boolean);
   if (sentences.length <= 1) return [trimmed];
-  return sentences.map((s) => (s.match(/^[\-\x95\u00B7\u2022]\s/) ? s : BULLET_CHAR + ' ' + s));
+  return sentences.map((s) => (BULLET_PREFIX_RE.test(s) ? s : BULLET_CHAR + ' ' + s));
 }
 
 // Helper to wrap bullet text with indent
@@ -261,7 +266,7 @@ export function wrapBulletText(
   maxWidth: number
 ): { lines: string[]; hasBullet: boolean } {
   // Detect if line starts with bullet-like characters
-  const bulletMatch = text.match(/^[\-\x95\u00B7\u2022]\s*/);
+  const bulletMatch = text.match(BULLET_PREFIX_RE);
   const hasBullet = !!bulletMatch;
   
   // Remove the original bullet/dash if present

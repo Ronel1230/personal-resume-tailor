@@ -1,5 +1,5 @@
 import { PDFPage, rgb } from 'pdf-lib';
-import { TemplateContext, wrapText, wrapBulletText, formatDate, drawTextWithBold, COLORS, SPACING, BULLET_INDENT, BULLET_CHAR, SKILL_CONTINUATION_INDENT, parseEducationLine, isEducationSection, splitIntoBulletLines, toWinAnsiSafe } from '../utils';
+import { TemplateContext, wrapText, wrapBulletText, formatDate, drawTextWithBold, COLORS, SPACING, BULLET_INDENT, BULLET_CHAR, SKILL_CONTINUATION_INDENT, parseEducationLine, isEducationSection, splitIntoBulletLines } from '../utils';
 
 // TEMPLATE 4: CLASSIC CENTERED - Centered header with elegant spacing
 export async function renderTemplate4(context: TemplateContext): Promise<Uint8Array> {
@@ -37,7 +37,7 @@ export async function renderTemplate4(context: TemplateContext): Promise<Uint8Ar
   
   const contactParts = [location, phone, email, linkedin].filter(Boolean);
   if (contactParts.length > 0) {
-    const contactText = toWinAnsiSafe(contactParts.join(`   ${BULLET_CHAR}   `));
+    const contactText = contactParts.join('   |   ');
     const contactWidth = font.widthOfTextAtSize(contactText, CONTACT_SIZE);
     const contactX = (PAGE_WIDTH - contactWidth) / 2;
     page.drawText(contactText, { x: contactX, y, size: CONTACT_SIZE, font, color: MEDIUM_GRAY });
