@@ -1,5 +1,30 @@
 import { PDFDocument, PDFFont, PDFPage, RGB, rgb } from 'pdf-lib';
 
+/** Bullet glyph supported by pdf-lib StandardFonts (WinAnsi code point 149). */
+export const BULLET_CHAR = '\x95';
+
+// Unicode punctuation that StandardFonts cannot encode (WinAnsi) -> ASCII-safe replacements
+const WIN_ANSI_REPLACEMENTS: ReadonlyArray<[string, string]> = [
+  ['\u2192', '->'], ['\u2190', '<-'], ['\u2194', '<->'],
+  ['\u21D2', '=>'], ['\u21D0', '<='],
+  ['\u2014', '-'], ['\u2013', '-'], ['\u2012', '-'], ['\u2015', '-'], ['\u2212', '-'],
+  ['\u2018', "'"], ['\u2019', "'"], ['\u201A', "'"], ['\u201B', "'"],
+  ['\u201C', '"'], ['\u201D', '"'], ['\u201E', '"'], ['\u201F', '"'],
+  ['\u2026', '...'],
+  ['\u2022', BULLET_CHAR], ['\u2023', BULLET_CHAR], ['\u25E6', BULLET_CHAR],
+  ['\u25AA', BULLET_CHAR], ['\u25CF', BULLET_CHAR], ['\u00B7', BULLET_CHAR],
+  ['\u200B', ''], ['\u200C', ''], ['\u200D', ''], ['\uFEFF', ''],
+];
+
+/** Normalize text so pdf-lib StandardFonts (WinAnsi) can encode every character. */
+export function toWinAnsiSafe(text: string): string {
+  let result = text;
+  for (const [from, to] of WIN_ANSI_REPLACEMENTS) {
+    result = result.split(from).join(to);
+  }
+  return result;
+}
+
 // Shared interface for template rendering
 export interface TemplateContext {
   pdfDoc: PDFDocument;
@@ -73,7 +98,7 @@ function looksLikeJobLine(line: string): boolean {
 function looksLikeBodyStart(line: string): boolean {
   const t = line.trim();
   if (!t) return false;
-  if (/^[\-\·•]\s/.test(t)) return true;
+  if (/^[\-\x95\u00B7\u2022]\s/.test(t)) return true;
   if (looksLikeJobLine(t)) return true;
   // Short section title ending with colon, e.g. "Experience:" or "EXPERIENCE:"
   if (t.length <= 50 && /^[A-Za-z]/.test(t) && /:\s*$/.test(t)) return true;
@@ -91,7 +116,7 @@ export function parseResume(resumeText: string): {
   linkedin: string;
   body: string;
 } {
-  const normalizedText = normalizeBoldMarkers(resumeText);
+  const normalizedText = toWinAnsiSafe(normalizeBoldMarkers(resumeText));
   const lines = normalizedText.split('\n');
   const info: string[] = [];
   let bodyStart = 0;
@@ -163,14 +188,14 @@ export function formatDate(dateStr: string): string {
         return `${monthNames[monthIndex]} ${year}`;
       }
       return part;
-    }).join(' – ');
+    }).join(' - ');
   } else if (dateStr.match(/^\d{2}\/\d{4}$/)) {
     const [month, year] = dateStr.split('/');
     const monthIndex = parseInt(month) - 1;
     return `${monthNames[monthIndex]} ${year}`;
   }
 
-  return dateStr;
+  return toWinAnsiSafe(dateStr);
 }
 
 // Non-breaking space used to protect spaces inside bold markers during wrapping
@@ -211,8 +236,7 @@ export function wrapText(text: string, font: PDFFont, size: number, maxWidth: nu
   return lines;
 }
 
-// Bullet character and indent
-export const BULLET_CHAR = '•';
+// Bullet indent (glyph is BULLET_CHAR above)
 export const BULLET_INDENT = 10; // Indent before bullet from margin
 /** Small fixed indent for skills section continuation lines (points) */
 export const SKILL_CONTINUATION_INDENT = 12;
@@ -222,11 +246,11 @@ export function splitIntoBulletLines(text: string): string[] {
   const trimmed = text.trim();
   if (!trimmed) return [];
   // Already looks like a single bullet (starts with bullet char)
-  if (/^[\-\·•]\s/.test(trimmed)) return [trimmed];
+  if (/^[\-\x95\u00B7\u2022]\s/.test(trimmed)) return [trimmed];
   // Split on period followed by space and capital letter (sentence boundary)
   const sentences = trimmed.split(/(?<=\.)\s+(?=[A-Z])/).map((s) => s.trim()).filter(Boolean);
   if (sentences.length <= 1) return [trimmed];
-  return sentences.map((s) => (s.match(/^[\-\·•]\s/) ? s : BULLET_CHAR + ' ' + s));
+  return sentences.map((s) => (s.match(/^[\-\x95\u00B7\u2022]\s/) ? s : BULLET_CHAR + ' ' + s));
 }
 
 // Helper to wrap bullet text with indent
@@ -237,7 +261,7 @@ export function wrapBulletText(
   maxWidth: number
 ): { lines: string[]; hasBullet: boolean } {
   // Detect if line starts with bullet-like characters
-  const bulletMatch = text.match(/^[\-\·•]\s*/);
+  const bulletMatch = text.match(/^[\-\x95\u00B7\u2022]\s*/);
   const hasBullet = !!bulletMatch;
   
   // Remove the original bullet/dash if present
@@ -272,7 +296,7 @@ export function drawTextWithBold(
   size: number,
   color: RGB
 ) {
-  const normalizedText = normalizeBoldMarkers(text);
+  const normalizedText = toWinAnsiSafe(normalizeBoldMarkers(text));
   const parts = normalizedText.split(/(\*\*[^*]+\*\*)/g).filter(part => part !== '');
 
   let offsetX = x;
