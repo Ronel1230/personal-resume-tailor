@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { BaseResumeProfile } from '@/app/data/baseResumes';
 import { DEFAULT_PROMPT_TEMPLATE } from '@/app/utils/promptBuilder';
+import { DEFAULT_WITHOUT_API_PROMPT } from '@/app/utils/defaultWithoutApiPrompt';
 
 interface ProfileEditorProps {
   profiles: BaseResumeProfile[];
@@ -44,6 +45,8 @@ export default function ProfileEditor({ profiles, onUpdate }: ProfileEditorProps
       name: '',
       resumeText: '',
       customPrompt: undefined,
+      withoutApiPrompt: undefined,
+      withoutApiProfileContent: undefined,
       pdfTemplate: 1,
       phone: '',
       linkedin: '',
@@ -83,6 +86,8 @@ export default function ProfileEditor({ profiles, onUpdate }: ProfileEditorProps
             name: editingProfile.name,
             resumeText: editingProfile.resumeText,
             customPrompt: editingProfile.customPrompt || undefined,
+            withoutApiPrompt: editingProfile.withoutApiPrompt || undefined,
+            withoutApiProfileContent: editingProfile.withoutApiProfileContent || undefined,
             pdfTemplate: editingProfile.pdfTemplate || 1,
             phone: editingProfile.phone || undefined,
             linkedin: editingProfile.linkedin || undefined,
@@ -95,6 +100,8 @@ export default function ProfileEditor({ profiles, onUpdate }: ProfileEditorProps
             name: editingProfile.name,
             resumeText: editingProfile.resumeText,
             customPrompt: editingProfile.customPrompt || undefined,
+            withoutApiPrompt: editingProfile.withoutApiPrompt || undefined,
+            withoutApiProfileContent: editingProfile.withoutApiProfileContent || undefined,
             pdfTemplate: editingProfile.pdfTemplate || 1,
             phone: editingProfile.phone || undefined,
             linkedin: editingProfile.linkedin || undefined,
@@ -157,6 +164,7 @@ export default function ProfileEditor({ profiles, onUpdate }: ProfileEditorProps
   // If editing, show the edit form
   if (editingProfile) {
     const currentPrompt = editingProfile.customPrompt || DEFAULT_PROMPT_TEMPLATE;
+    const currentWithoutApiPrompt = editingProfile.withoutApiPrompt || DEFAULT_WITHOUT_API_PROMPT;
 
     return (
       <div className="bg-white rounded-lg shadow-lg p-6">
@@ -211,7 +219,7 @@ export default function ProfileEditor({ profiles, onUpdate }: ProfileEditorProps
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Resume Text *
+                  Using API — Resume Text *
                 </label>
                 <textarea
                   value={editingProfile.resumeText}
@@ -305,10 +313,10 @@ export default function ProfileEditor({ profiles, onUpdate }: ProfileEditorProps
             </div>
           </div>
 
-          {/* Custom Prompt Editor */}
-          <div>
+          {/* Custom Prompt Editor (Using API) */}
+          <div className="border-b border-gray-200 pb-6">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-800">Custom Prompt</h3>
+              <h3 className="text-lg font-semibold text-gray-800">Using API — Custom Prompt</h3>
               <div className="flex gap-2">
                 <button
                   onClick={() => {
@@ -348,6 +356,67 @@ export default function ProfileEditor({ profiles, onUpdate }: ProfileEditorProps
               )}
               {!editingProfile.customPrompt && (
                 <span className="ml-2 text-gray-500">• Using default prompt</span>
+              )}
+            </p>
+          </div>
+
+          {/* Without API — Profile Content */}
+          <div className="border-b border-gray-200 pb-6 pt-6">
+            <h3 className="text-lg font-semibold text-gray-800 mb-4">Without API — Profile Content</h3>
+            <div className="mb-4 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+              <p className="text-sm text-amber-800">
+                Paste JSON profile data (name, email, experience, education, etc.) used for the manual ChatGPT workflow.
+              </p>
+            </div>
+            <textarea
+              value={editingProfile.withoutApiProfileContent ?? ''}
+              onChange={(e) =>
+                setEditingProfile({ ...editingProfile, withoutApiProfileContent: e.target.value || undefined })
+              }
+              rows={14}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono text-sm text-gray-900"
+              placeholder='{"name":"John Doe","email":"...","experience":[...],"education":[...]}'
+            />
+          </div>
+
+          {/* Without API — Prompt */}
+          <div>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-800">Without API — Prompt</h3>
+              <button
+                onClick={() => {
+                  setEditingProfile({ ...editingProfile, withoutApiPrompt: undefined });
+                }}
+                className="text-sm text-gray-600 hover:text-gray-800 underline"
+              >
+                Reset to Default
+              </button>
+            </div>
+            <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <p className="text-sm text-blue-800">
+                Use placeholders like <code className="bg-blue-100 px-1 rounded">{'{{name}}'}</code>,{' '}
+                <code className="bg-blue-100 px-1 rounded">{'{{workHistory}}'}</code>,{' '}
+                <code className="bg-blue-100 px-1 rounded">{'{{jobDescription}}'}</code>, etc.
+              </p>
+            </div>
+            <textarea
+              value={currentWithoutApiPrompt}
+              onChange={(e) => {
+                const newPrompt = e.target.value;
+                if (newPrompt !== DEFAULT_WITHOUT_API_PROMPT) {
+                  setEditingProfile({ ...editingProfile, withoutApiPrompt: newPrompt });
+                } else {
+                  setEditingProfile({ ...editingProfile, withoutApiPrompt: undefined });
+                }
+              }}
+              rows={20}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono text-sm text-gray-900"
+              placeholder="Enter without-API prompt template here..."
+            />
+            <p className="mt-2 text-xs text-gray-500">
+              {currentWithoutApiPrompt.length} characters
+              {editingProfile.withoutApiPrompt && (
+                <span className="ml-2 text-blue-600">• Custom without-API prompt is active</span>
               )}
             </p>
           </div>
@@ -413,7 +482,13 @@ export default function ProfileEditor({ profiles, onUpdate }: ProfileEditorProps
                   <div className="space-y-1 text-sm text-gray-600">
                     <p>Resume Text: {profile.resumeText.length} characters</p>
                     {profile.customPrompt && (
-                      <p className="text-blue-600">✓ Custom prompt configured</p>
+                      <p className="text-blue-600">✓ API custom prompt configured</p>
+                    )}
+                    {profile.withoutApiProfileContent && (
+                      <p className="text-indigo-600">✓ Without API profile content configured</p>
+                    )}
+                    {profile.withoutApiPrompt && (
+                      <p className="text-indigo-600">✓ Without API custom prompt configured</p>
                     )}
                     <p>PDF Template: {PDF_TEMPLATES.find(t => t.value === (profile.pdfTemplate || 1))?.label || "Template1"}</p>
                   </div>

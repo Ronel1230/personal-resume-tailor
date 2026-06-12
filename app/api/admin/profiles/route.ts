@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const { name, resumeText, customPrompt, pdfTemplate, phone, linkedin, github, lastCompany, university } = await req.json();
+    const { name, resumeText, customPrompt, withoutApiPrompt, withoutApiProfileContent, pdfTemplate, phone, linkedin, github, lastCompany, university } = await req.json();
     
     if (!name || !resumeText) {
       return NextResponse.json(
@@ -59,6 +59,8 @@ export async function POST(req: NextRequest) {
         name,
         resumeText,
         customPrompt: customPrompt || null,
+        withoutApiPrompt: withoutApiPrompt || null,
+        withoutApiProfileContent: withoutApiProfileContent || null,
         pdfTemplate: pdfTemplate || 1,
         phone: phone || null,
         linkedin: linkedin || null,
@@ -84,7 +86,7 @@ export async function PUT(req: NextRequest) {
   }
 
   try {
-    const { oldName, name, resumeText, customPrompt, pdfTemplate, phone, linkedin, github, lastCompany, university } = await req.json();
+    const { oldName, name, resumeText, customPrompt, withoutApiPrompt, withoutApiProfileContent, pdfTemplate, phone, linkedin, github, lastCompany, university } = await req.json();
     
     if (!oldName || !name || !resumeText) {
       return NextResponse.json(
@@ -125,6 +127,8 @@ export async function PUT(req: NextRequest) {
         name,
         resumeText,
         customPrompt: customPrompt || null,
+        withoutApiPrompt: withoutApiPrompt || null,
+        withoutApiProfileContent: withoutApiProfileContent || null,
         pdfTemplate: pdfTemplate || 1,
         phone: phone || null,
         linkedin: linkedin || null,

@@ -16,6 +16,8 @@
   },
   "dependencies": {
     "@prisma/client": "^4.16.2",
+    "@react-pdf/renderer": "^4.5.1",
+    "jsonc-parser": "^3.3.1",
     "next": "^15.5.9",
     "openai": "^5.8.2",
     "pdf-lib": "^1.17.1",

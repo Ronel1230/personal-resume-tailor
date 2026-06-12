@@ -1,10 +1,12 @@
 // Type definition for BaseResumeProfile
 // Note: Profiles are now stored in the database and accessed via API or db.ts helpers
 export type BaseResumeProfile = {
-  name: string; // profile display name used as the select value
-  resumeText: string; // full plain-text resume template
-  customPrompt?: string; // optional custom prompt for this profile
-  pdfTemplate?: number; // PDF template identifier (e.g., 'default', 'modern', 'classic')
+  name: string;
+  resumeText: string;
+  customPrompt?: string;
+  withoutApiPrompt?: string;
+  withoutApiProfileContent?: string;
+  pdfTemplate?: number;
   phone?: string;
   linkedin?: string;
   github?: string;
