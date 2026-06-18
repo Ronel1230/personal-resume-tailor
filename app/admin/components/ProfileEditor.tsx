@@ -9,19 +9,13 @@ interface ProfileEditorProps {
   onUpdate: () => void;
 }
 
-// PDF Template options
-const PDF_TEMPLATES = [
-  { value: 1, label: 'Template1 - Bold Header' },
-  { value: 2, label: 'Template2 - Accent Bar' },
-  { value: 3, label: 'Template3 - Minimalist' },
-  { value: 4, label: 'Template4 - Centered Classic' },
-  { value: 5, label: 'Template5 - Modern Block' },
-  { value: 6, label: 'Template6 - Teal Banner' },
-  { value: 7, label: 'Template7 - Split Header' },
-  { value: 8, label: 'Template8 - Boxed Sections' },
-  { value: 9, label: 'Template9 - Double Rule' },
-  { value: 10, label: 'Template10 - Compact' },
-];
+import { WITHOUT_API_TEMPLATE_LABELS } from '@/app/utils/pdfTemplateMapping';
+
+// PDF Template options (shared number; Without API uses React-PDF styles below)
+const PDF_TEMPLATES = Array.from({ length: 10 }, (_, i) => {
+  const value = i + 1;
+  return { value, label: `Template ${value} — ${WITHOUT_API_TEMPLATE_LABELS[value]}` };
+});
 
 export default function ProfileEditor({ profiles, onUpdate }: ProfileEditorProps) {
   const [selectedProfileName, setSelectedProfileName] = useState<string | null>(null);
@@ -308,7 +302,7 @@ export default function ProfileEditor({ profiles, onUpdate }: ProfileEditorProps
                 ))}
               </select>
               <p className="mt-2 text-xs text-gray-500">
-                Choose the PDF template style for this profile
+                Without API mode uses the visual style above. Using API mode uses its own pdf-lib layout for the same template number.
               </p>
             </div>
           </div>

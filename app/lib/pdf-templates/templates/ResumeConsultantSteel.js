@@ -1,8 +1,9 @@
 import { createResumeTemplate } from '../TemplateBase';
 
+/** Template 9 — Consultant Steel: steel-blue split header, accent-line sections, compact */
 export const ResumeConsultantSteel = createResumeTemplate({
     fonts: {
-        body: 'Times-Roman',
+        body: 'Helvetica',
         title: 'Helvetica-Bold',
         baseSize: 10,
         nameSize: 22,
@@ -14,7 +15,17 @@ export const ResumeConsultantSteel = createResumeTemplate({
         experience: 'Professional Experience',
         education: 'Education',
     },
-    headerLayout: 'center',
+    headerLayout: 'split',
+    theme: {
+        primary: '#1e293b',
+        secondary: '#475569',
+        accent: '#0284c7',
+        headerText: '#0c4a6e',
+        headerSubtext: '#64748b',
+        sectionStyle: 'accentLine',
+        skillsLayout: 'twoColumn',
+        pagePadding: '12mm',
+    },
 });
 
 export default ResumeConsultantSteel;
