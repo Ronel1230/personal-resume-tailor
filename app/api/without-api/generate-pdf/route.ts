@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getBaseResumeByName } from '@/app/data/db';
 import { parseWithoutApiProfileContent, type ResumeContent } from '@/app/utils/profilePrompt';
-import { extractJsonObjectString, parseResumeJsonString } from '@/app/utils/resumeJson';
+import { extractJsonObjectString, parseResumeJsonString, detectTruncatedPaste, validateResumeShape } from '@/app/utils/resumeJson';
 import { buildResumePdfData, pdfAttachmentFilename } from '@/app/utils/profileUtils';
 import { getWithoutApiTemplateId } from '@/app/utils/pdfTemplateMapping';
 import { renderPdfBuffer } from '@/app/utils/pdfRender';
@@ -35,6 +35,11 @@ export async function POST(req: NextRequest) {
     }
 
     const jsonStr = extractJsonObjectString(rawResponse);
+    const truncationError = detectTruncatedPaste(rawResponse, jsonStr);
+    if (truncationError) {
+      return NextResponse.json({ error: truncationError }, { status: 400 });
+    }
+
     const parsed = parseResumeJsonString(jsonStr);
     if (!parsed.ok) {
       return NextResponse.json(
@@ -47,13 +52,12 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const resumeContent = parsed.data as unknown as ResumeContent;
-    if (!resumeContent.title || !resumeContent.summary || !resumeContent.skills || !resumeContent.experience) {
-      return NextResponse.json(
-        { error: 'JSON must include title, summary, skills, and experience.' },
-        { status: 400 }
-      );
+    const shape = validateResumeShape(parsed.data, profileData.experience.length);
+    if (!shape.ok) {
+      return NextResponse.json({ error: shape.reason }, { status: 400 });
     }
+
+    const resumeContent = parsed.data as unknown as ResumeContent;
 
     const templateName = getWithoutApiTemplateId(profile.pdfTemplate || 1);
     const TemplateComponent = getTemplate(templateName);

@@ -169,7 +169,9 @@ export default function WithoutApiResumeForm({
       )}
 
       {error && (
-        <p className="text-sm text-red-600">{error}</p>
+        <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+          {error}
+        </div>
       )}
 
       <div>
