@@ -23,12 +23,30 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Profile not found' }, { status: 404 });
     }
 
+    const resume = profile.withoutApiProfileContent?.trim();
+    if (!resume) {
+      return NextResponse.json(
+        { error: 'Without API profile content is not configured for this profile' },
+        { status: 400 }
+      );
+    }
+
     const prompt = `Please give me short humanized and impactful answers for questions below:
 
-Job Description: ${jd}
-Resume: ${profile.resumeText}
+//////////////////////////////////
+Job Description
+//////////////////////////////////
+${jd}
 
-Questions: ${questions}`;
+//////////////////////////////////
+Resume
+//////////////////////////////////
+${resume}
+
+//////////////////////////////////
+Questions
+//////////////////////////////////
+${questions}`;
 
     return NextResponse.json({ prompt });
   } catch (error) {
