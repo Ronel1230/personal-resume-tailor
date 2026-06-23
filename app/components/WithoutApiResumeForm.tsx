@@ -237,7 +237,7 @@ export default function WithoutApiResumeForm({
           <button
             type="button"
             onClick={copyQuestionsPromptToClipboard}
-            disabled={copyQuestionsLoading}
+            disabled={copyQuestionsLoading || !jd.trim() || !questions.trim()}
             className="px-3 py-1 text-xs bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white font-semibold rounded-md shadow transition-colors duration-200"
           >
             {copiedField === 'questions'
