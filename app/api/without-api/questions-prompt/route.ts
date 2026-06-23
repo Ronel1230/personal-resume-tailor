@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const prompt = `Please give me short humanized and impactful answers for questions below:
+    const prompt = `Please give me short humanized and impactful direct answers for questions below:
 
 //////////////////////////////////
 Job Description
