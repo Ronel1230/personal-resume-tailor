@@ -15,7 +15,7 @@ type ContactInfo = {
 
 export default function Home() {
   const formRef = useRef<HTMLFormElement>(null);
-  const [mode, setMode] = useState<GenerationMode>('api');
+  const [mode, setMode] = useState<GenerationMode>('without-api');
   const [profileName, setProfileName] = useState<string | null>(null);
   const [gateInput, setGateInput] = useState('');
   const [gateError, setGateError] = useState('');
@@ -107,8 +107,8 @@ export default function Home() {
                 onChange={(e) => setMode(e.target.value as GenerationMode)}
                 className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-900 bg-white"
               >
-                <option value="api">Using API</option>
                 <option value="without-api">Without API</option>
+                <option value="api" disabled>Using API</option>
               </select>
               <p className="text-xs text-gray-500 mt-1">
                 {mode === 'api'

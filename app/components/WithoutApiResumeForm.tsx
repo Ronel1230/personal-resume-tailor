@@ -15,9 +15,11 @@ export default function WithoutApiResumeForm({
   profileDataLoading,
 }: WithoutApiResumeFormProps) {
   const [jd, setJd] = useState('');
+  const [questions, setQuestions] = useState('');
   const [llmResponse, setLlmResponse] = useState('');
   const [companyName, setCompanyName] = useState('');
   const [copyPromptLoading, setCopyPromptLoading] = useState(false);
+  const [copyQuestionsLoading, setCopyQuestionsLoading] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [elapsedTime, setElapsedTime] = useState(0);
   const [lastGenerationTime, setLastGenerationTime] = useState<number | null>(null);
@@ -81,6 +83,34 @@ export default function WithoutApiResumeForm({
     }
   };
 
+  const copyQuestionsPromptToClipboard = async () => {
+    if (!jd.trim() || !questions.trim()) {
+      setError('Please enter both a job description and questions first');
+      return;
+    }
+    setError('');
+    setCopyQuestionsLoading(true);
+    try {
+      const response = await fetch('/api/without-api/questions-prompt', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ profile: profileName, jd, questions }),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to build questions prompt');
+      }
+      await navigator.clipboard.writeText(data.prompt);
+      setQuestions('');
+      setCopiedField('questions');
+      setTimeout(() => setCopiedField(null), 2000);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to copy questions prompt');
+    } finally {
+      setCopyQuestionsLoading(false);
+    }
+  };
+
   const handleGenerate = async () => {
     if (!llmResponse.trim()) {
       setError('Please paste the LLM response (JSON) first');
@@ -128,6 +158,7 @@ export default function WithoutApiResumeForm({
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
       setLastGenerationTime(Math.floor((Date.now() - startTime) / 1000));
+      setLlmResponse('');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to generate PDF');
     } finally {
@@ -149,17 +180,17 @@ export default function WithoutApiResumeForm({
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-3 text-sm">
       {quickCopyFields.length > 0 && (
         <div>
-          <p className="text-sm font-medium text-gray-700 mb-2">Copy to clipboard:</p>
-          <div className="flex flex-wrap gap-2">
+          <p className="text-xs font-medium text-gray-700 mb-1">Copy to clipboard:</p>
+          <div className="flex flex-wrap gap-1.5">
             {quickCopyFields.map(({ key, label, value }) => (
               <button
                 key={key}
                 type="button"
                 onClick={() => copyToClipboard(String(value), key)}
-                className="px-3 py-1.5 text-sm bg-gray-100 hover:bg-gray-200 rounded-md border border-gray-300 text-gray-800 transition-colors"
+                className="px-2.5 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded-md border border-gray-300 text-gray-800 transition-colors"
               >
                 {copiedField === key ? 'Copied!' : label}
               </button>
@@ -169,60 +200,80 @@ export default function WithoutApiResumeForm({
       )}
 
       {error && (
-        <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+        <div className="rounded-lg border border-red-200 bg-red-50 p-2 text-xs text-red-700">
           {error}
         </div>
       )}
 
       <div>
-        <label className="block text-gray-700 font-medium mb-2">Step 1 — Job Description</label>
+        <div className="flex items-center justify-between mb-1">
+          <label className="block text-gray-700 font-medium">Step 1 — Job Description</label>
+          <button
+            type="button"
+            onClick={copyPromptToClipboard}
+            disabled={copyPromptLoading || !jd.trim()}
+            className="px-3 py-1 text-xs bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white font-semibold rounded-md shadow transition-colors duration-200"
+          >
+            {copiedField === 'prompt'
+              ? 'Copied!'
+              : copyPromptLoading
+                ? 'Building...'
+                : 'Copy Prompt'}
+          </button>
+        </div>
         <textarea
           value={jd}
           onChange={(e) => setJd(e.target.value)}
-          rows={6}
+          rows={5}
           placeholder="Paste the job description here..."
-          className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-400 resize-none text-gray-900"
+          className="w-full border border-gray-300 rounded-md p-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 resize-none text-gray-900"
         />
       </div>
 
       <div>
-        <label className="block text-gray-700 font-medium mb-2">Step 2 — Copy Prompt for ChatGPT</label>
-        <button
-          type="button"
-          onClick={copyPromptToClipboard}
-          disabled={copyPromptLoading || !jd.trim()}
-          className="w-full bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white font-semibold py-2 px-4 rounded-md shadow transition-colors duration-200"
-        >
-          {copiedField === 'prompt'
-            ? 'Copied! Paste into ChatGPT'
-            : copyPromptLoading
-              ? 'Building prompt...'
-              : 'Copy Prompt (Profile + JD)'}
-        </button>
-        <p className="text-xs text-gray-500 mt-2">
-          Paste the copied text into ChatGPT, then copy the JSON response below.
-        </p>
+        <div className="flex items-center justify-between mb-1">
+          <label className="block text-gray-700 font-medium">Questions in JD (optional)</label>
+          <button
+            type="button"
+            onClick={copyQuestionsPromptToClipboard}
+            disabled={copyQuestionsLoading}
+            className="px-3 py-1 text-xs bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white font-semibold rounded-md shadow transition-colors duration-200"
+          >
+            {copiedField === 'questions'
+              ? 'Copied!'
+              : copyQuestionsLoading
+                ? 'Building...'
+                : 'Copy Questions Prompt'}
+          </button>
+        </div>
+        <textarea
+          value={questions}
+          onChange={(e) => setQuestions(e.target.value)}
+          rows={3}
+          placeholder="Paste application questions here..."
+          className="w-full border border-gray-300 rounded-md p-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 resize-none text-gray-900"
+        />
       </div>
 
       <div>
-        <label className="block text-gray-700 font-medium mb-2">Step 3 — Paste LLM Response (JSON)</label>
+        <label className="block text-gray-700 font-medium mb-1">Step 2 — Paste LLM Response (JSON)</label>
         <textarea
           value={llmResponse}
           onChange={(e) => setLlmResponse(e.target.value)}
-          rows={8}
+          rows={6}
           placeholder='Paste the JSON from ChatGPT here...'
-          className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-400 resize-none font-mono text-sm text-gray-900"
+          className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-400 resize-none font-mono text-xs text-gray-900"
         />
       </div>
 
       <div>
-        <label className="block text-gray-700 font-medium mb-2">Company Name (optional)</label>
+        <label className="block text-gray-700 font-medium mb-1">Company Name (optional)</label>
         <input
           type="text"
           value={companyName}
           onChange={(e) => setCompanyName(e.target.value)}
           placeholder="Used in the PDF filename"
-          className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-900"
+          className="w-full border border-gray-300 rounded-md p-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-900"
         />
       </div>
 
@@ -236,7 +287,7 @@ export default function WithoutApiResumeForm({
       </button>
 
       {lastGenerationTime !== null && (
-        <p className="text-sm text-green-600 text-center">
+        <p className="text-xs text-green-600 text-center">
           Resume generated successfully in {lastGenerationTime}s
         </p>
       )}
