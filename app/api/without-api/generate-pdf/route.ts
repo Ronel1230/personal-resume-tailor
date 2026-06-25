@@ -65,7 +65,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: `Template "${templateName}" not found` }, { status: 404 });
     }
 
-    const templateData = buildResumePdfData(profileData, resumeContent);
+    const templateData = buildResumePdfData(profileData, resumeContent, profile.photo);
     const pdfBuffer = await renderPdfBuffer(TemplateComponent, templateData);
     const fileName = pdfAttachmentFilename(profileData.name, companyName);
 

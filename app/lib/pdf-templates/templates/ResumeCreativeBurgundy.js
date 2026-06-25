@@ -1,13 +1,13 @@
 import { createResumeTemplate } from '../TemplateBase';
 
-/** Template 4 — Creative Burgundy: serif name, burgundy filled section labels */
+/** Template 4 — Creative Burgundy: serif name, burgundy underline sections */
 export const ResumeCreativeBurgundy = createResumeTemplate({
     fonts: {
         body: 'Helvetica',
-        title: 'Times-Bold',
+        title: 'Helvetica-Bold',
         baseSize: 11,
-        nameSize: 28,
-        titleSize: 12,
+        nameSize: 26,
+        titleSize: 11.5,
     },
     sectionTitles: {
         summary: 'Professional Summary',
@@ -17,13 +17,10 @@ export const ResumeCreativeBurgundy = createResumeTemplate({
     },
     headerLayout: 'minimal',
     theme: {
-        primary: '#3f1219',
-        secondary: '#7f1d1d',
         accent: '#991b1b',
-        headerText: '#7f1d1d',
-        headerSubtext: '#b45309',
-        sectionStyle: 'filled',
+        sectionStyle: 'underline',
         nameLetterSpacing: 0.5,
+        headerBorderWidth: 2,
     },
 });
 

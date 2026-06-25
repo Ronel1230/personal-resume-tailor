@@ -10,6 +10,12 @@ export const WITHOUT_API_TEMPLATE_MAP: Record<number, string> = {
   8: 'Resume-Classic-Charcoal',
   9: 'Resume-Consultant-Steel',
   10: 'Resume-Academic-Purple',
+  11: 'Resume-Plain-Classic',
+  12: 'Resume-Plain-Left',
+  13: 'Resume-Plain-Split',
+  14: 'Resume-Plain-Minimal',
+  15: 'Resume-Plain-Boxed',
+  16: 'Resume-Photo',
 };
 
 export const WITHOUT_API_TEMPLATE_LABELS: Record<number, string> = {
@@ -22,7 +28,13 @@ export const WITHOUT_API_TEMPLATE_LABELS: Record<number, string> = {
   7: 'Executive Navy — navy banner, gold double-rule sections',
   8: 'Classic Charcoal — serif, charcoal accent-line sections',
   9: 'Consultant Steel — steel-blue split header, 2-col skills',
-  10: 'Academic Purple — purple filled labels, formal serif',
+  10: 'Academic Purple — purple underline sections, formal centered',
+  11: 'Plain Classic — black & white, centered header',
+  12: 'Plain Left — black & white, left-aligned header',
+  13: 'Plain Split — black & white, name left / contact right',
+  14: 'Plain Minimal — black & white, borderless section labels',
+  15: 'Plain Boxed — black & white, light-grey boxed sections',
+  16: 'Photo — header with profile photo (upload below)',
 };
 
 export function getWithoutApiTemplateId(pdfTemplate: number): string {

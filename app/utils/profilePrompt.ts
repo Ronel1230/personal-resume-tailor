@@ -32,11 +32,12 @@ export type WithoutApiProfileData = {
 
 export type ResumeContent = {
   title: string;
+  techStack?: string;
   summary: string;
   skills: Record<string, string[]>;
   certifications?: string[];
-  projects?: string[];
-  experience: Array<{ title?: string; focus?: string; project?: string; client?: string; details: string[] }>;
+  projects?: Array<{ heading?: string; content?: string }>;
+  experience: Array<{ title?: string; project?: string; details: string[] }>;
 };
 
 function processTemplate(template: string, variables: Record<string, string | number>): string {

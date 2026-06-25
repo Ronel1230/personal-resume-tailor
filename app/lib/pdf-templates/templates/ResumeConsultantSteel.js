@@ -1,13 +1,14 @@
 import { createResumeTemplate } from '../TemplateBase';
 
-/** Template 9 — Consultant Steel: steel-blue split header, accent-line sections, compact */
+/** Template 9 — Consultant Steel: steel-blue split header, underline sections */
 export const ResumeConsultantSteel = createResumeTemplate({
     fonts: {
         body: 'Helvetica',
         title: 'Helvetica-Bold',
-        baseSize: 10,
-        nameSize: 22,
-        contactSize: 8.5,
+        baseSize: 11,
+        nameSize: 25,
+        titleSize: 11.5,
+        contactSize: 9,
     },
     sectionTitles: {
         summary: 'Executive Summary',
@@ -15,16 +16,13 @@ export const ResumeConsultantSteel = createResumeTemplate({
         experience: 'Professional Experience',
         education: 'Education',
     },
+    sectionOrder: ['summary', 'skills', 'experience', 'projects', 'education', 'certifications'],
     headerLayout: 'split',
     theme: {
-        primary: '#1e293b',
-        secondary: '#475569',
         accent: '#0284c7',
-        headerText: '#0c4a6e',
-        headerSubtext: '#64748b',
-        sectionStyle: 'accentLine',
+        sectionStyle: 'underline',
         skillsLayout: 'twoColumn',
-        pagePadding: '12mm',
+        pagePadding: '14mm',
     },
 });
 

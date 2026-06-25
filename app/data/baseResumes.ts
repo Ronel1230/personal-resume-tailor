@@ -7,6 +7,7 @@ export type BaseResumeProfile = {
   withoutApiPrompt?: string;
   withoutApiProfileContent?: string;
   pdfTemplate?: number;
+  photo?: string;
   phone?: string;
   linkedin?: string;
   github?: string;

@@ -30,11 +30,17 @@ export function getContactForPdf(profileData: WithoutApiProfileData | null) {
   return { phone, linkedin };
 }
 
-export function buildResumePdfData(profileData: WithoutApiProfileData, resumeContent: ResumeContent) {
+export function buildResumePdfData(
+  profileData: WithoutApiProfileData,
+  resumeContent: ResumeContent,
+  photo?: string | null
+) {
   const { phone, linkedin } = getContactForPdf(profileData);
   return {
     name: profileData.name,
-    title: profileData.title,
+    title: (resumeContent.title || '').trim() || profileData.title || '',
+    techStack: (resumeContent.techStack || '').trim(),
+    photo: typeof photo === 'string' && photo.trim() ? photo.trim() : null,
     email: profileData.email,
     phone,
     location: profileData.location,
@@ -46,15 +52,15 @@ export function buildResumePdfData(profileData: WithoutApiProfileData, resumeCon
       ? resumeContent.certifications.filter((c) => typeof c === 'string' && c.trim())
       : [],
     projects: Array.isArray(resumeContent.projects)
-      ? resumeContent.projects.filter((p) => typeof p === 'string' && p.trim())
+      ? resumeContent.projects
+          .filter((p) => p && typeof p === 'object' && ((p.heading || '').trim() || (p.content || '').trim()))
+          .map((p) => ({ heading: (p.heading || '').trim(), content: (p.content || '').trim() }))
       : [],
     experience: profileData.experience.map((job, idx) => {
-      const baseTitle = job.title || resumeContent.experience[idx]?.title || 'Engineer';
-      const focus = resumeContent.experience[idx]?.focus;
-      const title =
-        typeof focus === 'string' && focus.trim()
-          ? `${baseTitle} (${focus.trim()})`
-          : baseTitle;
+      const llmTitle = (resumeContent.experience[idx]?.title || '').trim();
+      const profileTitle = (job.title || '').trim();
+      // Most recent role: use the JD-tailored discipline title; older roles keep the real title.
+      const title = (idx === 0 ? llmTitle || profileTitle : profileTitle || llmTitle) || 'Engineer';
       return {
       title,
       company: job.company,
@@ -63,7 +69,6 @@ export function buildResumePdfData(profileData: WithoutApiProfileData, resumeCon
       end_date: job.end_date,
       industry: job.industry,
       project: resumeContent.experience[idx]?.project || '',
-      client: resumeContent.experience[idx]?.client || '',
       details: resumeContent.experience[idx]?.details || [],
       };
     }),

@@ -26,6 +26,15 @@ const stripBoldTags = (str) => {
     .replace(/<\/?b[^>]*>/gi, '');
 };
 
+// Remove all bold markers ([[...]], **...**, <strong>/<b>) WITHOUT bolding —
+// for sections that must render as plain text even if the LLM added markers.
+export const stripBoldMarkers = (str) => {
+  if (!str || typeof str !== 'string') return str ?? '';
+  return stripBoldTags(decodeHtmlEntities(String(str)))
+    .replace(/\[\[(.+?)\]\]/g, '$1')
+    .replace(/\*\*(.+?)\*\*/g, '$1');
+};
+
 // Helper component to render text with bold tags
 // Supports <strong>, </strong>, <b>, </b> (case-insensitive, with optional attributes) and **markdown**
 export const BoldText = ({ text, style }) => {
@@ -34,6 +43,9 @@ export const BoldText = ({ text, style }) => {
   let normalized = decodeHtmlEntities(String(text));
   normalized = normalized
     .replace(/<b\b[^>]*>|<\/b\s*>/gi, (m) => (m.startsWith('</') ? '</strong>' : '<strong>'))
+    // [[...]] is the copy-paste-safe bold marker (markdown chat UIs don't render it,
+    // so the markers survive when the user copies the response into the app).
+    .replace(/\[\[(.+?)\]\]/g, '<strong>$1</strong>')
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
 
   const hasBold = /<strong/i.test(normalized);

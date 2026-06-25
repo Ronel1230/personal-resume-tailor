@@ -12,7 +12,7 @@ interface ProfileEditorProps {
 import { WITHOUT_API_TEMPLATE_LABELS } from '@/app/utils/pdfTemplateMapping';
 
 // PDF Template options (shared number; Without API uses React-PDF styles below)
-const PDF_TEMPLATES = Array.from({ length: 10 }, (_, i) => {
+const PDF_TEMPLATES = Array.from({ length: 16 }, (_, i) => {
   const value = i + 1;
   return { value, label: `Template ${value} — ${WITHOUT_API_TEMPLATE_LABELS[value]}` };
 });
@@ -42,6 +42,7 @@ export default function ProfileEditor({ profiles, onUpdate }: ProfileEditorProps
       withoutApiPrompt: undefined,
       withoutApiProfileContent: undefined,
       pdfTemplate: 1,
+      photo: undefined,
       phone: '',
       linkedin: '',
       github: '',
@@ -83,6 +84,7 @@ export default function ProfileEditor({ profiles, onUpdate }: ProfileEditorProps
             withoutApiPrompt: editingProfile.withoutApiPrompt || undefined,
             withoutApiProfileContent: editingProfile.withoutApiProfileContent || undefined,
             pdfTemplate: editingProfile.pdfTemplate || 1,
+            photo: editingProfile.photo || undefined,
             phone: editingProfile.phone || undefined,
             linkedin: editingProfile.linkedin || undefined,
             github: editingProfile.github || undefined,
@@ -97,6 +99,7 @@ export default function ProfileEditor({ profiles, onUpdate }: ProfileEditorProps
             withoutApiPrompt: editingProfile.withoutApiPrompt || undefined,
             withoutApiProfileContent: editingProfile.withoutApiProfileContent || undefined,
             pdfTemplate: editingProfile.pdfTemplate || 1,
+            photo: editingProfile.photo || undefined,
             phone: editingProfile.phone || undefined,
             linkedin: editingProfile.linkedin || undefined,
             github: editingProfile.github || undefined,
@@ -153,6 +156,27 @@ export default function ProfileEditor({ profiles, onUpdate }: ProfileEditorProps
     } finally {
       setLoading(false);
     }
+  };
+
+  const handlePhotoUpload = (file: File | null) => {
+    if (!editingProfile) return;
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      setError('Photo must be an image file (PNG or JPG).');
+      return;
+    }
+    // Keep base64 payload reasonable for DB storage (~2MB original).
+    if (file.size > 2 * 1024 * 1024) {
+      setError('Photo is too large. Please use an image under 2 MB.');
+      return;
+    }
+    setError('');
+    const reader = new FileReader();
+    reader.onload = () => {
+      const dataUrl = typeof reader.result === 'string' ? reader.result : '';
+      setEditingProfile((prev) => (prev ? { ...prev, photo: dataUrl || undefined } : prev));
+    };
+    reader.readAsDataURL(file);
   };
 
   // If editing, show the edit form
@@ -303,6 +327,47 @@ export default function ProfileEditor({ profiles, onUpdate }: ProfileEditorProps
               </select>
               <p className="mt-2 text-xs text-gray-500">
                 Without API mode uses the visual style above. Using API mode uses its own pdf-lib layout for the same template number.
+              </p>
+            </div>
+
+            {/* Profile Photo (used by the Photo template, #16) */}
+            <div className="mt-6">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Profile Photo <span className="text-gray-400">(used by Template 16 — Photo)</span>
+              </label>
+              <div className="flex items-center gap-4">
+                {editingProfile.photo ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={editingProfile.photo}
+                    alt="Profile preview"
+                    className="w-20 h-20 rounded-full object-cover border border-gray-300"
+                  />
+                ) : (
+                  <div className="w-20 h-20 rounded-full border border-dashed border-gray-300 flex items-center justify-center text-gray-400 text-xs text-center">
+                    No photo
+                  </div>
+                )}
+                <div className="flex flex-col gap-2">
+                  <input
+                    type="file"
+                    accept="image/png,image/jpeg,image/jpg,image/webp"
+                    onChange={(e) => handlePhotoUpload(e.target.files?.[0] ?? null)}
+                    className="text-sm text-gray-700 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                  />
+                  {editingProfile.photo && (
+                    <button
+                      type="button"
+                      onClick={() => setEditingProfile({ ...editingProfile, photo: undefined })}
+                      className="self-start text-sm text-red-600 hover:text-red-800 underline"
+                    >
+                      Remove photo
+                    </button>
+                  )}
+                </div>
+              </div>
+              <p className="mt-2 text-xs text-gray-500">
+                PNG/JPG, square works best, under 2 MB. Stored with the profile and shown only on the Photo template.
               </p>
             </div>
           </div>

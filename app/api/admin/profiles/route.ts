@@ -33,8 +33,8 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const { name, resumeText, customPrompt, withoutApiPrompt, withoutApiProfileContent, pdfTemplate, phone, linkedin, github, lastCompany, university } = await req.json();
-    
+    const { name, resumeText, customPrompt, withoutApiPrompt, withoutApiProfileContent, pdfTemplate, photo, phone, linkedin, github, lastCompany, university } = await req.json();
+
     if (!name || !resumeText) {
       return NextResponse.json(
         { error: 'Name and resumeText are required' },
@@ -62,6 +62,7 @@ export async function POST(req: NextRequest) {
         withoutApiPrompt: withoutApiPrompt || null,
         withoutApiProfileContent: withoutApiProfileContent || null,
         pdfTemplate: pdfTemplate || 1,
+        photo: photo || null,
         phone: phone || null,
         linkedin: linkedin || null,
         github: github || null,
@@ -86,8 +87,8 @@ export async function PUT(req: NextRequest) {
   }
 
   try {
-    const { oldName, name, resumeText, customPrompt, withoutApiPrompt, withoutApiProfileContent, pdfTemplate, phone, linkedin, github, lastCompany, university } = await req.json();
-    
+    const { oldName, name, resumeText, customPrompt, withoutApiPrompt, withoutApiProfileContent, pdfTemplate, photo, phone, linkedin, github, lastCompany, university } = await req.json();
+
     if (!oldName || !name || !resumeText) {
       return NextResponse.json(
         { error: 'oldName, name, and resumeText are required' },
@@ -130,6 +131,7 @@ export async function PUT(req: NextRequest) {
         withoutApiPrompt: withoutApiPrompt || null,
         withoutApiProfileContent: withoutApiProfileContent || null,
         pdfTemplate: pdfTemplate || 1,
+        photo: photo || null,
         phone: phone || null,
         linkedin: linkedin || null,
         github: github || null,

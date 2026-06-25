@@ -1,25 +1,29 @@
 import React from 'react';
-import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
-import { extractYear, BoldText } from './utils';
+import { Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/renderer';
+import { extractYear, BoldText, stripBoldMarkers } from './utils';
 
 export const createResumeTemplate = (config) => {
     const {
         fonts = {},
         sectionTitles = {},
+        sectionOrder = null,
         headerLayout = 'center',
         theme = {},
     } = config;
 
+    // All readable body text is forced to grey/black; the template's accent
+    // color is kept only for structural lines/bands (borders, banners, stripes).
+    // On banner headers (headerBg set) the header text stays light for contrast.
     const colors = {
-        primary: theme.primary || '#111827',
-        secondary: theme.secondary || '#374151',
+        primary: '#111827',
+        secondary: '#374151',
         accent: theme.accent || theme.primary || '#111827',
         headerBg: theme.headerBg ?? null,
-        headerText: theme.headerText || '#111827',
-        headerSubtext: theme.headerSubtext || '#4b5563',
+        headerText: theme.headerBg ? (theme.headerText || '#ffffff') : '#111827',
+        headerSubtext: theme.headerBg ? (theme.headerSubtext || '#e5e7eb') : '#374151',
         sectionBg: theme.sectionBg ?? null,
         pageBg: theme.pageBg ?? '#ffffff',
-        muted: theme.muted || '#6b7280',
+        muted: '#6b7280',
     };
 
     const sectionStyle = theme.sectionStyle || 'underline';
@@ -80,7 +84,26 @@ export const createResumeTemplate = (config) => {
         },
         headerMinimal: {
             marginBottom: 16,
-            paddingBottom: 6,
+            paddingBottom: 10,
+            borderBottomWidth: theme.headerBorderWidth ?? 1,
+            borderBottomColor: colors.accent,
+        },
+        headerPhoto: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            marginBottom: 14,
+            paddingBottom: 10,
+            borderBottomWidth: theme.headerBorderWidth ?? 1,
+            borderBottomColor: colors.accent,
+        },
+        headerPhotoText: { flex: 1, paddingRight: 14 },
+        photo: {
+            width: theme.photoSize || 78,
+            height: theme.photoSize || 78,
+            borderRadius: theme.photoRounded === false ? 4 : (theme.photoSize || 78) / 2,
+            objectFit: 'cover',
+            borderWidth: 1,
+            borderColor: colors.accent,
         },
         headerSidebarIntro: {
             marginBottom: 14,
@@ -92,13 +115,20 @@ export const createResumeTemplate = (config) => {
             fontSize: fonts.nameSize || 24,
             fontFamily: fonts.title || 'Helvetica-Bold',
             fontWeight: 'bold',
-            marginBottom: 3,
+            marginBottom: 6,
             color: colors.headerText,
             textTransform: theme.nameUppercase ? 'uppercase' : 'none',
             letterSpacing: theme.nameLetterSpacing || 0,
         },
         title: {
-            fontSize: fonts.titleSize || 11,
+            fontSize: fonts.titleSize || 11.5,
+            fontFamily: fonts.title || 'Helvetica-Bold',
+            fontWeight: 'bold',
+            marginBottom: 8,
+            color: colors.headerText,
+        },
+        subheadline: {
+            fontSize: (fonts.titleSize || 11) - 1,
             fontFamily: fonts.body || 'Helvetica',
             marginBottom: 6,
             color: colors.headerSubtext,
@@ -125,12 +155,12 @@ export const createResumeTemplate = (config) => {
             borderLeftColor: colors.accent,
         },
         sectionTitleUnderline: {
-            fontSize: fonts.sectionSize || 10,
+            fontSize: fonts.sectionSize || 10.5,
             fontFamily: fonts.title || 'Helvetica-Bold',
             fontWeight: 'bold',
             textTransform: 'uppercase',
             letterSpacing: 1.2,
-            color: colors.accent,
+            color: colors.primary,
             marginBottom: 8,
             paddingBottom: 4,
             borderBottomWidth: 1,
@@ -150,7 +180,7 @@ export const createResumeTemplate = (config) => {
             alignSelf: 'flex-start',
         },
         sectionTitleMinimal: {
-            fontSize: fonts.sectionSize || 10,
+            fontSize: fonts.sectionSize || 10.5,
             fontFamily: fonts.title || 'Helvetica-Bold',
             fontWeight: 'bold',
             textTransform: 'uppercase',
@@ -159,7 +189,7 @@ export const createResumeTemplate = (config) => {
             marginBottom: 6,
         },
         sectionTitleDoubleRule: {
-            fontSize: fonts.sectionSize || 10,
+            fontSize: fonts.sectionSize || 10.5,
             fontFamily: fonts.title || 'Helvetica-Bold',
             fontWeight: 'bold',
             textTransform: 'uppercase',
@@ -185,61 +215,71 @@ export const createResumeTemplate = (config) => {
         skillsGridItem: { width: '50%', paddingRight: 8, marginBottom: 8 },
         skillsCategory: { marginBottom: 8, width: '100%' },
         skillsLabel: {
-            fontSize: fonts.skillsLabelSize || 9,
+            fontSize: fonts.skillsLabelSize || 10.5,
             fontFamily: fonts.title || 'Helvetica-Bold',
             fontWeight: 'bold',
-            color: colors.accent,
+            color: colors.primary,
             marginBottom: 2,
-            textTransform: 'uppercase',
-            letterSpacing: 0.6,
+            textTransform: 'none',
+            letterSpacing: 0,
         },
         skillsList: {
-            fontSize: fonts.skillsListSize || 9.5,
+            fontSize: fonts.skillsListSize || 10,
             color: colors.secondary,
             lineHeight: 1.45,
         },
-        expItem: { marginBottom: 10 },
+        expItem: { marginBottom: 14 },
         expHeader: {
             flexDirection: 'row',
             justifyContent: 'space-between',
             alignItems: 'baseline',
-            marginBottom: 1,
+            marginBottom: 2,
         },
         expTitle: {
-            fontSize: fonts.expTitleSize || 10.5,
+            fontSize: fonts.expTitleSize || 11.5,
             fontFamily: fonts.title || 'Helvetica-Bold',
             fontWeight: 'bold',
             color: colors.primary,
         },
         expDates: { fontSize: fonts.expDatesSize || 9, color: colors.muted },
         expCompany: {
-            fontSize: fonts.expCompanySize || 10,
+            fontSize: fonts.expCompanySize || 10.5,
             color: colors.secondary,
-            marginBottom: 3,
+            marginBottom: 5,
             fontStyle: theme.companyItalic === false ? 'normal' : 'italic',
         },
         expIndustry: {
-            fontSize: (fonts.expCompanySize || 10) - 0.5,
+            fontSize: (fonts.expCompanySize || 10.5) - 0.5,
             fontFamily: fonts.title || 'Helvetica-Bold',
             fontWeight: 'bold',
-            color: colors.accent,
-            marginBottom: 3,
+            color: colors.primary,
+            marginBottom: 4,
+        },
+        expMetaBox: {
+            backgroundColor: '#f3f4f6',
+            borderLeftWidth: 3,
+            borderLeftColor: colors.accent,
+            paddingVertical: 4,
+            paddingHorizontal: 8,
+            marginTop: 1,
+            marginBottom: 5,
         },
         expMeta: {
-            fontSize: (fonts.expDetailSize || 10) - 0.5,
+            fontSize: (fonts.expDetailSize || 10.5) - 0.5,
             color: colors.secondary,
+            lineHeight: 1.4,
             marginBottom: 2,
         },
         expMetaLabel: {
             fontFamily: fonts.title || 'Helvetica-Bold',
             fontWeight: 'bold',
-            color: colors.accent,
+            color: colors.primary,
         },
-        expDetails: { marginLeft: theme.bulletStyle === 'dash' ? 8 : 14 },
+        expDetails: { marginLeft: theme.bulletStyle === 'dash' ? 8 : 14, marginTop: 4 },
         expDetailItem: {
-            fontSize: fonts.expDetailSize || 10,
+            fontSize: fonts.expDetailSize || 10.5,
             lineHeight: 1.45,
-            marginBottom: 2,
+            marginBottom: 3,
             color: colors.primary,
         },
         eduItem: { marginBottom: 8 },
@@ -250,7 +290,7 @@ export const createResumeTemplate = (config) => {
             marginBottom: 1,
         },
         eduDegree: {
-            fontSize: fonts.eduDegreeSize || 10.5,
+            fontSize: fonts.eduDegreeSize || 11.5,
             fontFamily: fonts.title || 'Helvetica-Bold',
             fontWeight: 'bold',
             color: colors.primary,
@@ -262,13 +302,13 @@ export const createResumeTemplate = (config) => {
             fontStyle: 'italic',
         },
         certItem: {
-            fontSize: fonts.expDetailSize || 10,
+            fontSize: fonts.expDetailSize || 10.5,
             lineHeight: 1.45,
             marginBottom: 2,
             color: colors.primary,
         },
         projectItem: {
-            fontSize: fonts.expDetailSize || 10,
+            fontSize: fonts.expDetailSize || 10.5,
             lineHeight: 1.45,
             marginBottom: 2,
             color: colors.primary,
@@ -283,7 +323,7 @@ export const createResumeTemplate = (config) => {
 
     const renderSectionTitle = (label) => {
         if (sectionStyle === 'filled') return <Text style={styles.sectionTitleFilled}>{label}</Text>;
-        if (sectionStyle === 'minimal') return <Text style={styles.sectionTitleMinimal}>{label}</Text>;
+        if (sectionStyle === 'minimal' || sectionStyle === 'leftBar') return <Text style={styles.sectionTitleMinimal}>{label}</Text>;
         if (sectionStyle === 'doubleRule') return <Text style={styles.sectionTitleDoubleRule}>{label}</Text>;
         if (sectionStyle === 'accentLine') {
             return (
@@ -297,20 +337,35 @@ export const createResumeTemplate = (config) => {
     };
 
     const renderHeader = (data, lightText = false) => {
-        const { name, title, email, phone, location, linkedin, website } = data;
+        const { name, title, techStack, email, phone, location, linkedin, website } = data;
         const textColor = lightText ? '#ffffff' : colors.headerText;
         const subColor = lightText ? '#e5e7eb' : colors.headerSubtext;
         const nameStyle = [styles.name, { color: textColor }];
-        const titleStyle = [styles.title, { color: subColor }];
+        const titleStyle = [styles.title, { color: textColor }];
+        const subStyle = [styles.subheadline, { color: subColor }];
         const contactStyle = [styles.contact, { color: subColor }];
         const contactLine = [email, phone, location, linkedin, website].filter(Boolean);
+        const headline = title ? <Text style={titleStyle}>{title}</Text> : null;
+
+        if (headerLayout === 'photo') {
+            return (
+                <View style={styles.headerPhoto}>
+                    <View style={styles.headerPhotoText}>
+                        <Text style={nameStyle}>{name}</Text>
+                        {headline}
+                        <Text style={contactStyle}>{contactLine.join('  •  ')}</Text>
+                    </View>
+                    {data.photo && <Image src={data.photo} style={styles.photo} />}
+                </View>
+            );
+        }
 
         if (headerLayout === 'banner') {
             return (
                 <View style={styles.headerBanner}>
                     <Text style={nameStyle}>{name}</Text>
-                    {title && <Text style={titleStyle}>{title}</Text>}
-                    <Text style={[contactStyle, styles.contactCenter]}>{contactLine.join('  •  ')}</Text>
+                    {headline}
+                    <Text style={contactStyle}>{contactLine.join('  •  ')}</Text>
                 </View>
             );
         }
@@ -321,7 +376,7 @@ export const createResumeTemplate = (config) => {
                     <View style={styles.headerSplitRow}>
                         <View style={{ flex: 1, paddingRight: 12 }}>
                             <Text style={nameStyle}>{name}</Text>
-                            {title && <Text style={titleStyle}>{title}</Text>}
+                            {headline}
                         </View>
                         <View style={{ flex: 1 }}>
                             {contactLine.map((item, i) => (
@@ -337,7 +392,7 @@ export const createResumeTemplate = (config) => {
             return (
                 <View style={styles.headerMinimal}>
                     <Text style={[nameStyle, { fontSize: (fonts.nameSize || 24) + 2 }]}>{name}</Text>
-                    {title && <Text style={titleStyle}>{title}</Text>}
+                    {headline}
                     <Text style={contactStyle}>{contactLine.join('  |  ')}</Text>
                 </View>
             );
@@ -346,7 +401,7 @@ export const createResumeTemplate = (config) => {
         return (
             <View style={styles.headerCenter}>
                 <Text style={nameStyle}>{name}</Text>
-                {title && <Text style={titleStyle}>{title}</Text>}
+                {headline}
                 <Text style={[contactStyle, styles.contactCenter]}>{contactLine.join('  •  ')}</Text>
             </View>
         );
@@ -364,10 +419,9 @@ export const createResumeTemplate = (config) => {
                         {entries.map(([category, skillList], idx) => (
                             <View key={idx} style={styles.skillsGridItem}>
                                 <Text style={styles.skillsLabel}>{category}</Text>
-                                <BoldText
-                                    text={Array.isArray(skillList) ? skillList.join(', ') : String(skillList)}
-                                    style={styles.skillsList}
-                                />
+                                <Text style={styles.skillsList}>
+                                    {stripBoldMarkers(Array.isArray(skillList) ? skillList.join(', ') : String(skillList))}
+                                </Text>
                             </View>
                         ))}
                     </View>
@@ -375,10 +429,9 @@ export const createResumeTemplate = (config) => {
                     entries.map(([category, skillList], idx) => (
                         <View key={idx} style={styles.skillsCategory}>
                             <Text style={styles.skillsLabel}>{category}</Text>
-                            <BoldText
-                                text={Array.isArray(skillList) ? skillList.join(' · ') : String(skillList)}
-                                style={styles.skillsList}
-                            />
+                            <Text style={styles.skillsList}>
+                                {stripBoldMarkers(Array.isArray(skillList) ? skillList.join(' · ') : String(skillList))}
+                            </Text>
                         </View>
                     ))
                 )}
@@ -402,16 +455,9 @@ export const createResumeTemplate = (config) => {
                         </Text>
                         {exp.industry && <Text style={styles.expIndustry}>{exp.industry}</Text>}
                         {exp.project && (
-                            <Text style={styles.expMeta}>
-                                <Text style={styles.expMetaLabel}>Project: </Text>
-                                {exp.project}
-                            </Text>
-                        )}
-                        {exp.client && (
-                            <Text style={styles.expMeta}>
-                                <Text style={styles.expMetaLabel}>Client: </Text>
-                                {exp.client}
-                            </Text>
+                            <View style={styles.expMetaBox}>
+                                <BoldText text={`**Project:** ${String(exp.project)}`} style={styles.expMeta} />
+                            </View>
                         )}
                         {exp.details && exp.details.length > 0 && (
                             <View style={styles.expDetails}>
@@ -460,14 +506,18 @@ export const createResumeTemplate = (config) => {
             <View style={getSectionWrapperStyle()}>
                 {renderSectionTitle(sectionTitles.projects || 'Projects')}
                 <View style={styles.expDetails}>
-                    {projects.map((project, idx) => (
-                        <View key={idx} style={{ marginBottom: 2 }}>
-                            <BoldText
-                                text={`${bulletPrefix}${String(project ?? '')}`}
-                                style={styles.projectItem}
-                            />
-                        </View>
-                    ))}
+                    {projects.map((project, idx) => {
+                        const heading = stripBoldMarkers((project && project.heading ? String(project.heading) : '').trim());
+                        const content = stripBoldMarkers((project && project.content ? String(project.content) : '').trim());
+                        const text = heading
+                            ? `${bulletPrefix}**${heading}**${content ? `: ${content}` : ''}`
+                            : `${bulletPrefix}${content}`;
+                        return (
+                            <View key={idx} style={{ marginBottom: 2 }}>
+                                <BoldText text={text} style={styles.projectItem} />
+                            </View>
+                        );
+                    })}
                 </View>
             </View>
         );
@@ -492,20 +542,37 @@ export const createResumeTemplate = (config) => {
         );
     };
 
+    const renderSummaryBlock = (summary) =>
+        summary ? (
+            <View style={getSectionWrapperStyle()}>
+                {renderSectionTitle(sectionTitles.summary || 'Summary')}
+                <BoldText text={summary} style={styles.summary} />
+            </View>
+        ) : null;
+
+    const sectionRenderers = {
+        summary: (data) => renderSummaryBlock(data.summary),
+        skills: (data) => renderSkillsBlock(data.skills),
+        education: (data) => renderEducationBlock(data.education),
+        certifications: (data) => renderCertificationsBlock(data.certifications),
+        experience: (data) => renderExperienceBlock(data.experience),
+        projects: (data) => renderProjectsBlock(data.projects),
+    };
+
+    const DEFAULT_SECTION_ORDER = ['summary', 'skills', 'education', 'certifications', 'experience', 'projects'];
+    const order =
+        Array.isArray(sectionOrder) && sectionOrder.length ? sectionOrder : DEFAULT_SECTION_ORDER;
+
+    const renderSections = (data) =>
+        order.map((key, i) => {
+            const render = sectionRenderers[key];
+            return render ? <React.Fragment key={i}>{render(data)}</React.Fragment> : null;
+        });
+
     const renderBody = (data) => (
         <>
             {renderHeader(data, headerLayout === 'banner')}
-            {data.summary && (
-                <View style={getSectionWrapperStyle()}>
-                    {renderSectionTitle(sectionTitles.summary || 'Summary')}
-                    <BoldText text={data.summary} style={styles.summary} />
-                </View>
-            )}
-            {renderSkillsBlock(data.skills)}
-            {renderEducationBlock(data.education)}
-            {renderCertificationsBlock(data.certifications)}
-            {renderExperienceBlock(data.experience)}
-            {renderProjectsBlock(data.projects)}
+            {renderSections(data)}
         </>
     );
 
@@ -524,17 +591,7 @@ export const createResumeTemplate = (config) => {
                                     .join('  •  ')}
                             </Text>
                         </View>
-                        {data.summary && (
-                            <View style={getSectionWrapperStyle()}>
-                                {renderSectionTitle(sectionTitles.summary || 'Summary')}
-                                <BoldText text={data.summary} style={styles.summary} />
-                            </View>
-                        )}
-                        {renderSkillsBlock(data.skills)}
-                        {renderEducationBlock(data.education)}
-                        {renderCertificationsBlock(data.certifications)}
-                        {renderExperienceBlock(data.experience)}
-                        {renderProjectsBlock(data.projects)}
+                        {renderSections(data)}
                     </View>
                 </Page>
             </Document>

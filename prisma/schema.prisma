@@ -18,6 +18,7 @@ model Profile {
   withoutApiPrompt         String?  @db.Text
   withoutApiProfileContent String?  @db.Text
   pdfTemplate              Int      @default(1)
+  photo                    String?  @db.Text
   phone                    String?
   linkedin                 String?
   github                   String?
