@@ -231,6 +231,10 @@ export default function WithoutApiResumeForm({
           placeholder="Paste the job description here..."
           className="w-full border border-gray-300 rounded-md p-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 resize-none text-gray-900"
         />
+        <p className="mt-1 text-xs text-gray-500">
+          Tip: if ChatGPT turns the pasted prompt into a file attachment and replies asking what to do,
+          just send a one-line message: <span className="font-medium text-gray-700">&quot;Follow the attached prompt and reply with only the JSON.&quot;</span>
+        </p>
       </div>
 
       <div>
