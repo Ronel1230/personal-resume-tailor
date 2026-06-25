@@ -225,6 +225,16 @@ export const createResumeTemplate = (config) => {
             color: colors.accent,
             marginBottom: 3,
         },
+        expMeta: {
+            fontSize: (fonts.expDetailSize || 10) - 0.5,
+            color: colors.secondary,
+            marginBottom: 2,
+        },
+        expMetaLabel: {
+            fontFamily: fonts.title || 'Helvetica-Bold',
+            fontWeight: 'bold',
+            color: colors.accent,
+        },
         expDetails: { marginLeft: theme.bulletStyle === 'dash' ? 8 : 14 },
         expDetailItem: {
             fontSize: fonts.expDetailSize || 10,
@@ -250,6 +260,18 @@ export const createResumeTemplate = (config) => {
             fontSize: fonts.eduSchoolSize || 10,
             color: colors.secondary,
             fontStyle: 'italic',
+        },
+        certItem: {
+            fontSize: fonts.expDetailSize || 10,
+            lineHeight: 1.45,
+            marginBottom: 2,
+            color: colors.primary,
+        },
+        projectItem: {
+            fontSize: fonts.expDetailSize || 10,
+            lineHeight: 1.45,
+            marginBottom: 2,
+            color: colors.primary,
         },
     });
 
@@ -342,9 +364,10 @@ export const createResumeTemplate = (config) => {
                         {entries.map(([category, skillList], idx) => (
                             <View key={idx} style={styles.skillsGridItem}>
                                 <Text style={styles.skillsLabel}>{category}</Text>
-                                <Text style={styles.skillsList}>
-                                    {Array.isArray(skillList) ? skillList.join(', ') : String(skillList)}
-                                </Text>
+                                <BoldText
+                                    text={Array.isArray(skillList) ? skillList.join(', ') : String(skillList)}
+                                    style={styles.skillsList}
+                                />
                             </View>
                         ))}
                     </View>
@@ -352,9 +375,10 @@ export const createResumeTemplate = (config) => {
                     entries.map(([category, skillList], idx) => (
                         <View key={idx} style={styles.skillsCategory}>
                             <Text style={styles.skillsLabel}>{category}</Text>
-                            <Text style={styles.skillsList}>
-                                {Array.isArray(skillList) ? skillList.join(' · ') : String(skillList)}
-                            </Text>
+                            <BoldText
+                                text={Array.isArray(skillList) ? skillList.join(' · ') : String(skillList)}
+                                style={styles.skillsList}
+                            />
                         </View>
                     ))
                 )}
@@ -377,6 +401,18 @@ export const createResumeTemplate = (config) => {
                             {exp.company}{exp.location && `, ${exp.location}`}
                         </Text>
                         {exp.industry && <Text style={styles.expIndustry}>{exp.industry}</Text>}
+                        {exp.project && (
+                            <Text style={styles.expMeta}>
+                                <Text style={styles.expMetaLabel}>Project: </Text>
+                                {exp.project}
+                            </Text>
+                        )}
+                        {exp.client && (
+                            <Text style={styles.expMeta}>
+                                <Text style={styles.expMetaLabel}>Client: </Text>
+                                {exp.client}
+                            </Text>
+                        )}
                         {exp.details && exp.details.length > 0 && (
                             <View style={styles.expDetails}>
                                 {exp.details.map((detail, detailIdx) => (
@@ -418,6 +454,44 @@ export const createResumeTemplate = (config) => {
         );
     };
 
+    const renderProjectsBlock = (projects) => {
+        if (!projects || projects.length === 0) return null;
+        return (
+            <View style={getSectionWrapperStyle()}>
+                {renderSectionTitle(sectionTitles.projects || 'Projects')}
+                <View style={styles.expDetails}>
+                    {projects.map((project, idx) => (
+                        <View key={idx} style={{ marginBottom: 2 }}>
+                            <BoldText
+                                text={`${bulletPrefix}${String(project ?? '')}`}
+                                style={styles.projectItem}
+                            />
+                        </View>
+                    ))}
+                </View>
+            </View>
+        );
+    };
+
+    const renderCertificationsBlock = (certifications) => {
+        if (!certifications || certifications.length === 0) return null;
+        return (
+            <View style={getSectionWrapperStyle()}>
+                {renderSectionTitle(sectionTitles.certifications || 'Certifications')}
+                <View style={styles.expDetails}>
+                    {certifications.map((cert, idx) => (
+                        <View key={idx} style={{ marginBottom: 2 }}>
+                            <BoldText
+                                text={`${bulletPrefix}${String(cert ?? '')}`}
+                                style={styles.certItem}
+                            />
+                        </View>
+                    ))}
+                </View>
+            </View>
+        );
+    };
+
     const renderBody = (data) => (
         <>
             {renderHeader(data, headerLayout === 'banner')}
@@ -428,8 +502,10 @@ export const createResumeTemplate = (config) => {
                 </View>
             )}
             {renderSkillsBlock(data.skills)}
-            {renderExperienceBlock(data.experience)}
             {renderEducationBlock(data.education)}
+            {renderCertificationsBlock(data.certifications)}
+            {renderExperienceBlock(data.experience)}
+            {renderProjectsBlock(data.projects)}
         </>
     );
 
@@ -455,8 +531,10 @@ export const createResumeTemplate = (config) => {
                             </View>
                         )}
                         {renderSkillsBlock(data.skills)}
-                        {renderExperienceBlock(data.experience)}
                         {renderEducationBlock(data.education)}
+                        {renderCertificationsBlock(data.certifications)}
+                        {renderExperienceBlock(data.experience)}
+                        {renderProjectsBlock(data.projects)}
                     </View>
                 </Page>
             </Document>

@@ -34,7 +34,9 @@ export type ResumeContent = {
   title: string;
   summary: string;
   skills: Record<string, string[]>;
-  experience: Array<{ title?: string; details: string[] }>;
+  certifications?: string[];
+  projects?: string[];
+  experience: Array<{ title?: string; focus?: string; project?: string; client?: string; details: string[] }>;
 };
 
 function processTemplate(template: string, variables: Record<string, string | number>): string {

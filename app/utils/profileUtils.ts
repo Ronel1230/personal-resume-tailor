@@ -42,15 +42,31 @@ export function buildResumePdfData(profileData: WithoutApiProfileData, resumeCon
     website: null as string | null,
     summary: resumeContent.summary,
     skills: resumeContent.skills,
-    experience: profileData.experience.map((job, idx) => ({
-      title: job.title || resumeContent.experience[idx]?.title || 'Engineer',
+    certifications: Array.isArray(resumeContent.certifications)
+      ? resumeContent.certifications.filter((c) => typeof c === 'string' && c.trim())
+      : [],
+    projects: Array.isArray(resumeContent.projects)
+      ? resumeContent.projects.filter((p) => typeof p === 'string' && p.trim())
+      : [],
+    experience: profileData.experience.map((job, idx) => {
+      const baseTitle = job.title || resumeContent.experience[idx]?.title || 'Engineer';
+      const focus = resumeContent.experience[idx]?.focus;
+      const title =
+        typeof focus === 'string' && focus.trim()
+          ? `${baseTitle} (${focus.trim()})`
+          : baseTitle;
+      return {
+      title,
       company: job.company,
       location: job.location,
       start_date: job.start_date,
       end_date: job.end_date,
       industry: job.industry,
+      project: resumeContent.experience[idx]?.project || '',
+      client: resumeContent.experience[idx]?.client || '',
       details: resumeContent.experience[idx]?.details || [],
-    })),
+      };
+    }),
     education: profileData.education,
   };
 }
