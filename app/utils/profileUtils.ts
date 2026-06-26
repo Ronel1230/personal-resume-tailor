@@ -48,6 +48,7 @@ export function buildResumePdfData(
     phone,
     location,
     linkedin,
+    github: (profileData.github || '').trim() || null,
     website: null as string | null,
     summary: resumeContent.summary,
     skills: resumeContent.skills,
