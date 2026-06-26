@@ -1,6 +1,25 @@
 import React from 'react';
-import { Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/renderer';
+import { Document, Page, Text, View, StyleSheet, Image, Svg, Path } from '@react-pdf/renderer';
 import { extractYear, BoldText, stripBoldMarkers } from './utils';
+
+// Filled 24x24 contact icons (Material-style), drawn in the contact text color.
+const CONTACT_ICON_PATHS = {
+    email: 'M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z',
+    phone: 'M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z',
+    location: 'M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z',
+    linkedin: 'M19 0h-14c-2.76 0-5 2.24-5 5v14c0 2.76 2.24 5 5 5h14c2.76 0 5-2.24 5-5v-14c0-2.76-2.24-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.27c-.97 0-1.75-.79-1.75-1.76s.78-1.75 1.75-1.75 1.75.79 1.75 1.75-.78 1.76-1.75 1.76zm13.5 12.27h-3v-5.6c0-3.37-4-3.12-4 0v5.6h-3v-11h3v1.77c1.4-2.59 7-2.78 7 2.48v6.75z',
+    website: 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93C7.05 19.44 4 16.08 4 12c0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z',
+};
+
+const ContactIcon = ({ type, color, size }) => {
+    const d = CONTACT_ICON_PATHS[type];
+    if (!d) return null;
+    return (
+        <Svg width={size} height={size} viewBox="0 0 24 24" style={{ marginRight: 3 }}>
+            <Path d={d} fill={color} />
+        </Svg>
+    );
+};
 
 export const createResumeTemplate = (config) => {
     const {
@@ -142,6 +161,13 @@ export const createResumeTemplate = (config) => {
         contactCenter: { textAlign: 'center' },
         contactRight: { textAlign: 'right' },
         contactItem: { marginBottom: 2 },
+        contactRow: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center' },
+        contactChip: { flexDirection: 'row', alignItems: 'center', marginRight: 12, marginBottom: 2 },
+        contactText: {
+            fontSize: fonts.contactSize || 9,
+            fontFamily: fonts.body || 'Helvetica',
+            lineHeight: 1.3,
+        },
         section: { marginBottom: 12 },
         sectionBoxed: {
             marginBottom: 12,
@@ -246,6 +272,17 @@ export const createResumeTemplate = (config) => {
             fontSize: fonts.expCompanySize || 10.5,
             color: colors.secondary,
             marginBottom: 5,
+        },
+        expCompanyName: {
+            fontFamily: fonts.title || 'Helvetica-Bold',
+            fontWeight: 'bold',
+            color: colors.primary,
+            fontStyle: 'normal',
+        },
+        expLocation: {
+            fontFamily: fonts.body || 'Helvetica',
+            fontWeight: 'normal',
+            color: colors.muted,
             fontStyle: theme.companyItalic === false ? 'normal' : 'italic',
         },
         expIndustry: {
@@ -336,15 +373,50 @@ export const createResumeTemplate = (config) => {
         return <Text style={styles.sectionTitleUnderline}>{label}</Text>;
     };
 
+    const buildContactItems = (data) =>
+        [
+            data.email && { type: 'email', value: data.email },
+            data.phone && { type: 'phone', value: data.phone },
+            data.location && { type: 'location', value: data.location },
+            data.linkedin && { type: 'linkedin', value: data.linkedin },
+            data.website && { type: 'website', value: data.website },
+        ].filter(Boolean);
+
+    const renderContact = (items, color, mode = 'left') => {
+        if (!items || items.length === 0) return null;
+        const iconSize = (fonts.contactSize || 9) + 1;
+        if (mode === 'rightColumn') {
+            return (
+                <View>
+                    {items.map((it, i) => (
+                        <View key={i} style={[styles.contactChip, { justifyContent: 'flex-end', marginRight: 0, marginBottom: 3 }]}>
+                            <ContactIcon type={it.type} color={color} size={iconSize} />
+                            <Text style={[styles.contactText, { color }]}>{it.value}</Text>
+                        </View>
+                    ))}
+                </View>
+            );
+        }
+        const justifyContent = mode === 'center' ? 'center' : 'flex-start';
+        return (
+            <View style={[styles.contactRow, { justifyContent }]}>
+                {items.map((it, i) => (
+                    <View key={i} style={styles.contactChip}>
+                        <ContactIcon type={it.type} color={color} size={iconSize} />
+                        <Text style={[styles.contactText, { color }]}>{it.value}</Text>
+                    </View>
+                ))}
+            </View>
+        );
+    };
+
     const renderHeader = (data, lightText = false) => {
-        const { name, title, techStack, email, phone, location, linkedin, website } = data;
+        const { name, title } = data;
         const textColor = lightText ? '#ffffff' : colors.headerText;
         const subColor = lightText ? '#e5e7eb' : colors.headerSubtext;
         const nameStyle = [styles.name, { color: textColor }];
         const titleStyle = [styles.title, { color: textColor }];
-        const subStyle = [styles.subheadline, { color: subColor }];
-        const contactStyle = [styles.contact, { color: subColor }];
-        const contactLine = [email, phone, location, linkedin, website].filter(Boolean);
+        const contactItems = buildContactItems(data);
         const headline = title ? <Text style={titleStyle}>{title}</Text> : null;
 
         if (headerLayout === 'photo') {
@@ -353,7 +425,7 @@ export const createResumeTemplate = (config) => {
                     <View style={styles.headerPhotoText}>
                         <Text style={nameStyle}>{name}</Text>
                         {headline}
-                        <Text style={contactStyle}>{contactLine.join('  •  ')}</Text>
+                        {renderContact(contactItems, subColor, 'left')}
                     </View>
                     {data.photo && <Image src={data.photo} style={styles.photo} />}
                 </View>
@@ -365,7 +437,7 @@ export const createResumeTemplate = (config) => {
                 <View style={styles.headerBanner}>
                     <Text style={nameStyle}>{name}</Text>
                     {headline}
-                    <Text style={contactStyle}>{contactLine.join('  •  ')}</Text>
+                    {renderContact(contactItems, subColor, 'left')}
                 </View>
             );
         }
@@ -379,9 +451,7 @@ export const createResumeTemplate = (config) => {
                             {headline}
                         </View>
                         <View style={{ flex: 1 }}>
-                            {contactLine.map((item, i) => (
-                                <Text key={i} style={[contactStyle, styles.contactRight, styles.contactItem]}>{item}</Text>
-                            ))}
+                            {renderContact(contactItems, subColor, 'rightColumn')}
                         </View>
                     </View>
                 </View>
@@ -393,7 +463,7 @@ export const createResumeTemplate = (config) => {
                 <View style={styles.headerMinimal}>
                     <Text style={[nameStyle, { fontSize: (fonts.nameSize || 24) + 2 }]}>{name}</Text>
                     {headline}
-                    <Text style={contactStyle}>{contactLine.join('  |  ')}</Text>
+                    {renderContact(contactItems, subColor, 'left')}
                 </View>
             );
         }
@@ -402,7 +472,7 @@ export const createResumeTemplate = (config) => {
             <View style={styles.headerCenter}>
                 <Text style={nameStyle}>{name}</Text>
                 {headline}
-                <Text style={[contactStyle, styles.contactCenter]}>{contactLine.join('  •  ')}</Text>
+                {renderContact(contactItems, subColor, 'center')}
             </View>
         );
     };
@@ -451,7 +521,8 @@ export const createResumeTemplate = (config) => {
                             <Text style={styles.expDates}>{exp.start_date} – {exp.end_date}</Text>
                         </View>
                         <Text style={styles.expCompany}>
-                            {exp.company}{exp.location && `, ${exp.location}`}
+                            <Text style={styles.expCompanyName}>{exp.company}</Text>
+                            {exp.location ? <Text style={styles.expLocation}>{`  —  ${exp.location}`}</Text> : null}
                         </Text>
                         {exp.industry && <Text style={styles.expIndustry}>{exp.industry}</Text>}
                         {exp.project && (
@@ -585,11 +656,7 @@ export const createResumeTemplate = (config) => {
                         <View style={styles.headerSidebarIntro}>
                             <Text style={styles.name}>{data.name}</Text>
                             {data.title && <Text style={styles.title}>{data.title}</Text>}
-                            <Text style={styles.contact}>
-                                {[data.email, data.phone, data.location, data.linkedin, data.website]
-                                    .filter(Boolean)
-                                    .join('  •  ')}
-                            </Text>
+                            {renderContact(buildContactItems(data), colors.headerSubtext, 'left')}
                         </View>
                         {renderSections(data)}
                     </View>

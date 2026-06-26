@@ -36,6 +36,9 @@ export function buildResumePdfData(
   photo?: string | null
 ) {
   const { phone, linkedin } = getContactForPdf(profileData);
+  const loc = (profileData.location || '').trim();
+  const postal = (profileData.postalCode || '').trim();
+  const location = postal ? (loc ? `${loc} ${postal}` : postal) : loc;
   return {
     name: profileData.name,
     title: (resumeContent.title || '').trim() || profileData.title || '',
@@ -43,7 +46,7 @@ export function buildResumePdfData(
     photo: typeof photo === 'string' && photo.trim() ? photo.trim() : null,
     email: profileData.email,
     phone,
-    location: profileData.location,
+    location,
     linkedin,
     website: null as string | null,
     summary: resumeContent.summary,
