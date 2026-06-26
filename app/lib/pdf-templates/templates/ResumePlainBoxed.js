@@ -13,7 +13,7 @@ export const ResumePlainBoxed = createResumeTemplate({
     theme: {
         accent: '#9ca3af',
         sectionStyle: 'boxed',
-        sectionBg: '#f3f4f6',
+        sectionBg: '#f9fafb',
         skillsLayout: 'table',
     },
 });
