@@ -158,8 +158,8 @@ export default function WithoutApiResumeForm({
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
       setLastGenerationTime(Math.floor((Date.now() - startTime) / 1000));
-      setJd('');
-      setQuestions('');
+      // Keep the JD so the user can tweak/regenerate without re-pasting it.
+      //setQuestions('');
       setLlmResponse('');
       setCompanyName('');
     } catch (err) {

@@ -374,18 +374,30 @@ export const createResumeTemplate = (config) => {
     };
 
     const renderSectionTitle = (label) => {
-        if (sectionStyle === 'filled') return <Text style={styles.sectionTitleFilled}>{label}</Text>;
-        if (sectionStyle === 'minimal' || sectionStyle === 'leftBar') return <Text style={styles.sectionTitleMinimal}>{label}</Text>;
-        if (sectionStyle === 'doubleRule') return <Text style={styles.sectionTitleDoubleRule}>{label}</Text>;
-        if (sectionStyle === 'accentLine') {
-            return (
-                <View>
+        let el;
+        if (sectionStyle === 'filled') {
+            el = <Text style={styles.sectionTitleFilled}>{label}</Text>;
+        } else if (sectionStyle === 'minimal' || sectionStyle === 'leftBar') {
+            el = <Text style={styles.sectionTitleMinimal}>{label}</Text>;
+        } else if (sectionStyle === 'doubleRule') {
+            el = <Text style={styles.sectionTitleDoubleRule}>{label}</Text>;
+        } else if (sectionStyle === 'accentLine') {
+            el = (
+                <>
                     <View style={styles.sectionAccentLine} />
                     <Text style={styles.sectionTitleMinimal}>{label}</Text>
-                </View>
+                </>
             );
+        } else {
+            el = <Text style={styles.sectionTitleUnderline}>{label}</Text>;
         }
-        return <Text style={styles.sectionTitleUnderline}>{label}</Text>;
+        // Keep the heading with the start of its content: if there isn't room for
+        // some content after the title, push the title to the next page.
+        return (
+            <View wrap={false} minPresenceAhead={48}>
+                {el}
+            </View>
+        );
     };
 
     const buildContactItems = (data) =>
