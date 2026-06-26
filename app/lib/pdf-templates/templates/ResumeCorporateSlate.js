@@ -15,7 +15,7 @@ export const ResumeCorporateSlate = createResumeTemplate({
         accent: '#64748b',
         sectionStyle: 'boxed',
         sectionBg: '#f1f5f9',
-        skillsLayout: 'twoColumn',
+        skillsLayout: 'labelLeft',
     },
 });
 

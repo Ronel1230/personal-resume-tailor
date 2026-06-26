@@ -263,6 +263,21 @@ export const createResumeTemplate = (config) => {
             color: colors.secondary,
             lineHeight: 1.45,
         },
+        skillsRow: { flexDirection: 'row', marginBottom: 4, alignItems: 'flex-start' },
+        skillsRowLabel: {
+            width: fonts.skillsLabelWidth || 110,
+            paddingRight: 8,
+            fontSize: fonts.skillsLabelSize || 10.5,
+            fontFamily: fonts.title || 'Helvetica-Bold',
+            fontWeight: 'bold',
+            color: colors.primary,
+        },
+        skillsRowList: {
+            flex: 1,
+            fontSize: fonts.skillsListSize || 10,
+            color: colors.secondary,
+            lineHeight: 1.45,
+        },
         expItem: { marginBottom: 14 },
         expHeader: {
             flexDirection: 'row',
@@ -502,7 +517,16 @@ export const createResumeTemplate = (config) => {
         return (
             <View style={getSectionWrapperStyle()}>
                 {renderSectionTitle(sectionTitles.skills || 'Skills')}
-                {skillsLayout === 'twoColumn' ? (
+                {skillsLayout === 'labelLeft' ? (
+                    entries.map(([category, skillList], idx) => (
+                        <View key={idx} style={styles.skillsRow}>
+                            <Text style={styles.skillsRowLabel}>{category}</Text>
+                            <Text style={styles.skillsRowList}>
+                                {stripBoldMarkers(Array.isArray(skillList) ? skillList.join(', ') : String(skillList))}
+                            </Text>
+                        </View>
+                    ))
+                ) : skillsLayout === 'twoColumn' ? (
                     <View style={styles.skillsGrid}>
                         {entries.map(([category, skillList], idx) => (
                             <View key={idx} style={styles.skillsGridItem}>
@@ -518,7 +542,7 @@ export const createResumeTemplate = (config) => {
                         <View key={idx} style={styles.skillsCategory}>
                             <Text style={styles.skillsLabel}>{category}</Text>
                             <Text style={styles.skillsList}>
-                                {stripBoldMarkers(Array.isArray(skillList) ? skillList.join(' · ') : String(skillList))}
+                                {stripBoldMarkers(Array.isArray(skillList) ? skillList.join(', ') : String(skillList))}
                             </Text>
                         </View>
                     ))

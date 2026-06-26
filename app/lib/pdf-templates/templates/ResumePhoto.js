@@ -13,6 +13,7 @@ export const ResumePhoto = createResumeTemplate({
     theme: {
         accent: '#111827',
         sectionStyle: 'underline',
+        skillsLayout: 'labelLeft',
         photoSize: 80,
         photoRounded: true,
     },

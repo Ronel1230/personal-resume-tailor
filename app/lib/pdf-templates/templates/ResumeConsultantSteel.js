@@ -21,7 +21,7 @@ export const ResumeConsultantSteel = createResumeTemplate({
     theme: {
         accent: '#0284c7',
         sectionStyle: 'underline',
-        skillsLayout: 'twoColumn',
+        skillsLayout: 'labelLeft',
         pagePadding: '14mm',
     },
 });

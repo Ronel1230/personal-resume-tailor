@@ -17,6 +17,7 @@ export const ResumeExecutiveNavy = createResumeTemplate({
         headerText: '#ffffff',
         headerSubtext: '#cbd5e1',
         sectionStyle: 'underline',
+        skillsLayout: 'labelLeft',
     },
 });
 

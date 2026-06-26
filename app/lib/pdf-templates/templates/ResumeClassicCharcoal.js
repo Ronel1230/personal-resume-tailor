@@ -30,6 +30,7 @@ export const ResumeClassicCharcoal = createResumeTemplate({
         accent: '#57534e',
         sectionStyle: 'accentLine',
         companyItalic: false,
+        skillsLayout: 'labelLeft',
     },
 });
 

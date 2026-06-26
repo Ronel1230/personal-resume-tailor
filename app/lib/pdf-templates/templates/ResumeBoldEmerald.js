@@ -13,6 +13,7 @@ export const ResumeBoldEmerald = createResumeTemplate({
     theme: {
         accent: '#059669',
         sectionStyle: 'leftBar',
+        skillsLayout: 'labelLeft',
     },
 });
 
