@@ -48,10 +48,30 @@ function processTemplate(template: string, variables: Record<string, string | nu
   return out;
 }
 
+// Parse the start_date strings used in profiles. Handles: "present", "MM/YYYY",
+// "M/YYYY", "YYYY", "Mar 2023"/"March 2023", "YYYY-MM", and full dates. Returns
+// null if the value can't be understood (so it's ignored, not mis-parsed).
+export function parseExperienceDate(dateStr: string | null | undefined): Date | null {
+  const s = String(dateStr || '').trim();
+  if (!s) return null;
+  if (s.toLowerCase() === 'present' || s.toLowerCase() === 'current') return new Date();
+
+  // MM/YYYY or M/YYYY (e.g. 03/2023)
+  let m = s.match(/^(\d{1,2})\/(\d{4})$/);
+  if (m) return new Date(Number(m[2]), Number(m[1]) - 1, 1);
+
+  // YYYY only
+  m = s.match(/^(\d{4})$/);
+  if (m) return new Date(Number(m[1]), 0, 1);
+
+  // Everything else the JS engine handles (Mar 2023, March 2023, 2023-03, MM/DD/YYYY, …)
+  const d = new Date(s);
+  return isNaN(d.getTime()) ? null : d;
+}
+
 export function yearsFromExperience(experience: WithoutApiExperience[]): number {
   if (!experience?.length) return 0;
-  const parseDate = (dateStr: string) =>
-    dateStr.toLowerCase() === 'present' ? new Date() : new Date(dateStr);
+  const parseDate = (dateStr: string) => parseExperienceDate(dateStr) ?? new Date();
   const earliest = experience.reduce((min, job) => {
     const d = parseDate(job.start_date);
     return d < min ? d : min;
