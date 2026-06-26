@@ -1,6 +1,13 @@
 import React from 'react';
-import { Document, Page, Text, View, StyleSheet, Image, Svg, Path } from '@react-pdf/renderer';
+import { Document, Page, Text, View, StyleSheet, Image, Svg, Path, Link } from '@react-pdf/renderer';
 import { extractYear, BoldText, stripBoldMarkers } from './utils';
+
+// Normalize a profile URL/handle into a clickable href.
+const toHref = (v) => {
+    const s = String(v || '').trim();
+    if (!s) return null;
+    return /^https?:\/\//i.test(s) ? s : `https://${s.replace(/^\/+/, '')}`;
+};
 
 // Filled 24x24 contact icons (Material-style), drawn in the contact text color.
 const CONTACT_ICON_PATHS = {
@@ -169,6 +176,7 @@ export const createResumeTemplate = (config) => {
             fontFamily: fonts.body || 'Helvetica',
             lineHeight: 1.3,
         },
+        contactLink: { textDecoration: 'none' },
         section: { marginBottom: 12 },
         sectionBoxed: {
             marginBottom: 12,
@@ -379,21 +387,29 @@ export const createResumeTemplate = (config) => {
             data.email && { type: 'email', value: data.email },
             data.phone && { type: 'phone', value: data.phone },
             data.location && { type: 'location', value: data.location },
-            data.linkedin && { type: 'linkedin', value: data.linkedin },
-            data.github && { type: 'github', value: data.github },
-            data.website && { type: 'website', value: data.website },
+            data.linkedin && { type: 'linkedin', value: 'LinkedIn', href: toHref(data.linkedin) },
+            data.github && { type: 'github', value: 'GitHub', href: toHref(data.github) },
+            data.website && { type: 'website', value: 'Website', href: toHref(data.website) },
         ].filter(Boolean);
 
     const renderContact = (items, color, mode = 'left') => {
         if (!items || items.length === 0) return null;
         const iconSize = (fonts.contactSize || 9) + 1;
+        const renderValue = (it) =>
+            it.href ? (
+                <Link src={it.href} style={[styles.contactText, styles.contactLink, { color }]}>
+                    {it.value}
+                </Link>
+            ) : (
+                <Text style={[styles.contactText, { color }]}>{it.value}</Text>
+            );
         if (mode === 'rightColumn') {
             return (
                 <View>
                     {items.map((it, i) => (
                         <View key={i} style={[styles.contactChip, { justifyContent: 'flex-end', marginRight: 0, marginBottom: 3 }]}>
                             <ContactIcon type={it.type} color={color} size={iconSize} />
-                            <Text style={[styles.contactText, { color }]}>{it.value}</Text>
+                            {renderValue(it)}
                         </View>
                     ))}
                 </View>
@@ -405,7 +421,7 @@ export const createResumeTemplate = (config) => {
                 {items.map((it, i) => (
                     <View key={i} style={styles.contactChip}>
                         <ContactIcon type={it.type} color={color} size={iconSize} />
-                        <Text style={[styles.contactText, { color }]}>{it.value}</Text>
+                        {renderValue(it)}
                     </View>
                 ))}
             </View>
