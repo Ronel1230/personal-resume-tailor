@@ -269,6 +269,30 @@ export const createResumeTemplate = (config) => {
             fontWeight: 'bold',
             color: colors.primary,
         },
+        skillsTable: { borderWidth: 1, borderColor: '#d1d5db' },
+        skillsTableRow: {
+            flexDirection: 'row',
+            borderBottomWidth: 1,
+            borderBottomColor: '#d1d5db',
+        },
+        skillsTableRowLast: { borderBottomWidth: 0 },
+        skillsTableCategory: {
+            width: '30%',
+            padding: 5,
+            borderRightWidth: 1,
+            borderRightColor: '#d1d5db',
+            fontFamily: fonts.title || 'Helvetica-Bold',
+            fontWeight: 'bold',
+            fontSize: fonts.skillsLabelSize || 10.5,
+            color: colors.primary,
+        },
+        skillsTableSkills: {
+            flex: 1,
+            padding: 5,
+            fontSize: fonts.skillsListSize || 10,
+            color: colors.secondary,
+            lineHeight: 1.4,
+        },
         expItem: { marginBottom: 14 },
         expHeader: {
             flexDirection: 'row',
@@ -520,7 +544,21 @@ export const createResumeTemplate = (config) => {
         return (
             <View style={getSectionWrapperStyle()}>
                 {renderSectionTitle(sectionTitles.skills || 'Skills')}
-                {skillsLayout === 'labelLeft' ? (
+                {skillsLayout === 'table' ? (
+                    <View style={styles.skillsTable}>
+                        {entries.map(([category, skillList], idx) => (
+                            <View
+                                key={idx}
+                                style={[styles.skillsTableRow, idx === entries.length - 1 ? styles.skillsTableRowLast : null]}
+                            >
+                                <Text style={styles.skillsTableCategory}>{category}</Text>
+                                <Text style={styles.skillsTableSkills}>
+                                    {stripBoldMarkers(Array.isArray(skillList) ? skillList.join(', ') : String(skillList))}
+                                </Text>
+                            </View>
+                        ))}
+                    </View>
+                ) : skillsLayout === 'labelLeft' ? (
                     entries.map(([category, skillList], idx) => (
                         <View key={idx} style={styles.skillsInlineItem}>
                             <Text style={styles.skillsList}>

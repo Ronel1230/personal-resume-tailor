@@ -15,7 +15,7 @@ export const ResumeAcademicPurple = createResumeTemplate({
         accent: '#7c3aed',
         sectionStyle: 'underline',
         headerBorderWidth: 2,
-        skillsLayout: 'labelLeft',
+        skillsLayout: 'table',
     },
 });
 
