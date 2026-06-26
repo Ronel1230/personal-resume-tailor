@@ -263,20 +263,11 @@ export const createResumeTemplate = (config) => {
             color: colors.secondary,
             lineHeight: 1.45,
         },
-        skillsRow: { flexDirection: 'row', marginBottom: 4, alignItems: 'flex-start' },
-        skillsRowLabel: {
-            width: fonts.skillsLabelWidth || 110,
-            paddingRight: 8,
-            fontSize: fonts.skillsLabelSize || 10.5,
+        skillsInlineItem: { marginBottom: 4, width: '100%' },
+        skillsLabelInline: {
             fontFamily: fonts.title || 'Helvetica-Bold',
             fontWeight: 'bold',
             color: colors.primary,
-        },
-        skillsRowList: {
-            flex: 1,
-            fontSize: fonts.skillsListSize || 10,
-            color: colors.secondary,
-            lineHeight: 1.45,
         },
         expItem: { marginBottom: 14 },
         expHeader: {
@@ -519,9 +510,9 @@ export const createResumeTemplate = (config) => {
                 {renderSectionTitle(sectionTitles.skills || 'Skills')}
                 {skillsLayout === 'labelLeft' ? (
                     entries.map(([category, skillList], idx) => (
-                        <View key={idx} style={styles.skillsRow}>
-                            <Text style={styles.skillsRowLabel}>{category}</Text>
-                            <Text style={styles.skillsRowList}>
+                        <View key={idx} style={styles.skillsInlineItem}>
+                            <Text style={styles.skillsList}>
+                                <Text style={styles.skillsLabelInline}>{category}: </Text>
                                 {stripBoldMarkers(Array.isArray(skillList) ? skillList.join(', ') : String(skillList))}
                             </Text>
                         </View>
