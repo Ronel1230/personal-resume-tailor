@@ -627,30 +627,30 @@ export const createResumeTemplate = (config) => {
         return (
             <View style={getSectionWrapperStyle()}>
                 {experience.map((exp, idx) => (
-                    <View key={idx} style={styles.expItem}>
-                        {/* The entry header — job title, dates, company, and the
-                            Key Skills line — is kept on one page (`wrap={false}`)
-                            so it never splits across a page break. The first
-                            entry also carries the section heading so "Experience"
-                            stays attached to it. The bullets below sit outside the
-                            group, so a long role can still flow onto the next page. */}
-                        <View wrap={false}>
-                            {idx === 0 && renderSectionTitle(sectionTitles.experience || 'Experience')}
-                            <View style={styles.expHeader}>
-                                <Text style={styles.expTitle}>{exp.title || 'Engineer'}</Text>
-                                <Text style={styles.expDates}>{exp.start_date} – {exp.end_date}</Text>
-                            </View>
-                            <Text style={styles.expCompany}>
-                                <Text style={styles.expCompanyName}>{exp.company}</Text>
-                                {exp.location ? <Text style={styles.expLocation}>{`  —  ${exp.location}`}</Text> : null}
-                            </Text>
-                            {exp.industry && <Text style={styles.expIndustry}>{exp.industry}</Text>}
-                            {experienceMetaLabel && exp.project && (
-                                <View style={styles.expMetaBox}>
-                                    <BoldText text={`**${experienceMetaLabel}:** ${String(exp.project)}`} style={styles.expMeta} />
-                                </View>
-                            )}
+                    // Each job is a single `wrap={false}` unit so its header — job
+                    // title, dates, company, and the Key Skills line — never splits
+                    // across a page break (and the whole entry moves to the next
+                    // page together if it doesn't fit). The first entry also carries
+                    // the section heading so "Experience" stays attached to it.
+                    // Keeping `wrap={false}` on this one outer view (rather than on a
+                    // nested sub-block) avoids a react-pdf bug where a deeply-nested
+                    // unbreakable block at the page bottom renders overlapping text.
+                    <View key={idx} wrap={false} style={styles.expItem}>
+                        {idx === 0 && renderSectionTitle(sectionTitles.experience || 'Experience')}
+                        <View style={styles.expHeader}>
+                            <Text style={styles.expTitle}>{exp.title || 'Engineer'}</Text>
+                            <Text style={styles.expDates}>{exp.start_date} – {exp.end_date}</Text>
                         </View>
+                        <Text style={styles.expCompany}>
+                            <Text style={styles.expCompanyName}>{exp.company}</Text>
+                            {exp.location ? <Text style={styles.expLocation}>{`  —  ${exp.location}`}</Text> : null}
+                        </Text>
+                        {exp.industry && <Text style={styles.expIndustry}>{exp.industry}</Text>}
+                        {experienceMetaLabel && exp.project && (
+                            <View style={styles.expMetaBox}>
+                                <BoldText text={`**${experienceMetaLabel}:** ${String(exp.project)}`} style={styles.expMeta} />
+                            </View>
+                        )}
                         {exp.details && exp.details.length > 0 && (
                             <View style={styles.expDetails}>
                                 {exp.details.map((detail, detailIdx) => (
