@@ -88,12 +88,12 @@ export async function POST(req: NextRequest) {
 
     const templateData = buildResumePdfData(profileData, resumeContent, profile.photo);
     const pdfBuffer = await renderPdfBuffer(TemplateComponent, templateData);
-    // Tag the filename with the template name when one resume per template is
+    // Tag the filename with the template number when one resume per template is
     // being produced, so the downloads don't overwrite each other.
     const fileName = pdfAttachmentFilename(
       profileData.name,
       companyName,
-      templateOverride ? templateName : null
+      templateOverride ? `Template-${selectedTemplate}` : null
     );
 
     return new NextResponse(new Uint8Array(pdfBuffer), {
