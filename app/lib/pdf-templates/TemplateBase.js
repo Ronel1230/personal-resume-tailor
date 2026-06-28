@@ -36,15 +36,17 @@ export const createResumeTemplate = (config) => {
         sectionOrder = null,
         headerLayout = 'center',
         theme = {},
-        // Per-job meta line drawn from each experience entry's `project` field:
-        //   'project'  → labelled "Project" (a one-line project sentence)
-        //   'keySkills' → labelled "Key Skills" (a comma-separated skills list)
+        // Per-job meta line. The LLM provides BOTH fields on every entry; each
+        // template chooses which (if any) to show:
+        //   'project'  → labelled "Project" from the entry's `project` sentence
+        //   'keySkills' → labelled "Key Skills" from the entry's `keySkills` list
         //   'none'      → not rendered at all
         experienceMeta = 'project',
     } = config;
 
     const experienceMetaLabel =
         experienceMeta === 'keySkills' ? 'Key Skills' : experienceMeta === 'none' ? null : 'Project';
+    const experienceMetaField = experienceMeta === 'keySkills' ? 'keySkills' : 'project';
 
     // All readable body text is forced to grey/black; the template's accent
     // color is kept only for structural lines/bands (borders, banners, stripes).
@@ -624,49 +626,53 @@ export const createResumeTemplate = (config) => {
 
     const renderExperienceBlock = (experience) => {
         if (!experience || experience.length === 0) return null;
-        return (
-            <View style={getSectionWrapperStyle()}>
-                {experience.map((exp, idx) => (
-                    // Each job is a single `wrap={false}` unit so its header — job
-                    // title, dates, company, and the Key Skills line — never splits
-                    // across a page break (and the whole entry moves to the next
-                    // page together if it doesn't fit). The first entry also carries
-                    // the section heading so "Experience" stays attached to it.
-                    // Keeping `wrap={false}` on this one outer view (rather than on a
-                    // nested sub-block) avoids a react-pdf bug where a deeply-nested
-                    // unbreakable block at the page bottom renders overlapping text.
-                    <View key={idx} wrap={false} style={styles.expItem}>
-                        {idx === 0 && renderSectionTitle(sectionTitles.experience || 'Experience')}
-                        <View style={styles.expHeader}>
-                            <Text style={styles.expTitle}>{exp.title || 'Engineer'}</Text>
-                            <Text style={styles.expDates}>{exp.start_date} – {exp.end_date}</Text>
-                        </View>
-                        <Text style={styles.expCompany}>
-                            <Text style={styles.expCompanyName}>{exp.company}</Text>
-                            {exp.location ? <Text style={styles.expLocation}>{`  —  ${exp.location}`}</Text> : null}
-                        </Text>
-                        {exp.industry && <Text style={styles.expIndustry}>{exp.industry}</Text>}
-                        {experienceMetaLabel && exp.project && (
-                            <View style={styles.expMetaBox}>
-                                <BoldText text={`**${experienceMetaLabel}:** ${String(exp.project)}`} style={styles.expMeta} />
-                            </View>
-                        )}
-                        {exp.details && exp.details.length > 0 && (
-                            <View style={styles.expDetails}>
-                                {exp.details.map((detail, detailIdx) => (
-                                    <View key={detailIdx} style={{ marginBottom: 2 }}>
-                                        <BoldText
-                                            text={`${bulletPrefix}${String(detail ?? '')}`}
-                                            style={styles.expDetailItem}
-                                        />
-                                    </View>
-                                ))}
-                            </View>
-                        )}
+        // Each entry is emitted as two siblings of the section wrapper: a header
+        // block and (optionally) a bullets block.
+        //  - The header (dates, title, company, Key Skills) is `wrap={false}` so
+        //    it never splits across a page break. It sits ONE level under the
+        //    section wrapper — keeping the unbreakable block shallow avoids a
+        //    react-pdf bug where a deeply-nested no-wrap block at the page bottom
+        //    renders overlapping text.
+        //  - The bullets are a separate, wrappable block, so a long role's bullets
+        //    can flow onto the next page instead of forcing the whole job down.
+        const metaValue = (exp) => exp[experienceMetaField];
+        const nodes = [];
+        experience.forEach((exp, idx) => {
+            nodes.push(
+                <View key={`h${idx}`} wrap={false} style={idx === 0 ? undefined : { marginTop: 14 }}>
+                    {idx === 0 && renderSectionTitle(sectionTitles.experience || 'Experience')}
+                    <View style={styles.expHeader}>
+                        <Text style={styles.expTitle}>{exp.title || 'Engineer'}</Text>
+                        <Text style={styles.expDates}>{exp.start_date} – {exp.end_date}</Text>
                     </View>
-                ))}
-            </View>
-        );
+                    <Text style={styles.expCompany}>
+                        <Text style={styles.expCompanyName}>{exp.company}</Text>
+                        {exp.location ? <Text style={styles.expLocation}>{`  —  ${exp.location}`}</Text> : null}
+                    </Text>
+                    {exp.industry && <Text style={styles.expIndustry}>{exp.industry}</Text>}
+                    {experienceMetaLabel && metaValue(exp) && (
+                        <View style={styles.expMetaBox}>
+                            <BoldText text={`**${experienceMetaLabel}:** ${String(metaValue(exp))}`} style={styles.expMeta} />
+                        </View>
+                    )}
+                </View>
+            );
+            if (exp.details && exp.details.length > 0) {
+                nodes.push(
+                    <View key={`b${idx}`} style={styles.expDetails}>
+                        {exp.details.map((detail, detailIdx) => (
+                            <View key={detailIdx} style={{ marginBottom: 2 }}>
+                                <BoldText
+                                    text={`${bulletPrefix}${String(detail ?? '')}`}
+                                    style={styles.expDetailItem}
+                                />
+                            </View>
+                        ))}
+                    </View>
+                );
+            }
+        });
+        return <View style={getSectionWrapperStyle()}>{nodes}</View>;
     };
 
     const renderEducationBlock = (education) => {

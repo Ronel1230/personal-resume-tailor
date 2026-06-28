@@ -48,19 +48,6 @@ export const WITHOUT_API_TEMPLATE_LABELS: Record<number, string> = {
   [ALL_TEMPLATES_VALUE]: 'All Templates — generate one resume per template',
 };
 
-export type ExperienceMetaMode = 'project' | 'keySkills' | 'none';
-
-// What the per-job meta line (the `project` field) should be for a given
-// template — must stay in sync with each template's `experienceMeta` config:
-//   Templates 4-6  → a "Key Skills" comma list
-//   Templates 7-10 → nothing (line is hidden)
-//   everything else → the classic "Project" sentence
-export function getExperienceMetaMode(pdfTemplate: number): ExperienceMetaMode {
-  if (pdfTemplate >= 4 && pdfTemplate <= 6) return 'keySkills';
-  if (pdfTemplate >= 7 && pdfTemplate <= 10) return 'none';
-  return 'project';
-}
-
 export function getWithoutApiTemplateId(pdfTemplate: number): string {
   return WITHOUT_API_TEMPLATE_MAP[pdfTemplate] || WITHOUT_API_TEMPLATE_MAP[1];
 }

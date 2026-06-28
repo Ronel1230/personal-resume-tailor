@@ -73,6 +73,7 @@ export function buildResumePdfData(
       end_date: job.end_date,
       industry: job.industry,
       project: resumeContent.experience[idx]?.project || '',
+      keySkills: resumeContent.experience[idx]?.keySkills || '',
       details: resumeContent.experience[idx]?.details || [],
       };
     }),
