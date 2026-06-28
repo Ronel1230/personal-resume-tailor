@@ -398,28 +398,50 @@ export const createResumeTemplate = (config) => {
     };
 
     const renderSectionTitle = (label) => {
-        let el;
         if (sectionStyle === 'filled') {
-            el = <Text style={styles.sectionTitleFilled}>{label}</Text>;
-        } else if (sectionStyle === 'minimal' || sectionStyle === 'leftBar') {
-            el = <Text style={styles.sectionTitleMinimal}>{label}</Text>;
-        } else if (sectionStyle === 'doubleRule') {
-            el = <Text style={styles.sectionTitleDoubleRule}>{label}</Text>;
-        } else if (sectionStyle === 'accentLine') {
-            el = (
+            return <Text style={styles.sectionTitleFilled}>{label}</Text>;
+        }
+        if (sectionStyle === 'minimal' || sectionStyle === 'leftBar') {
+            return <Text style={styles.sectionTitleMinimal}>{label}</Text>;
+        }
+        if (sectionStyle === 'doubleRule') {
+            return <Text style={styles.sectionTitleDoubleRule}>{label}</Text>;
+        }
+        if (sectionStyle === 'accentLine') {
+            return (
                 <>
                     <View style={styles.sectionAccentLine} />
                     <Text style={styles.sectionTitleMinimal}>{label}</Text>
                 </>
             );
-        } else {
-            el = <Text style={styles.sectionTitleUnderline}>{label}</Text>;
         }
-        // Keep the heading with the start of its content: if there isn't room for
-        // some content after the title, push the title to the next page.
+        return <Text style={styles.sectionTitleUnderline}>{label}</Text>;
+    };
+
+    // Render a section, keeping its heading glued to the first row of content.
+    //
+    // react-pdf decides page breaks per node relative to its *siblings*. A bare
+    // `minPresenceAhead` on the title doesn't help, because the title is always
+    // the first child of the section wrapper — with no previous sibling the
+    // layout engine treats it as "already at the top of the page" and refuses to
+    // push it down (see shouldBreak's `breakingImprovesPresence` guard). The
+    // result is a heading stranded at the bottom while its content flows over.
+    //
+    // Wrapping the title together with the first content row in a `wrap={false}`
+    // group fixes it: if the two don't both fit in the remaining space, the
+    // group can't be split, so it (and therefore the whole section) is pushed to
+    // the next page — leaving the requested gap above so the section starts fresh.
+    const renderSection = (label, items) => {
+        const rows = (items || []).filter(Boolean);
+        if (rows.length === 0) return null;
+        const [first, ...rest] = rows;
         return (
-            <View wrap={false} minPresenceAhead={48}>
-                {el}
+            <View style={getSectionWrapperStyle()}>
+                <View wrap={false}>
+                    {renderSectionTitle(label)}
+                    {first}
+                </View>
+                {rest}
             </View>
         );
     };
@@ -540,169 +562,148 @@ export const createResumeTemplate = (config) => {
     const renderSkillsBlock = (skills) => {
         if (!skills || Object.keys(skills).length === 0) return null;
         const entries = Object.entries(skills);
+        const skillsText = (skillList) =>
+            stripBoldMarkers(Array.isArray(skillList) ? skillList.join(', ') : String(skillList));
 
-        return (
-            <View style={getSectionWrapperStyle()}>
-                {renderSectionTitle(sectionTitles.skills || 'Skills')}
-                {skillsLayout === 'table' ? (
-                    <View style={styles.skillsTable}>
-                        {entries.map(([category, skillList], idx) => (
-                            <View
-                                key={idx}
-                                style={[styles.skillsTableRow, idx === entries.length - 1 ? styles.skillsTableRowLast : null]}
-                            >
-                                <Text style={styles.skillsTableCategory}>{category}</Text>
-                                <Text style={styles.skillsTableSkills}>
-                                    {stripBoldMarkers(Array.isArray(skillList) ? skillList.join(', ') : String(skillList))}
-                                </Text>
-                            </View>
-                        ))}
-                    </View>
-                ) : skillsLayout === 'labelLeft' ? (
-                    entries.map(([category, skillList], idx) => (
-                        <View key={idx} style={styles.skillsInlineItem}>
-                            <Text style={styles.skillsList}>
-                                <Text style={styles.skillsLabelInline}>{category}: </Text>
-                                {stripBoldMarkers(Array.isArray(skillList) ? skillList.join(', ') : String(skillList))}
-                            </Text>
+        let items;
+        if (skillsLayout === 'table') {
+            // Bordered table is one connected unit; keep it as a single row.
+            items = [
+                <View key="table" style={styles.skillsTable}>
+                    {entries.map(([category, skillList], idx) => (
+                        <View
+                            key={idx}
+                            style={[styles.skillsTableRow, idx === entries.length - 1 ? styles.skillsTableRowLast : null]}
+                        >
+                            <Text style={styles.skillsTableCategory}>{category}</Text>
+                            <Text style={styles.skillsTableSkills}>{skillsText(skillList)}</Text>
                         </View>
-                    ))
-                ) : skillsLayout === 'twoColumn' ? (
-                    <View style={styles.skillsGrid}>
-                        {entries.map(([category, skillList], idx) => (
-                            <View key={idx} style={styles.skillsGridItem}>
-                                <Text style={styles.skillsLabel}>{category}</Text>
-                                <Text style={styles.skillsList}>
-                                    {stripBoldMarkers(Array.isArray(skillList) ? skillList.join(', ') : String(skillList))}
-                                </Text>
-                            </View>
-                        ))}
-                    </View>
-                ) : (
-                    entries.map(([category, skillList], idx) => (
-                        <View key={idx} style={styles.skillsCategory}>
+                    ))}
+                </View>,
+            ];
+        } else if (skillsLayout === 'labelLeft') {
+            items = entries.map(([category, skillList], idx) => (
+                <View key={idx} style={styles.skillsInlineItem}>
+                    <Text style={styles.skillsList}>
+                        <Text style={styles.skillsLabelInline}>{category}: </Text>
+                        {skillsText(skillList)}
+                    </Text>
+                </View>
+            ));
+        } else if (skillsLayout === 'twoColumn') {
+            // Flex-wrap grid must stay in its container to lay out in columns.
+            items = [
+                <View key="grid" style={styles.skillsGrid}>
+                    {entries.map(([category, skillList], idx) => (
+                        <View key={idx} style={styles.skillsGridItem}>
                             <Text style={styles.skillsLabel}>{category}</Text>
-                            <Text style={styles.skillsList}>
-                                {stripBoldMarkers(Array.isArray(skillList) ? skillList.join(', ') : String(skillList))}
-                            </Text>
+                            <Text style={styles.skillsList}>{skillsText(skillList)}</Text>
                         </View>
-                    ))
-                )}
-            </View>
-        );
+                    ))}
+                </View>,
+            ];
+        } else {
+            items = entries.map(([category, skillList], idx) => (
+                <View key={idx} style={styles.skillsCategory}>
+                    <Text style={styles.skillsLabel}>{category}</Text>
+                    <Text style={styles.skillsList}>{skillsText(skillList)}</Text>
+                </View>
+            ));
+        }
+
+        return renderSection(sectionTitles.skills || 'Skills', items);
     };
 
     const renderExperienceBlock = (experience) => {
         if (!experience || experience.length === 0) return null;
-        return (
-            <View style={getSectionWrapperStyle()}>
-                {renderSectionTitle(sectionTitles.experience || 'Experience')}
-                {experience.map((exp, idx) => (
-                    <View key={idx} style={styles.expItem}>
-                        <View style={styles.expHeader}>
-                            <Text style={styles.expTitle}>{exp.title || 'Engineer'}</Text>
-                            <Text style={styles.expDates}>{exp.start_date} – {exp.end_date}</Text>
-                        </View>
-                        <Text style={styles.expCompany}>
-                            <Text style={styles.expCompanyName}>{exp.company}</Text>
-                            {exp.location ? <Text style={styles.expLocation}>{`  —  ${exp.location}`}</Text> : null}
-                        </Text>
-                        {exp.industry && <Text style={styles.expIndustry}>{exp.industry}</Text>}
-                        {exp.project && (
-                            <View style={styles.expMetaBox}>
-                                <BoldText text={`**Project:** ${String(exp.project)}`} style={styles.expMeta} />
-                            </View>
-                        )}
-                        {exp.details && exp.details.length > 0 && (
-                            <View style={styles.expDetails}>
-                                {exp.details.map((detail, detailIdx) => (
-                                    <View key={detailIdx} style={{ marginBottom: 2 }}>
-                                        <BoldText
-                                            text={`${bulletPrefix}${String(detail ?? '')}`}
-                                            style={styles.expDetailItem}
-                                        />
-                                    </View>
-                                ))}
-                            </View>
-                        )}
+        const items = experience.map((exp, idx) => (
+            <View key={idx} style={styles.expItem}>
+                <View style={styles.expHeader}>
+                    <Text style={styles.expTitle}>{exp.title || 'Engineer'}</Text>
+                    <Text style={styles.expDates}>{exp.start_date} – {exp.end_date}</Text>
+                </View>
+                <Text style={styles.expCompany}>
+                    <Text style={styles.expCompanyName}>{exp.company}</Text>
+                    {exp.location ? <Text style={styles.expLocation}>{`  —  ${exp.location}`}</Text> : null}
+                </Text>
+                {exp.industry && <Text style={styles.expIndustry}>{exp.industry}</Text>}
+                {exp.project && (
+                    <View style={styles.expMetaBox}>
+                        <BoldText text={`**Project:** ${String(exp.project)}`} style={styles.expMeta} />
                     </View>
-                ))}
+                )}
+                {exp.details && exp.details.length > 0 && (
+                    <View style={styles.expDetails}>
+                        {exp.details.map((detail, detailIdx) => (
+                            <View key={detailIdx} style={{ marginBottom: 2 }}>
+                                <BoldText
+                                    text={`${bulletPrefix}${String(detail ?? '')}`}
+                                    style={styles.expDetailItem}
+                                />
+                            </View>
+                        ))}
+                    </View>
+                )}
             </View>
-        );
+        ));
+        return renderSection(sectionTitles.experience || 'Experience', items);
     };
 
     const renderEducationBlock = (education) => {
         if (!education || education.length === 0) return null;
-        return (
-            <View style={getSectionWrapperStyle()}>
-                {renderSectionTitle(sectionTitles.education || 'Education')}
-                {education.map((edu, idx) => (
-                    <View key={idx} style={styles.eduItem}>
-                        <View style={styles.eduHeader}>
-                            <Text style={styles.eduDegree}>{edu.degree}</Text>
-                            <Text style={styles.eduDates}>
-                                {extractYear(edu.start_year)}
-                                {edu.end_year && ` – ${extractYear(edu.end_year)}`}
-                            </Text>
-                        </View>
-                        <Text style={styles.eduSchool}>
-                            {edu.school}{edu.grade && ` • GPA: ${edu.grade}`}
-                        </Text>
-                    </View>
-                ))}
+        const items = education.map((edu, idx) => (
+            <View key={idx} style={styles.eduItem}>
+                <View style={styles.eduHeader}>
+                    <Text style={styles.eduDegree}>{edu.degree}</Text>
+                    <Text style={styles.eduDates}>
+                        {extractYear(edu.start_year)}
+                        {edu.end_year && ` – ${extractYear(edu.end_year)}`}
+                    </Text>
+                </View>
+                <Text style={styles.eduSchool}>
+                    {edu.school}{edu.grade && ` • GPA: ${edu.grade}`}
+                </Text>
             </View>
-        );
+        ));
+        return renderSection(sectionTitles.education || 'Education', items);
     };
 
     const renderProjectsBlock = (projects) => {
         if (!projects || projects.length === 0) return null;
-        return (
-            <View style={getSectionWrapperStyle()}>
-                {renderSectionTitle(sectionTitles.projects || 'Projects')}
-                <View style={styles.expDetails}>
-                    {projects.map((project, idx) => {
-                        const heading = stripBoldMarkers((project && project.heading ? String(project.heading) : '').trim());
-                        const content = stripBoldMarkers((project && project.content ? String(project.content) : '').trim());
-                        const text = heading
-                            ? `${bulletPrefix}**${heading}**${content ? `: ${content}` : ''}`
-                            : `${bulletPrefix}${content}`;
-                        return (
-                            <View key={idx} style={{ marginBottom: 2 }}>
-                                <BoldText text={text} style={styles.projectItem} />
-                            </View>
-                        );
-                    })}
+        const items = projects.map((project, idx) => {
+            const heading = stripBoldMarkers((project && project.heading ? String(project.heading) : '').trim());
+            const content = stripBoldMarkers((project && project.content ? String(project.content) : '').trim());
+            const text = heading
+                ? `${bulletPrefix}**${heading}**${content ? `: ${content}` : ''}`
+                : `${bulletPrefix}${content}`;
+            return (
+                <View key={idx} style={[styles.expDetails, { marginTop: 0, marginBottom: 2 }]}>
+                    <BoldText text={text} style={styles.projectItem} />
                 </View>
-            </View>
-        );
+            );
+        });
+        return renderSection(sectionTitles.projects || 'Projects', items);
     };
 
     const renderCertificationsBlock = (certifications) => {
         if (!certifications || certifications.length === 0) return null;
-        return (
-            <View style={getSectionWrapperStyle()}>
-                {renderSectionTitle(sectionTitles.certifications || 'Certifications')}
-                <View style={styles.expDetails}>
-                    {certifications.map((cert, idx) => (
-                        <View key={idx} style={{ marginBottom: 2 }}>
-                            <BoldText
-                                text={`${bulletPrefix}${String(cert ?? '')}`}
-                                style={styles.certItem}
-                            />
-                        </View>
-                    ))}
-                </View>
+        const items = certifications.map((cert, idx) => (
+            <View key={idx} style={[styles.expDetails, { marginTop: 0, marginBottom: 2 }]}>
+                <BoldText
+                    text={`${bulletPrefix}${String(cert ?? '')}`}
+                    style={styles.certItem}
+                />
             </View>
-        );
+        ));
+        return renderSection(sectionTitles.certifications || 'Certifications', items);
     };
 
     const renderSummaryBlock = (summary) =>
-        summary ? (
-            <View style={getSectionWrapperStyle()}>
-                {renderSectionTitle(sectionTitles.summary || 'Summary')}
-                <BoldText text={summary} style={styles.summary} />
-            </View>
-        ) : null;
+        summary
+            ? renderSection(sectionTitles.summary || 'Summary', [
+                  <BoldText key="summary" text={summary} style={styles.summary} />,
+              ])
+            : null;
 
     const sectionRenderers = {
         summary: (data) => renderSummaryBlock(data.summary),
