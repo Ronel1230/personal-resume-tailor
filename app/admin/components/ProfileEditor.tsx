@@ -9,13 +9,18 @@ interface ProfileEditorProps {
   onUpdate: () => void;
 }
 
-import { WITHOUT_API_TEMPLATE_LABELS } from '@/app/utils/pdfTemplateMapping';
+import { WITHOUT_API_TEMPLATE_LABELS, ALL_TEMPLATES_VALUE } from '@/app/utils/pdfTemplateMapping';
 
-// PDF Template options (shared number; Without API uses React-PDF styles below)
-const PDF_TEMPLATES = Array.from({ length: 16 }, (_, i) => {
-  const value = i + 1;
-  return { value, label: `Template ${value} — ${WITHOUT_API_TEMPLATE_LABELS[value]}` };
-});
+// PDF Template options (shared number; Without API uses React-PDF styles below).
+// The final "All Templates" entry tells Without API mode to render one resume
+// per template when generating.
+const PDF_TEMPLATES = [
+  ...Array.from({ length: 16 }, (_, i) => {
+    const value = i + 1;
+    return { value, label: `Template ${value} — ${WITHOUT_API_TEMPLATE_LABELS[value]}` };
+  }),
+  { value: ALL_TEMPLATES_VALUE, label: WITHOUT_API_TEMPLATE_LABELS[ALL_TEMPLATES_VALUE] },
+];
 
 export default function ProfileEditor({ profiles, onUpdate }: ProfileEditorProps) {
   const [selectedProfileName, setSelectedProfileName] = useState<string | null>(null);

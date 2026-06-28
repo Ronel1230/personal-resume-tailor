@@ -21,6 +21,8 @@ export default function WithoutApiResumeForm({
   const [copyPromptLoading, setCopyPromptLoading] = useState(false);
   const [copyQuestionsLoading, setCopyQuestionsLoading] = useState(false);
   const [generating, setGenerating] = useState(false);
+  // When the profile uses "All Templates", track which one we're on (e.g. 3/16).
+  const [batchProgress, setBatchProgress] = useState<{ current: number; total: number } | null>(null);
   const [elapsedTime, setElapsedTime] = useState(0);
   const [lastGenerationTime, setLastGenerationTime] = useState<number | null>(null);
   const [copiedField, setCopiedField] = useState<string | null>(null);
@@ -111,6 +113,41 @@ export default function WithoutApiResumeForm({
     }
   };
 
+  // Fire one generate-pdf request. Pass a template number to override the
+  // profile's configured template (used when looping over "All Templates").
+  const requestPdf = (template: number | null) =>
+    fetch('/api/without-api/generate-pdf', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        profile: profileName,
+        llmResponse: llmResponse.trim(),
+        companyName: companyName.trim() || null,
+        ...(template ? { template } : {}),
+      }),
+    });
+
+  // Turn a PDF response into a browser download.
+  const downloadPdfResponse = async (response: Response) => {
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+
+    const contentDisposition = response.headers.get('Content-Disposition');
+    let filename = `${profileName.replace(/\s+/g, '_')}.pdf`;
+    if (contentDisposition) {
+      const filenameMatch = contentDisposition.match(/filename="(.+)"/);
+      if (filenameMatch) filename = filenameMatch[1];
+    }
+
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+  };
+
   const handleGenerate = async () => {
     if (!llmResponse.trim()) {
       setError('Please paste the LLM response (JSON) first');
@@ -118,6 +155,7 @@ export default function WithoutApiResumeForm({
     }
     setError('');
     setGenerating(true);
+    setBatchProgress(null);
     setElapsedTime(0);
     const startTime = Date.now();
     const timer = setInterval(() => {
@@ -125,38 +163,39 @@ export default function WithoutApiResumeForm({
     }, 1000);
 
     try {
-      const response = await fetch('/api/without-api/generate-pdf', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          profile: profileName,
-          llmResponse: llmResponse.trim(),
-          companyName: companyName.trim() || null,
-        }),
-      });
+      const response = await requestPdf(null);
 
       if (!response.ok) {
         const errData = await response.json().catch(() => ({}));
         throw new Error(errData.error || 'Failed to generate PDF');
       }
 
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
+      const contentType = response.headers.get('Content-Type') || '';
 
-      const contentDisposition = response.headers.get('Content-Disposition');
-      let filename = `${profileName.replace(/\s+/g, '_')}.pdf`;
-      if (contentDisposition) {
-        const filenameMatch = contentDisposition.match(/filename="(.+)"/);
-        if (filenameMatch) filename = filenameMatch[1];
+      if (contentType.includes('application/json')) {
+        // Profile is set to "All Templates": the route returned the list of
+        // templates to render. Generate and download one resume per template.
+        const data = await response.json();
+        const templates: { value: number; label: string }[] = Array.isArray(data?.templates)
+          ? data.templates
+          : [];
+        if (data?.mode !== 'all-templates' || templates.length === 0) {
+          throw new Error(data?.error || 'Unexpected response from server');
+        }
+
+        for (let i = 0; i < templates.length; i++) {
+          setBatchProgress({ current: i + 1, total: templates.length });
+          const r = await requestPdf(templates[i].value);
+          if (!r.ok) {
+            const e = await r.json().catch(() => ({}));
+            throw new Error(e.error || `Failed to generate "${templates[i].label}"`);
+          }
+          await downloadPdfResponse(r);
+        }
+      } else {
+        await downloadPdfResponse(response);
       }
 
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
       setLastGenerationTime(Math.floor((Date.now() - startTime) / 1000));
       // Keep the JD so the user can tweak/regenerate without re-pasting it.
       //setQuestions('');
@@ -167,6 +206,7 @@ export default function WithoutApiResumeForm({
     } finally {
       clearInterval(timer);
       setGenerating(false);
+      setBatchProgress(null);
     }
   };
 
@@ -290,7 +330,11 @@ export default function WithoutApiResumeForm({
         disabled={generating || !llmResponse.trim()}
         className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-semibold py-2 px-4 rounded-md shadow transition-colors duration-200"
       >
-        {generating ? `Generating PDF... (${elapsedTime}s)` : 'Generate PDF'}
+        {generating
+          ? batchProgress
+            ? `Generating template ${batchProgress.current}/${batchProgress.total}... (${elapsedTime}s)`
+            : `Generating PDF... (${elapsedTime}s)`
+          : 'Generate PDF'}
       </button>
 
       {lastGenerationTime !== null && (

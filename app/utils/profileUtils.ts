@@ -80,7 +80,11 @@ export function buildResumePdfData(
   };
 }
 
-export function pdfAttachmentFilename(resumeName: string, companyName?: string | null) {
+export function pdfAttachmentFilename(
+  resumeName: string,
+  companyName?: string | null,
+  templateLabel?: string | null
+) {
   const nameParts = resumeName ? resumeName.trim().split(/\s+/) : [];
   let base =
     !nameParts.length
@@ -92,6 +96,10 @@ export function pdfAttachmentFilename(resumeName: string, companyName?: string |
   if (companyName?.trim()) {
     const c = companyName.trim().replace(/\s+/g, '_').replace(/[^A-Za-z0-9_-]/g, '');
     base = `${base}_${c}`;
+  }
+  if (templateLabel?.trim()) {
+    const t = templateLabel.trim().replace(/\s+/g, '_').replace(/[^A-Za-z0-9_-]/g, '');
+    base = `${base}_${t}`;
   }
   return `${base}.pdf`;
 }

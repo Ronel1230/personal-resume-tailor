@@ -18,6 +18,16 @@ export const WITHOUT_API_TEMPLATE_MAP: Record<number, string> = {
   16: 'Resume-Photo',
 };
 
+// Sentinel "template" that means: generate one resume for every real template.
+// Must be a truthy number outside the 1..16 range (the route uses
+// `profile.pdfTemplate || 1`, so 0 would collapse to template 1).
+export const ALL_TEMPLATES_VALUE = 17;
+
+// Every concrete template number, in order — what "All Templates" expands to.
+export const ALL_TEMPLATE_NUMBERS: number[] = Object.keys(WITHOUT_API_TEMPLATE_MAP)
+  .map(Number)
+  .sort((a, b) => a - b);
+
 export const WITHOUT_API_TEMPLATE_LABELS: Record<number, string> = {
   1: 'Classic Professional — centered black header',
   2: 'Teal Banner — full-width teal header band',
@@ -35,6 +45,7 @@ export const WITHOUT_API_TEMPLATE_LABELS: Record<number, string> = {
   14: 'Plain Minimal — black & white, borderless section labels',
   15: 'Plain Boxed — black & white, light-grey boxed sections',
   16: 'Photo — header with profile photo (upload below)',
+  [ALL_TEMPLATES_VALUE]: 'All Templates — generate one resume per template',
 };
 
 export function getWithoutApiTemplateId(pdfTemplate: number): string {
