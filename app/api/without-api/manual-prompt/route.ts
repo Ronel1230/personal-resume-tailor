@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
     }
 
     const promptTemplate = profile.withoutApiPrompt || DEFAULT_WITHOUT_API_PROMPT;
-    const prompt = buildManualPrompt(profileData, jd, promptTemplate);
+    const prompt = buildManualPrompt(profileData, jd, promptTemplate, profile.pdfTemplate || 1);
 
     return NextResponse.json({ prompt });
   } catch (error) {

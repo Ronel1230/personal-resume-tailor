@@ -24,7 +24,8 @@ export const ResumeClassicCharcoal = createResumeTemplate({
         experience: 'Experience',
         education: 'Education',
     },
-    sectionOrder: ['summary', 'skills', 'experience', 'projects', 'education', 'certifications'],
+    sectionOrder: ['summary', 'skills', 'experience', 'education', 'certifications'],
+    experienceMeta: 'none',
     headerLayout: 'center',
     theme: {
         accent: '#57534e',

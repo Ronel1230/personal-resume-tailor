@@ -9,7 +9,8 @@ export const ResumeExecutiveNavy = createResumeTemplate({
         experience: 'Professional Experience',
         education: 'Education',
     },
-    sectionOrder: ['summary', 'skills', 'experience', 'projects', 'education', 'certifications'],
+    sectionOrder: ['summary', 'skills', 'experience', 'education', 'certifications'],
+    experienceMeta: 'none',
     headerLayout: 'banner',
     theme: {
         accent: '#1e3a5f',

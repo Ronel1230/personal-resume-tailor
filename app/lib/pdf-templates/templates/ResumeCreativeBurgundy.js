@@ -15,12 +15,15 @@ export const ResumeCreativeBurgundy = createResumeTemplate({
         experience: 'Professional Experience',
         education: 'Education',
     },
+    sectionOrder: ['summary', 'skills', 'education', 'experience', 'projects'],
+    experienceMeta: 'keySkills',
     headerLayout: 'minimal',
     theme: {
         accent: '#991b1b',
         sectionStyle: 'underline',
         nameLetterSpacing: 0.5,
         headerBorderWidth: 2,
+        skillsLayout: 'table',
     },
 });
 

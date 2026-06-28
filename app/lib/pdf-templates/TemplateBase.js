@@ -2,6 +2,10 @@ import React from 'react';
 import { Document, Page, Text, View, StyleSheet, Image, Svg, Path, Link } from '@react-pdf/renderer';
 import { extractYear, BoldText, stripBoldMarkers } from './utils';
 
+// If the Experience heading would otherwise sit within this many points of the
+// page bottom, push the whole section to the next page (PDF units are points).
+const EXPERIENCE_KEEP_TOP_SPACE = 200;
+
 // Normalize a profile URL/handle into a clickable href.
 const toHref = (v) => {
     const s = String(v || '').trim();
@@ -36,7 +40,15 @@ export const createResumeTemplate = (config) => {
         sectionOrder = null,
         headerLayout = 'center',
         theme = {},
+        // Per-job meta line drawn from each experience entry's `project` field:
+        //   'project'  → labelled "Project" (a one-line project sentence)
+        //   'keySkills' → labelled "Key Skills" (a comma-separated skills list)
+        //   'none'      → not rendered at all
+        experienceMeta = 'project',
     } = config;
+
+    const experienceMetaLabel =
+        experienceMeta === 'keySkills' ? 'Key Skills' : experienceMeta === 'none' ? null : 'Project';
 
     // All readable body text is forced to grey/black; the template's accent
     // color is kept only for structural lines/bands (borders, banners, stripes).
@@ -431,11 +443,20 @@ export const createResumeTemplate = (config) => {
     // group fixes it: if the two don't both fit in the remaining space, the
     // group can't be split, so it (and therefore the whole section) is pushed to
     // the next page — leaving the requested gap above so the section starts fresh.
-    const renderSection = (label, items) => {
+    //
+    // `keepTopSpace` (points) adds a stronger guarantee for tall sections like
+    // Experience, whose first entry can be short enough to squeeze in at the very
+    // bottom of a page — leaving the heading stranded even with the group above.
+    // We emit a zero-height spacer with `minPresenceAhead` *before* the section
+    // (a page-level sibling, so the break is allowed to fire). If the section
+    // would start within `keepTopSpace` of the page bottom, react-pdf breaks
+    // before the spacer and carries the whole section to the next page. Because
+    // the spacer has no height, nothing is left behind on the previous page.
+    const renderSection = (label, items, keepTopSpace = 0) => {
         const rows = (items || []).filter(Boolean);
         if (rows.length === 0) return null;
         const [first, ...rest] = rows;
-        return (
+        const section = (
             <View style={getSectionWrapperStyle()}>
                 <View wrap={false}>
                     {renderSectionTitle(label)}
@@ -444,6 +465,15 @@ export const createResumeTemplate = (config) => {
                 {rest}
             </View>
         );
+        if (keepTopSpace > 0) {
+            return (
+                <>
+                    <View minPresenceAhead={keepTopSpace} />
+                    {section}
+                </>
+            );
+        }
+        return section;
     };
 
     const buildContactItems = (data) =>
@@ -627,9 +657,9 @@ export const createResumeTemplate = (config) => {
                     {exp.location ? <Text style={styles.expLocation}>{`  —  ${exp.location}`}</Text> : null}
                 </Text>
                 {exp.industry && <Text style={styles.expIndustry}>{exp.industry}</Text>}
-                {exp.project && (
+                {experienceMetaLabel && exp.project && (
                     <View style={styles.expMetaBox}>
-                        <BoldText text={`**Project:** ${String(exp.project)}`} style={styles.expMeta} />
+                        <BoldText text={`**${experienceMetaLabel}:** ${String(exp.project)}`} style={styles.expMeta} />
                     </View>
                 )}
                 {exp.details && exp.details.length > 0 && (
@@ -646,7 +676,9 @@ export const createResumeTemplate = (config) => {
                 )}
             </View>
         ));
-        return renderSection(sectionTitles.experience || 'Experience', items);
+        // Experience is the tall section: if its heading would land in the bottom
+        // ~200pt of a page, push the whole section to the next page instead.
+        return renderSection(sectionTitles.experience || 'Experience', items, EXPERIENCE_KEEP_TOP_SPACE);
     };
 
     const renderEducationBlock = (education) => {

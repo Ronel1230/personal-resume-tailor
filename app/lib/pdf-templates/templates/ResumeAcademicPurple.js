@@ -9,7 +9,8 @@ export const ResumeAcademicPurple = createResumeTemplate({
         experience: 'Professional Experience',
         education: 'Education & Credentials',
     },
-    sectionOrder: ['summary', 'skills', 'experience', 'projects', 'education', 'certifications'],
+    sectionOrder: ['summary', 'skills', 'experience', 'education', 'certifications'],
+    experienceMeta: 'none',
     headerLayout: 'center',
     theme: {
         accent: '#7c3aed',

@@ -13,7 +13,7 @@ Return **ONLY** valid JSON — no markdown fences, no commentary. Shape:
 
 ## BOLDING
 Bold key JD terms by wrapping them in \`[[double square brackets]]\` (e.g. \`[[Kubernetes]]\`, \`[[HIPAA]]\`) — **NOT** markdown \`**\` or HTML \`<b>\` (those get stripped when the response is copied out of a chat; \`[[…]]\` survives and the app converts it to real bold).
-- Bold in: \`"summary"\`, every \`"details"\` bullet, the \`"project"\` sentence, and \`"certifications"\` names.
+- Bold in: \`"summary"\`, every \`"details"\` bullet, and \`"certifications"\` names (and the \`"project"\` line only if the EXPERIENCE guidance for it says to).
 - Do **NOT** bold: \`"skills"\` values or \`"projects"\` content (keep plain).
 - Bold only the most important JD-required tokens (tools, platforms, domain nouns) — a few per sentence, never whole sentences. Brackets must stay inside valid JSON strings.
 
@@ -39,7 +39,7 @@ Standard \`{Seniority} {Discipline} Engineer\` only — never the JD title verba
 
 ## INDUSTRY (credibility)
 Work history has no industry field — derive industry from the JD. Industry/domain is a top priority in the **title, summary, and Industry & Domain skills**.
-Per-company rule for **bullets/projects**: emphasize the JD industry in a company's content **only if** that company is a **consulting/agency/software-services firm** (plausibly served JD-industry clients) **or is itself in the JD's industry**; otherwise keep that employer industry-neutral (engineering/architecture/transferable work, no claimed JD-domain experience). When emphasized, bold the industry term with \`[[…]]\`. The JD industry goes in the \`"project"\` line **only for the most recent role** (if credible); older roles emphasize industry in bullets, not the project line. Never force the industry where it isn't credible.
+Per-company rule for **bullets/projects**: emphasize the JD industry in a company's content **only if** that company is a **consulting/agency/software-services firm** (plausibly served JD-industry clients) **or is itself in the JD's industry**; otherwise keep that employer industry-neutral (engineering/architecture/transferable work, no claimed JD-domain experience). When emphasized, bold the industry term with \`[[…]]\`. When the per-job \`"project"\` line is a sentence (see EXPERIENCE), put the JD industry there **only for the most recent role** (if credible); otherwise emphasize industry in bullets, not the project line. Never force the industry where it isn't credible.
 
 ## SUMMARY
 **2–3 sentences (~45–70 words)**, executive and readable (not a keyword list): open with {{resumeTitle}} and {{yearsOfExperience}}+ years; **prominently name the JD's domain/industry up front** (e.g. fintech payments, healthcare/EHR); weave in 3–4 core JD technologies and one credible impact metric. Bold the 3–5 most important JD terms with \`[[…]]\`, **including the JD industry term** (e.g. \`[[fintech payments]]\`). The summary is resume-level positioning — emphasize the JD industry even if older employers were in other industries.
@@ -50,7 +50,7 @@ Per-company rule for **bullets/projects**: emphasize the JD industry in a compan
 ## EXPERIENCE — exactly {{experienceCount}} jobs (most recent first)
 Per job add:
 - \`"title"\` — **most recent role:** JD-aligned \`{Seniority} {Discipline} Engineer\` (candidate seniority, discipline from JD; no parenthetical). **Older roles:** the real/standard title from the work history (don't over-tailor).
-- \`"project"\` — one sentence (~10–16 words) on what you built on the main project, JD-aligned, with the key JD term bolded \`[[…]]\`. For the **most recent role only** (if credible), name + bold the JD industry here. e.g. "Built [[fintech payments]] services, migrating monolith billing to event-driven microservices."
+{{experienceMetaGuidance}}
 - \`"details"\` — bullets. Counts: **6 / 6 / 6 / 5** (newest→oldest), max 6 per job. Each **38–43 words (min 38)**, one achievement, rotating action verbs (Architected, Built, Designed, Developed, Engineered, Implemented, Integrated, Led, Optimized, Automated, Deployed, Scaled, Streamlined, Migrated, Refactored) — never "Responsible for / Worked on / Helped with".
   Pattern: [action verb] + [what you built] + [2–3 JD technologies] + [JD business/domain context] + [team/stakeholder scope] + [~% improvement or scale metric].
   **MANDATORY:** every bullet wraps **2–3 key JD terms** in \`[[…]]\` (bold the tokens, not phrases/metrics); a bullet with zero \`[[…]]\` is invalid. On credible employers, bold the JD industry term in ≥1 bullet.

@@ -9,7 +9,8 @@ export const ResumeCorporateSlate = createResumeTemplate({
         experience: 'Experience',
         education: 'Education',
     },
-    sectionOrder: ['summary', 'skills', 'experience', 'projects', 'education', 'certifications'],
+    sectionOrder: ['summary', 'skills', 'experience', 'projects', 'education'],
+    experienceMeta: 'keySkills',
     headerLayout: 'split',
     theme: {
         accent: '#64748b',

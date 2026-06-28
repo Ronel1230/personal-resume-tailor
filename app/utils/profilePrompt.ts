@@ -1,3 +1,5 @@
+import { getExperienceMetaMode, type ExperienceMetaMode } from './pdfTemplateMapping';
+
 export type WithoutApiExperience = {
   company: string;
   title?: string;
@@ -79,7 +81,25 @@ export function yearsFromExperience(experience: WithoutApiExperience[]): number 
   return Math.round((Date.now() - earliest.getTime()) / (1000 * 60 * 60 * 24 * 365));
 }
 
-export function buildPromptVariables(profileData: WithoutApiProfileData, jd: string) {
+// Instruction for the per-job `project` field, tailored to the template the
+// profile renders with (templates 4-6 want a Key Skills list, 7-10 want it
+// dropped). Kept here so the copied prompt asks for exactly what the chosen
+// template will display.
+function experienceMetaGuidance(mode: ExperienceMetaMode): string {
+  if (mode === 'keySkills') {
+    return '- `"project"` — a **comma-separated list of 5–7 key skills/technologies** most relevant to this role and the JD (exact JD spelling), e.g. "React, Node.js, AWS, PostgreSQL, Redis". **Plain text — no bold, no sentence, no trailing period.** This renders as the role\'s "Key Skills" line.';
+  }
+  if (mode === 'none') {
+    return '- `"project"` — set to an empty string `""` (this template does not render a per-job project/skills line).';
+  }
+  return '- `"project"` — one sentence (~10–16 words) on what you built on the main project, JD-aligned, with the key JD term bolded `[[…]]`. For the **most recent role only** (if credible), name + bold the JD industry here. e.g. "Built [[fintech payments]] services, migrating monolith billing to event-driven microservices."';
+}
+
+export function buildPromptVariables(
+  profileData: WithoutApiProfileData,
+  jd: string,
+  pdfTemplate?: number
+) {
   const workHistory = profileData.experience
     .map((job, idx) => {
       const parts = [`${idx + 1}. ${job.company}`];
@@ -108,15 +128,17 @@ export function buildPromptVariables(profileData: WithoutApiProfileData, jd: str
     jobDescription: jd,
     experienceCount: profileData.experience.length,
     resumeTitle: profileData.title || profileData.experience[0]?.title || 'Senior Software Engineer',
+    experienceMetaGuidance: experienceMetaGuidance(getExperienceMetaMode(pdfTemplate ?? 1)),
   };
 }
 
 export function buildManualPrompt(
   profileData: WithoutApiProfileData,
   jd: string,
-  promptTemplate: string
+  promptTemplate: string,
+  pdfTemplate?: number
 ): string {
-  return processTemplate(promptTemplate, buildPromptVariables(profileData, jd));
+  return processTemplate(promptTemplate, buildPromptVariables(profileData, jd, pdfTemplate));
 }
 
 export function parseWithoutApiProfileContent(content: string | null | undefined): WithoutApiProfileData | null {

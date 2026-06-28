@@ -9,11 +9,13 @@ export const ResumeBoldEmerald = createResumeTemplate({
         experience: 'Experience',
         education: 'Education',
     },
+    sectionOrder: ['summary', 'skills', 'education', 'experience', 'projects'],
+    experienceMeta: 'keySkills',
     headerLayout: 'minimal',
     theme: {
         accent: '#059669',
         sectionStyle: 'leftBar',
-        skillsLayout: 'labelLeft',
+        skillsLayout: 'table',
     },
 });
 

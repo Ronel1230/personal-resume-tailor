@@ -16,7 +16,8 @@ export const ResumeConsultantSteel = createResumeTemplate({
         experience: 'Professional Experience',
         education: 'Education',
     },
-    sectionOrder: ['summary', 'skills', 'experience', 'projects', 'education', 'certifications'],
+    sectionOrder: ['summary', 'skills', 'experience', 'education', 'certifications'],
+    experienceMeta: 'none',
     headerLayout: 'split',
     theme: {
         accent: '#0284c7',
