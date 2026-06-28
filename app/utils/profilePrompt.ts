@@ -87,7 +87,7 @@ export function yearsFromExperience(experience: WithoutApiExperience[]): number 
 // template will display.
 function experienceMetaGuidance(mode: ExperienceMetaMode): string {
   if (mode === 'keySkills') {
-    return '- `"project"` — a **comma-separated list of 5–7 key skills/technologies** most relevant to this role and the JD (exact JD spelling), e.g. "React, Node.js, AWS, PostgreSQL, Redis". **Plain text — no bold, no sentence, no trailing period.** This renders as the role\'s "Key Skills" line.';
+    return '- `"project"` — a **plain comma-separated list of 6–9 skills, tools, and technologies** this role most relied on (languages, frameworks, libraries, platforms, databases, tools), chosen to match the JD (exact JD spelling), e.g. "FastAPI, Python, React, TypeScript, PostgreSQL, Docker, AWS". **A keyword list ONLY — NOT a sentence, NOT an achievement, NOT what you built.** No verbs, no descriptions, no metrics, no bold, no trailing period. This renders as the role\'s "Key Skills" line, so it must read as a list of technologies.';
   }
   if (mode === 'none') {
     return '- `"project"` — set to an empty string `""` (this template does not render a per-job project/skills line).';

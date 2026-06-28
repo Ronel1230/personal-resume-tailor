@@ -2,10 +2,6 @@ import React from 'react';
 import { Document, Page, Text, View, StyleSheet, Image, Svg, Path, Link } from '@react-pdf/renderer';
 import { extractYear, BoldText, stripBoldMarkers } from './utils';
 
-// If the Experience heading would otherwise sit within this many points of the
-// page bottom, push the whole section to the next page (PDF units are points).
-const EXPERIENCE_KEEP_TOP_SPACE = 200;
-
 // Normalize a profile URL/handle into a clickable href.
 const toHref = (v) => {
     const s = String(v || '').trim();
@@ -443,20 +439,11 @@ export const createResumeTemplate = (config) => {
     // group fixes it: if the two don't both fit in the remaining space, the
     // group can't be split, so it (and therefore the whole section) is pushed to
     // the next page — leaving the requested gap above so the section starts fresh.
-    //
-    // `keepTopSpace` (points) adds a stronger guarantee for tall sections like
-    // Experience, whose first entry can be short enough to squeeze in at the very
-    // bottom of a page — leaving the heading stranded even with the group above.
-    // We emit a zero-height spacer with `minPresenceAhead` *before* the section
-    // (a page-level sibling, so the break is allowed to fire). If the section
-    // would start within `keepTopSpace` of the page bottom, react-pdf breaks
-    // before the spacer and carries the whole section to the next page. Because
-    // the spacer has no height, nothing is left behind on the previous page.
-    const renderSection = (label, items, keepTopSpace = 0) => {
+    const renderSection = (label, items) => {
         const rows = (items || []).filter(Boolean);
         if (rows.length === 0) return null;
         const [first, ...rest] = rows;
-        const section = (
+        return (
             <View style={getSectionWrapperStyle()}>
                 <View wrap={false}>
                     {renderSectionTitle(label)}
@@ -465,15 +452,6 @@ export const createResumeTemplate = (config) => {
                 {rest}
             </View>
         );
-        if (keepTopSpace > 0) {
-            return (
-                <>
-                    <View minPresenceAhead={keepTopSpace} />
-                    {section}
-                </>
-            );
-        }
-        return section;
     };
 
     const buildContactItems = (data) =>
@@ -646,39 +624,49 @@ export const createResumeTemplate = (config) => {
 
     const renderExperienceBlock = (experience) => {
         if (!experience || experience.length === 0) return null;
-        const items = experience.map((exp, idx) => (
-            <View key={idx} style={styles.expItem}>
-                <View style={styles.expHeader}>
-                    <Text style={styles.expTitle}>{exp.title || 'Engineer'}</Text>
-                    <Text style={styles.expDates}>{exp.start_date} – {exp.end_date}</Text>
-                </View>
-                <Text style={styles.expCompany}>
-                    <Text style={styles.expCompanyName}>{exp.company}</Text>
-                    {exp.location ? <Text style={styles.expLocation}>{`  —  ${exp.location}`}</Text> : null}
-                </Text>
-                {exp.industry && <Text style={styles.expIndustry}>{exp.industry}</Text>}
-                {experienceMetaLabel && exp.project && (
-                    <View style={styles.expMetaBox}>
-                        <BoldText text={`**${experienceMetaLabel}:** ${String(exp.project)}`} style={styles.expMeta} />
-                    </View>
-                )}
-                {exp.details && exp.details.length > 0 && (
-                    <View style={styles.expDetails}>
-                        {exp.details.map((detail, detailIdx) => (
-                            <View key={detailIdx} style={{ marginBottom: 2 }}>
-                                <BoldText
-                                    text={`${bulletPrefix}${String(detail ?? '')}`}
-                                    style={styles.expDetailItem}
-                                />
+        return (
+            <View style={getSectionWrapperStyle()}>
+                {experience.map((exp, idx) => (
+                    <View key={idx} style={styles.expItem}>
+                        {/* The entry header — job title, dates, company, and the
+                            Key Skills line — is kept on one page (`wrap={false}`)
+                            so it never splits across a page break. The first
+                            entry also carries the section heading so "Experience"
+                            stays attached to it. The bullets below sit outside the
+                            group, so a long role can still flow onto the next page. */}
+                        <View wrap={false}>
+                            {idx === 0 && renderSectionTitle(sectionTitles.experience || 'Experience')}
+                            <View style={styles.expHeader}>
+                                <Text style={styles.expTitle}>{exp.title || 'Engineer'}</Text>
+                                <Text style={styles.expDates}>{exp.start_date} – {exp.end_date}</Text>
                             </View>
-                        ))}
+                            <Text style={styles.expCompany}>
+                                <Text style={styles.expCompanyName}>{exp.company}</Text>
+                                {exp.location ? <Text style={styles.expLocation}>{`  —  ${exp.location}`}</Text> : null}
+                            </Text>
+                            {exp.industry && <Text style={styles.expIndustry}>{exp.industry}</Text>}
+                            {experienceMetaLabel && exp.project && (
+                                <View style={styles.expMetaBox}>
+                                    <BoldText text={`**${experienceMetaLabel}:** ${String(exp.project)}`} style={styles.expMeta} />
+                                </View>
+                            )}
+                        </View>
+                        {exp.details && exp.details.length > 0 && (
+                            <View style={styles.expDetails}>
+                                {exp.details.map((detail, detailIdx) => (
+                                    <View key={detailIdx} style={{ marginBottom: 2 }}>
+                                        <BoldText
+                                            text={`${bulletPrefix}${String(detail ?? '')}`}
+                                            style={styles.expDetailItem}
+                                        />
+                                    </View>
+                                ))}
+                            </View>
+                        )}
                     </View>
-                )}
+                ))}
             </View>
-        ));
-        // Experience is the tall section: if its heading would land in the bottom
-        // ~200pt of a page, push the whole section to the next page instead.
-        return renderSection(sectionTitles.experience || 'Experience', items, EXPERIENCE_KEEP_TOP_SPACE);
+        );
     };
 
     const renderEducationBlock = (education) => {
