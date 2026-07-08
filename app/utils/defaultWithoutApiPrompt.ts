@@ -9,11 +9,12 @@ Keep the **fixed facts** exactly as given: never change employer names, the titl
 
 ## OUTPUT
 Return **ONLY** valid JSON — no markdown fences, no commentary. Shape:
-{"title":"...","techStack":"...","summary":"...","skills":{"Category":["Skill1",...]},"experience":[{"title":"...","project":"...","keySkills":"...","details":["...",...]}],"projects":[{"heading":"...","content":"..."}],"certifications":["...","..."]}
+{"title":"...","techStack":"...","summary":"...","skills":{"Category":["Skill1",...]},"experience":[{"title":"...","project":"...","keySkills":"...","details":["...",...]}],"projects":[{"heading":"...","content":"..."}],"certifications":[]}
+**Do NOT generate certifications.** Always return \`"certifications"\` as an empty array \`[]\` — never suggest, infer, or invent any credential.
 
 ## BOLDING
 Bold key JD terms by wrapping them in \`[[double square brackets]]\` (e.g. \`[[Kubernetes]]\`, \`[[HIPAA]]\`) — **NOT** markdown \`**\` or HTML \`<b>\` (those get stripped when the response is copied out of a chat; \`[[…]]\` survives and the app converts it to real bold).
-- Bold in: \`"summary"\`, every \`"details"\` bullet, the \`"project"\` sentence, and \`"certifications"\` names.
+- Bold in: \`"summary"\`, every \`"details"\` bullet, and the \`"project"\` sentence.
 - Do **NOT** bold: \`"skills"\` values, \`"keySkills"\` lists, or \`"projects"\` content (keep plain).
 - Bold only the most important JD-required tokens (tools, platforms, domain nouns) — a few per sentence, never whole sentences. Brackets must stay inside valid JSON strings.
 
@@ -65,13 +66,13 @@ Example bullet (match this length/bold): "Engineered and deployed a [[Node.js]]/
 Example: {"heading":"Real-Time Analytics Dashboard","content":"Built with React and WebSockets, surfacing live KPIs for 5k+ concurrent users."}
 
 ## CERTIFICATIONS
-\`"certifications"\`: **2–3** real, well-known certs as one-line strings — suggested credentials {{name}} should include only if already held, or may pursue, and must confirm before use. Put one slightly-less-related but reputable cert **first**, then JD-aligned one(s). Bold the cert **name** (not issuer/year) with \`[[…]]\`, e.g. "[[AWS Certified Solutions Architect – Associate]], Amazon Web Services". Only name real, verifiable certifications — never invent a credential or issuer.
+\`"certifications"\`: **always an empty array \`[]\`.** Do NOT generate, suggest, or infer any certifications.
 
 ## BEFORE RETURNING — verify
 - Valid JSON; \`"experience"\` length = {{experienceCount}}; all bold uses \`[[…]]\` (never \`**\`/\`<b>\`) inside string values.
 - Summary 2–3 sentences with JD domain bolded; skills plain (no bold); ~40–48 skills incl. Industry & Domain.
 - Headline + most-recent role title = bare \`{Seniority} {Discipline} Engineer\` (candidate seniority); older titles real.
 - Every \`"details"\` bullet has 2–3 \`[[…]]\` terms and is 38–43 words; 6–8 metrics total (3–4 % + 2–3 scale).
-- Projects 2–3 (modest headings, plain content); certifications 2–3 (reputable cert first); \`"techStack"\` exactly 3 JD techs.
+- Projects 2–3 (modest headings, plain content); \`"certifications"\` is an empty array \`[]\`; \`"techStack"\` exactly 3 JD techs.
 Return ONLY the JSON object — first character \`{\`, last character \`}\`.
 `;
